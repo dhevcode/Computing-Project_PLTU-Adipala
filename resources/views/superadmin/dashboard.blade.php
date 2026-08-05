@@ -1,30 +1,38 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dashboard Super Admin</title>
+    <title>Dashboard Super Admin</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
-}
+        body {
+            background-image:url('{{ asset("assets/image/bg-pln.png") }}');
 
-body{
-    background:#EEF2F5;
-}
+            background-size: cover;
 
-/* ================= HEADER ================= */
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            background-attachment: fixed;
+        }
+
+        /* ================= HEADER ================= */
 
         .header {
 
@@ -198,345 +206,345 @@ body{
 
         }
 
-/* ================= CONTENT ================= */
+        /* ================= CONTENT ================= */
 
-.content{
+        .content {
 
-    margin-top: 25px;
-    padding:70px 14px 14px;
+            margin-top: 25px;
+            padding: 70px 14px 14px;
 
-}
+        }
 
-.card{
+        .card {
 
-    background:white;
+            background: white;
 
-    border-radius:14px;
+            border-radius: 14px;
 
-    padding:18px;
+            padding: 18px;
 
-    min-height:340px;
+            min-height: 340px;
 
-    box-shadow:
-    0 2px 10px rgba(0,0,0,.08);
+            box-shadow:
+                0 2px 10px rgba(0, 0, 0, .08);
 
-}
+        }
 
-.card-title{
+        .card-title {
 
-    color:#0A6B70;
+            color: #0A6B70;
 
-    font-size:18px;
+            font-size: 18px;
 
-    font-weight:700;
+            font-weight: 700;
 
-}
+        }
 
-.card-subtitle{
+        .card-subtitle {
 
-    color:#6F6F6F;
+            color: #6F6F6F;
 
-    font-size:11px;
+            font-size: 11px;
 
-    margin-bottom:12px;
+            margin-bottom: 12px;
 
-}
+        }
 
-/* ================= TABLE ================= */
+        /* ================= TABLE ================= */
 
-.table-admin{
+        .table-admin {
 
-    width:100%;
-    border-collapse:collapse;
+            width: 100%;
+            border-collapse: collapse;
 
-}
+        }
 
-.table-admin thead th{
+        .table-admin thead th {
 
-    text-align:left;
+            text-align: left;
 
-    font-size:11px;
+            font-size: 11px;
 
-    font-weight:500;
+            font-weight: 500;
 
-    color:#4E4E4E;
+            color: #4E4E4E;
 
-    padding:10px 4px;
+            padding: 10px 4px;
 
-    border-bottom:1px solid #D8D8D8;
+            border-bottom: 1px solid #D8D8D8;
 
-}
+        }
 
-.table-admin tbody td{
+        .table-admin tbody td {
 
-    font-size:12px;
+            font-size: 12px;
 
-    color:#2F2F2F;
+            color: #2F2F2F;
 
-    padding:12px 4px;
+            padding: 12px 4px;
 
-    border-bottom:1px solid #D8D8D8;
+            border-bottom: 1px solid #D8D8D8;
 
-}
+        }
 
-.status{
+        .status {
 
-    width:56px;
-    height:22px;
+            width: 56px;
+            height: 22px;
 
-    background:#0A5E86;
+            background: #0A5E86;
 
-    border-radius:999px;
+            border-radius: 999px;
 
-    color:white;
+            color: white;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-    font-size:10px;
+            font-size: 10px;
 
-    font-weight:500;
+            font-weight: 500;
 
-}
+        }
 
-.action{
+        .action {
 
-    display:flex;
-    gap:10px;
+            display: flex;
+            gap: 10px;
 
-}
+        }
 
-.edit{
+        .edit {
 
-    color:#444;
-}
+            color: #444;
+        }
 
-.delete{
+        .delete {
 
-    color:#FF5A5A;
-}
-
-</style>
+            color: #FF5A5A;
+        }
+    </style>
 
 </head>
 
 <body>
 
-<header class="header">
+    <header class="header">
 
-    <div class="header-left">
+        <div class="header-left">
 
-        <div class="logo-box">
+            <div class="logo-box">
 
-            <img src="{{ asset('assets/image/logo-pln.png') }}">
+                <img src="{{ asset('assets/image/logo-pln.png') }}">
+
+            </div>
+
+            <div class="header-title">
+
+                <h2>Monitoring Mahasiswa PKL</h2>
+
+                <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
+
+            </div>
 
         </div>
 
-        <div class="header-title">
+        <div class="header-right">
 
-            <h2>Monitoring Mahasiswa PKL</h2>
+            <a href="{{ route('superadmin.create') }}" class="btn-add">
+                <i class="fa-solid fa-plus"></i>
+                Tambah Admin
+            </a>
 
-            <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
+            <a href="#" class="logout">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </a>
+
+        </div>
+
+    </header>
+
+    <div class="content">
+
+        <div class="card">
+
+            <div class="card-title">
+                Data Admin
+            </div>
+
+            <div class="card-subtitle">
+                Menampilkan data admin
+            </div>
+
+            <table class="table-admin">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Nama Lengkap</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Bagian</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>James</td>
+                        <td>adminjames</td>
+                        <td>098</td>
+                        <td>Umum</td>
+                        <td>Admin</td>
+
+                        <td>
+                            <div class="status">
+                                Aktif
+                            </div>
+                        </td>
+
+                        <td>
+
+                            <div class="action">
+
+                                <i class="fa-regular fa-pen-to-square edit"></i>
+
+                                <i class="fa-regular fa-trash-can delete"></i>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>James</td>
+                        <td>adminjames</td>
+                        <td>098</td>
+                        <td>Umum</td>
+                        <td>Admin</td>
+
+                        <td>
+                            <div class="status">
+                                Aktif
+                            </div>
+                        </td>
+
+                        <td>
+
+                            <div class="action">
+
+                                <i class="fa-regular fa-pen-to-square edit"></i>
+
+                                <i class="fa-regular fa-trash-can delete"></i>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>James</td>
+                        <td>adminjames</td>
+                        <td>098</td>
+                        <td>Umum</td>
+                        <td>Admin</td>
+
+                        <td>
+                            <div class="status">
+                                Aktif
+                            </div>
+                        </td>
+
+                        <td>
+
+                            <div class="action">
+
+                                <i class="fa-regular fa-pen-to-square edit"></i>
+
+                                <i class="fa-regular fa-trash-can delete"></i>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>James</td>
+                        <td>adminjames</td>
+                        <td>098</td>
+                        <td>Umum</td>
+                        <td>Admin</td>
+
+                        <td>
+                            <div class="status">
+                                Aktif
+                            </div>
+                        </td>
+
+                        <td>
+
+                            <div class="action">
+
+                                <i class="fa-regular fa-pen-to-square edit"></i>
+
+                                <i class="fa-regular fa-trash-can delete"></i>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>James</td>
+                        <td>adminjames</td>
+                        <td>098</td>
+                        <td>Umum</td>
+                        <td>Admin</td>
+
+                        <td>
+                            <div class="status">
+                                Aktif
+                            </div>
+                        </td>
+
+                        <td>
+
+                            <div class="action">
+
+                                <i class="fa-regular fa-pen-to-square edit"></i>
+
+                                <i class="fa-regular fa-trash-can delete"></i>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
 
         </div>
 
     </div>
-
-    <div class="header-right">
-
-        <a href="{{ route('superadmin.create') }}" class="btn-add">
-    <i class="fa-solid fa-plus"></i>
-    Tambah Admin
-</a>
-
-        <a href="#" class="logout">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        </a>
-
-    </div>
-
-</header>
-
-<div class="content">
-
-<div class="card">
-
-    <div class="card-title">
-        Data Admin
-    </div>
-
-    <div class="card-subtitle">
-        Menampilkan data admin
-    </div>
-
-    <table class="table-admin">
-
-        <thead>
-
-        <tr>
-
-            <th>Nama Lengkap</th>
-            <th>Username</th>
-            <th>Password</th>
-            <th>Bagian</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Aksi</th>
-
-        </tr>
-
-        </thead>
-
-        <tbody>
-
-        <tr>
-
-            <td>James</td>
-            <td>adminjames</td>
-            <td>098</td>
-            <td>Umum</td>
-            <td>Admin</td>
-
-            <td>
-                <div class="status">
-                    Aktif
-                </div>
-            </td>
-
-            <td>
-
-                <div class="action">
-
-                    <i class="fa-regular fa-pen-to-square edit"></i>
-
-                    <i class="fa-regular fa-trash-can delete"></i>
-
-                </div>
-
-            </td>
-
-        </tr>
-
-                <tr>
-
-            <td>James</td>
-            <td>adminjames</td>
-            <td>098</td>
-            <td>Umum</td>
-            <td>Admin</td>
-
-            <td>
-                <div class="status">
-                    Aktif
-                </div>
-            </td>
-
-            <td>
-
-                <div class="action">
-
-                    <i class="fa-regular fa-pen-to-square edit"></i>
-
-                    <i class="fa-regular fa-trash-can delete"></i>
-
-                </div>
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>James</td>
-            <td>adminjames</td>
-            <td>098</td>
-            <td>Umum</td>
-            <td>Admin</td>
-
-            <td>
-                <div class="status">
-                    Aktif
-                </div>
-            </td>
-
-            <td>
-
-                <div class="action">
-
-                    <i class="fa-regular fa-pen-to-square edit"></i>
-
-                    <i class="fa-regular fa-trash-can delete"></i>
-
-                </div>
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>James</td>
-            <td>adminjames</td>
-            <td>098</td>
-            <td>Umum</td>
-            <td>Admin</td>
-
-            <td>
-                <div class="status">
-                    Aktif
-                </div>
-            </td>
-
-            <td>
-
-                <div class="action">
-
-                    <i class="fa-regular fa-pen-to-square edit"></i>
-
-                    <i class="fa-regular fa-trash-can delete"></i>
-
-                </div>
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>James</td>
-            <td>adminjames</td>
-            <td>098</td>
-            <td>Umum</td>
-            <td>Admin</td>
-
-            <td>
-                <div class="status">
-                    Aktif
-                </div>
-            </td>
-
-            <td>
-
-                <div class="action">
-
-                    <i class="fa-regular fa-pen-to-square edit"></i>
-
-                    <i class="fa-regular fa-trash-can delete"></i>
-
-                </div>
-
-            </td>
-
-        </tr>
-
-        </tbody>
-
-    </table>
-
-</div>
-
-</div>
 
 </body>
+
 </html>

@@ -21,7 +21,15 @@
         }
 
         body {
-            background: #EEF2F5;
+            background-image:url('{{ asset("assets/image/bg-pln.png") }}');
+
+            background-size: cover;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            background-attachment: fixed;
         }
 
         /* ================= HEADER ================= */
