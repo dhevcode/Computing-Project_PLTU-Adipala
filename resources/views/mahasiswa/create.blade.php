@@ -24,7 +24,15 @@
 
         html,
         body {
-            background: #EEF2F5;
+            background-image:url('{{ asset("assets/image/bg-pln.png") }}');
+
+            background-size: cover;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            background-attachment: fixed;
         }
 
         /* ================= HEADER ================= */
@@ -515,8 +523,6 @@
         <div class="wrapper">
             <div class="card">
 
-                <div class="card">
-
                     <h1>Tambahkan data Mahasiswa Magang</h1>
 
                     <p class="subtitle">
@@ -611,47 +617,41 @@
 
                     </div>
 
-                </div>
+                <div class="upload-section">
 
+                    <label>Surat Pengantar / Dokumen Pendukung</label>
 
+                    <div class="upload-box">
 
+                        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
 
+                        <p class="upload-text">
+                            Drag & Drop file di sini
+                        </p>
 
-            <div class="upload-section">
+                        <span>atau</span>
 
-                <label>Surat Pengantar / Dokumen Pendukung</label>
+                        <label for="uploadFile" class="upload-btn">
+                            Upload
+                        </label>
 
-                <div class="upload-box">
+                        <input type="file" id="uploadFile" hidden>
 
-                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-
-                    <p class="upload-text">
-                        Drag & Drop file di sini
-                    </p>
-
-                    <span>atau</span>
-
-                    <label for="uploadFile" class="upload-btn">
-                        Upload
-                    </label>
-
-                    <input type="file" id="uploadFile" hidden>
+                    </div>
 
                 </div>
 
-            </div>
+                <div class="button-area">
 
-            <div class="button-area">
+                    <a href="{{ url('/dashboardadmin') }}" class="btn-cancel">
+                        Batal
+                    </a>
 
-                <a href="{{ url('/dashboardadmin') }}" class="btn-cancel">
-                    Batal
-                </a>
+                    <button class="btn-save" type="submit">
+                        Simpan
+                    </button>
 
-                <button class="btn-save" type="submit">
-                    Simpan
-                </button>
-
-            </div>
+                </div>
             </div>
 
         </div>

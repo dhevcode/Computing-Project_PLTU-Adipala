@@ -29,6 +29,16 @@
             width: 100%;
             background: #EEF2F5;
             overflow-x: hidden;
+
+            background-image:url('{{ asset("assets/image/bg-pln.png") }}');
+
+            background-size: cover;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            background-attachment: fixed;
         }
 
         /* ================= HEADER ================= */
@@ -742,35 +752,35 @@
 
 <body>
 
-   <header class="header">
+    <header class="header">
 
-    <div class="header-left">
+        <div class="header-left">
 
-        <div class="logo-box">
-            <img src="{{ asset('assets/image/logo-pln.png') }}">
+            <div class="logo-box">
+                <img src="{{ asset('assets/image/logo-pln.png') }}">
+            </div>
+
+            <div class="header-title">
+                <h2>Monitoring Mahasiswa PKL</h2>
+                <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
+            </div>
+
         </div>
 
-        <div class="header-title">
-            <h2>Monitoring Mahasiswa PKL</h2>
-            <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
+        <div class="header-right">
+
+            <a href="{{ route('mahasiswa.create') }}" class="btn-add">
+                <i class="fa-solid fa-plus"></i>
+                Tambah Mahasiswa
+            </a>
+
+            <a href="#" class="logout">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </a>
+
         </div>
 
-    </div>
-
-    <div class="header-right">
-
-        <a href="{{ route('mahasiswa.create') }}" class="btn-add">
-            <i class="fa-solid fa-plus"></i>
-            Tambah Mahasiswa
-        </a>
-
-        <a href="#" class="logout">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        </a>
-
-    </div>
-
-</header>
+    </header>
 
     <div class="container">
 
@@ -915,25 +925,25 @@
 
                 </div>
 
-                
+
 
             </div>
 
-            
+
 
         </div>
         <div class="chart-card university-card">
 
-                    <div class="chart-header">
-                        <h3>Sebaran Universitas</h3>
-                        <p>Menampilkan distribusi mahasiswa PKL berdasarkan asal universitas.</p>
-                    </div>
+            <div class="chart-header">
+                <h3>Sebaran Universitas</h3>
+                <p>Menampilkan distribusi mahasiswa PKL berdasarkan asal universitas.</p>
+            </div>
 
-                    <div class="chart-area-univ">
-                        <canvas id="universitasChart"></canvas>
-                    </div>
+            <div class="chart-area-univ">
+                <canvas id="universitasChart"></canvas>
+            </div>
 
-                </div>
+        </div>
 
         <!-- ================= FILTER ================= -->
 
@@ -1209,32 +1219,35 @@
 
             data: {
 
-                labels: ['PNC', 'POLTEK NES', 'UNS'],
+                labels: ['PNC', 'POLINES', 'UNSOED'],
 
                 datasets: [{
 
                     data: [7, 6, 8],
 
-                    backgroundColor:(context)=>{
+                    backgroundColor: (context) => {
 
-const chart=context.chart;
-const {ctx,chartArea}=chart;
+                        const chart = context.chart;
+                        const {
+                            ctx,
+                            chartArea
+                        } = chart;
 
-if(!chartArea) return '#0E9C9A';
+                        if (!chartArea) return '#0E9C9A';
 
-const gradient=ctx.createLinearGradient(
-0,
-0,
-chartArea.right,
-0
-);
+                        const gradient = ctx.createLinearGradient(
+                            0,
+                            0,
+                            chartArea.right,
+                            0
+                        );
 
-gradient.addColorStop(0,'#139D99');
-gradient.addColorStop(1,'#0A5F63');
+                        gradient.addColorStop(0, '#139D99');
+                        gradient.addColorStop(1, '#0A5F63');
 
-return gradient;
+                        return gradient;
 
-},
+                    },
 
                     borderRadius: 4,
 
