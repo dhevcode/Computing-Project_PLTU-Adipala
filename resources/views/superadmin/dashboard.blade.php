@@ -350,9 +350,12 @@ body{
     Tambah Admin
 </a>
 
-        <a href="#" class="logout">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        </a>
+        <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+            @csrf
+            <button type="submit" class="logout" style="background: none; border: none; cursor: pointer;">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </form>
 
     </div>
 
@@ -389,148 +392,39 @@ body{
         </thead>
 
         <tbody>
-
+    @forelse($admins as $admin)
         <tr>
-
-            <td>James</td>
-            <td>adminjames</td>
-            <td>098</td>
-            <td>Umum</td>
-            <td>Admin</td>
-
+            <td>{{ $admin->nama_lengkap }}</td>
+            <td>{{ $admin->username }}</td>
+            <td>••••••••</td> {{-- Password di-hide demi keamanan --}}
+            <td>{{ $admin->divisi->nama_divisi ?? '-' }}</td> {{-- Menampilkan relasi divisi jika ada --}}
+            <td>{{ $admin->role }}</td>
             <td>
-                <div class="status">
-                    Aktif
-                </div>
+                @if($admin->is_active)
+                    <div class="status" style="background: #0A5E86;">
+                        Aktif
+                    </div>
+                @else
+                    <div class="status" style="background: #D9534F;">
+                        Nonaktif
+                    </div>
+                @endif
             </td>
-
             <td>
-
                 <div class="action">
-
-                    <i class="fa-regular fa-pen-to-square edit"></i>
-
-                    <i class="fa-regular fa-trash-can delete"></i>
-
+                    <a href="#" class="edit" title="Edit Admin"><i class="fa-regular fa-pen-to-square"></i></a>
+                    <a href="#" class="delete" title="Hapus Admin"><i class="fa-regular fa-trash-can"></i></a>
                 </div>
-
             </td>
-
         </tr>
-
-                <tr>
-
-            <td>James</td>
-            <td>adminjames</td>
-            <td>098</td>
-            <td>Umum</td>
-            <td>Admin</td>
-
-            <td>
-                <div class="status">
-                    Aktif
-                </div>
-            </td>
-
-            <td>
-
-                <div class="action">
-
-                    <i class="fa-regular fa-pen-to-square edit"></i>
-
-                    <i class="fa-regular fa-trash-can delete"></i>
-
-                </div>
-
-            </td>
-
-        </tr>
-
+    @empty
         <tr>
-
-            <td>James</td>
-            <td>adminjames</td>
-            <td>098</td>
-            <td>Umum</td>
-            <td>Admin</td>
-
-            <td>
-                <div class="status">
-                    Aktif
-                </div>
+            <td colspan="7" style="text-align: center; color: #888; padding: 20px;">
+                Belum ada data Admin yang terdaftar.
             </td>
-
-            <td>
-
-                <div class="action">
-
-                    <i class="fa-regular fa-pen-to-square edit"></i>
-
-                    <i class="fa-regular fa-trash-can delete"></i>
-
-                </div>
-
-            </td>
-
         </tr>
-
-        <tr>
-
-            <td>James</td>
-            <td>adminjames</td>
-            <td>098</td>
-            <td>Umum</td>
-            <td>Admin</td>
-
-            <td>
-                <div class="status">
-                    Aktif
-                </div>
-            </td>
-
-            <td>
-
-                <div class="action">
-
-                    <i class="fa-regular fa-pen-to-square edit"></i>
-
-                    <i class="fa-regular fa-trash-can delete"></i>
-
-                </div>
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>James</td>
-            <td>adminjames</td>
-            <td>098</td>
-            <td>Umum</td>
-            <td>Admin</td>
-
-            <td>
-                <div class="status">
-                    Aktif
-                </div>
-            </td>
-
-            <td>
-
-                <div class="action">
-
-                    <i class="fa-regular fa-pen-to-square edit"></i>
-
-                    <i class="fa-regular fa-trash-can delete"></i>
-
-                </div>
-
-            </td>
-
-        </tr>
-
-        </tbody>
+    @endforelse
+</tbody>
 
     </table>
 
