@@ -41,12 +41,11 @@ class AuthController extends Controller
             ]);
 
             // 4. Redirection Berdasarkan Role
-            if ($user->role === 'Super Admin') {
-                return redirect()->route('superadmin.dashboard');
-            } else {
-                // Ubah dari 'dashboard' menjadi 'admin.dashboard'
-                return redirect()->route('admin.dashboard');
-            }
+            return match (strtolower(trim($user->role))) {
+                'super admin' => redirect()->route('superadmin.dashboard'),
+                'admin' => redirect()->route('admin.dashboard'),
+                default => redirect()->route('login')->with('error', 'Role akun tidak dikenali.'),
+            };
         }
 
         // Jika password salah

@@ -331,312 +331,100 @@
 <body>
 
     <header class="header">
-
         <div class="header-left">
-
             <div class="logo-box">
-
-                <img src="{{ asset('assets/image/logo-pln.png') }}">
-
+                <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
             </div>
-
             <div class="header-title">
-
                 <h2>Monitoring Mahasiswa PKL</h2>
-
                 <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
-
             </div>
-
         </div>
-
         <div class="header-right">
-
             <a href="{{ route('superadmin.create') }}" class="btn-add">
                 <i class="fa-solid fa-plus"></i>
                 Tambah Admin
             </a>
-
-            <a href="#" class="logout">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            </a>
-
+            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                @csrf
+                <button type="submit" class="logout" style="background: none; border: none; cursor: pointer; color: white;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            </form>
         </div>
-
     </header>
 
     <div class="content">
+        @if(session('success'))
+            <div style="background: #e6f4f4; color: #0A5F63; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #bfe3e3; font-size: 13px; font-weight: 600;">
+                <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
+            </div>
+        @endif
 
         <div class="card">
-
             <div class="card-title">
                 Data Admin
             </div>
-
             <div class="card-subtitle">
                 Menampilkan data admin
             </div>
 
             <table class="table-admin">
-
                 <thead>
-
                     <tr>
-
                         <th>Nama Lengkap</th>
                         <th>Username</th>
-                        <th>Password</th>
+                        <th>Email</th>
                         <th>Bagian</th>
                         <th>Role</th>
                         <th>Status</th>
                         <th>Aksi</th>
-
                     </tr>
-
                 </thead>
-
                 <tbody>
-
-                    <tr>
-
-                        <td>James</td>
-                        <td>adminjames</td>
-                        <td>098</td>
-                        <td>Umum</td>
-                        <td>Admin</td>
-
-                        <td>
-                            <div class="status">
-                                Aktif
-                            </div>
-                        </td>
-
-                        <td>
-
-                            <div class="action">
-
-                                <i class="fa-regular fa-pen-to-square edit"></i>
-
-                                <i class="fa-regular fa-trash-can delete"></i>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>James</td>
-                        <td>adminjames</td>
-                        <td>098</td>
-                        <td>Umum</td>
-                        <td>Admin</td>
-
-                        <td>
-                            <div class="status">
-                                Aktif
-                            </div>
-                        </td>
-
-                        <td>
-
-                            <div class="action">
-
-                                <i class="fa-regular fa-pen-to-square edit"></i>
-
-                                <i class="fa-regular fa-trash-can delete"></i>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>James</td>
-                        <td>adminjames</td>
-                        <td>098</td>
-                        <td>Umum</td>
-                        <td>Admin</td>
-
-                        <td>
-                            <div class="status">
-                                Aktif
-                            </div>
-                        </td>
-
-                        <td>
-
-                            <div class="action">
-
-                                <i class="fa-regular fa-pen-to-square edit"></i>
-
-                                <i class="fa-regular fa-trash-can delete"></i>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>James</td>
-                        <td>adminjames</td>
-                        <td>098</td>
-                        <td>Umum</td>
-                        <td>Admin</td>
-
-                        <td>
-                            <div class="status">
-                                Aktif
-                            </div>
-                        </td>
-
-                        <td>
-
-                            <div class="action">
-
-                                <i class="fa-regular fa-pen-to-square edit"></i>
-
-                                <i class="fa-regular fa-trash-can delete"></i>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>James</td>
-                        <td>adminjames</td>
-                        <td>098</td>
-                        <td>Umum</td>
-                        <td>Admin</td>
-
-                        <td>
-                            <div class="status">
-                                Aktif
-                            </div>
-                        </td>
-
-                        <td>
-
-                            <div class="action">
-
-                                <i class="fa-regular fa-pen-to-square edit"></i>
-
-                                <i class="fa-regular fa-trash-can delete"></i>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
+                    @forelse($admins as $admin)
+                        <tr>
+                            <td>{{ $admin->nama_lengkap }}</td>
+                            <td>{{ $admin->username }}</td>
+                            <td>{{ $admin->email }}</td>
+                            <td>{{ $admin->divisi->nama_divisi ?? '-' }}</td>
+                            <td>{{ $admin->role }}</td>
+                            <td>
+                                @if($admin->is_active)
+                                    <div class="status" style="background: #0A5E86;">
+                                        Aktif
+                                    </div>
+                                @else
+                                    <div class="status" style="background: #D9534F;">
+                                        Nonaktif
+                                    </div>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="action">
+                                    <a href="{{ route('superadmin.edit', $admin->id_users) }}" class="edit" title="Edit Admin">
+                                        <i class="fa-regular fa-pen-to-square"></i>
+                                    </a>
+                                    <form action="{{ route('superadmin.destroy', $admin->id_users) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus admin ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="delete" style="background: none; border: none; padding: 0; cursor: pointer;" title="Hapus Admin">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #888; padding: 20px;">
+                                Belum ada data Admin yang terdaftar.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
-
-<<<<<<< HEAD
-=======
-    <div class="header-right">
-
-        <a href="{{ route('superadmin.create') }}" class="btn-add">
-    <i class="fa-solid fa-plus"></i>
-    Tambah Admin
-</a>
-
-        <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-            @csrf
-            <button type="submit" class="logout" style="background: none; border: none; cursor: pointer;">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            </button>
-        </form>
-
-    </div>
-
-</header>
-
-<div class="content">
-
-<div class="card">
-
-    <div class="card-title">
-        Data Admin
-    </div>
-
-    <div class="card-subtitle">
-        Menampilkan data admin
-    </div>
-
-    <table class="table-admin">
-
-        <thead>
-
-        <tr>
-
-            <th>Nama Lengkap</th>
-            <th>Username</th>
-            <th>Password</th>
-            <th>Bagian</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Aksi</th>
-
-        </tr>
-
-        </thead>
-
-        <tbody>
-    @forelse($admins as $admin)
-        <tr>
-            <td>{{ $admin->nama_lengkap }}</td>
-            <td>{{ $admin->username }}</td>
-            <td>••••••••</td> {{-- Password di-hide demi keamanan --}}
-            <td>{{ $admin->divisi->nama_divisi ?? '-' }}</td> {{-- Menampilkan relasi divisi jika ada --}}
-            <td>{{ $admin->role }}</td>
-            <td>
-                @if($admin->is_active)
-                    <div class="status" style="background: #0A5E86;">
-                        Aktif
-                    </div>
-                @else
-                    <div class="status" style="background: #D9534F;">
-                        Nonaktif
-                    </div>
-                @endif
-            </td>
-            <td>
-                <div class="action">
-                    <a href="#" class="edit" title="Edit Admin"><i class="fa-regular fa-pen-to-square"></i></a>
-                    <a href="#" class="delete" title="Hapus Admin"><i class="fa-regular fa-trash-can"></i></a>
-                </div>
-            </td>
-        </tr>
-    @empty
-        <tr>
-            <td colspan="7" style="text-align: center; color: #888; padding: 20px;">
-                Belum ada data Admin yang terdaftar.
-            </td>
-        </tr>
-    @endforelse
-</tbody>
-
-    </table>
-
-</div>
-
-</div>
-
->>>>>>> f81c535715504504ee1961a09cf1e2cd412976ef
 </body>
-
 </html>

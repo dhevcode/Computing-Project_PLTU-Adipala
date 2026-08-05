@@ -76,4 +76,73 @@ class SuperAdminController extends Controller
         return redirect()->route('superadmin.dashboard')
                          ->with('success', 'Data Admin berhasil ditambahkan!');
     }
+
+    public function edit($id)
+    {
+        $admin = User::findOrFail($id);
+        $divisi = Divisi::all();
+        
+        return view('superadmin.edit', compact('admin', 'divisi'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $admin = User::findOrFail($id);
+
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:100',
+            'username'     => 'required|string|max:100|unique:users,username,' . $admin->id_users . ',id_users',
+            'email'        => 'required|email|unique:users,email,' . $admin->id_users . ',id_users',
+            'password'     => 'nullable|min:6',
+            'role'         => 'required|in:Admin,Super Admin',
+            'id_divisi'    => 'required',
+            'is_active'    => 'required|in:0,1',
+        ]);
+
+        $idDivisi = null;
+
+        if ($request->id_divisi === 'new') {
+            $request->validate([
+                'nama_divisi_baru' => 'required|string|max:100|unique:divisi,nama_divisi',
+            ], [
+                'nama_divisi_baru.required' => 'Nama divisi baru wajib diisi.',
+                'nama_divisi_baru.unique'   => 'Nama divisi tersebut sudah ada.',
+            ]);
+
+            $divisiBaru = Divisi::create([
+                'nama_divisi' => $request->nama_divisi_baru,
+            ]);
+
+            $idDivisi = $divisiBaru->id_divisi;
+        } else {
+            $idDivisi = $request->id_divisi;
+        }
+
+        $data = [
+            'nama_lengkap' => $request->nama_lengkap,
+            'username'     => $request->username,
+            'email'        => $request->email,
+            'id_divisi'    => $idDivisi,
+            'role'         => $request->role,
+            'is_active'    => $request->is_active,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $admin->update($data);
+
+        return redirect()->route('superadmin.dashboard')
+                         ->with('success', 'Data Admin berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $admin = User::findOrFail($id);
+        $admin->delete();
+
+        return redirect()->route('superadmin.dashboard')
+                         ->with('success', 'Data Admin berhasil dihapus!');
+    }
 }
