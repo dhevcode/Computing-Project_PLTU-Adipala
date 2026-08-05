@@ -27,11 +27,21 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+<<<<<<< HEAD
     // Super Admin Group
     Route::get('/superadmin/dashboard', [SuperAdminController::class, 'index'])->name('superadmin.dashboard');
     Route::get('/superadmin/create', [SuperAdminController::class, 'create'])->name('superadmin.create');
     Route::post('/superadmin/store', [SuperAdminController::class, 'store'])->name('superadmin.store');
 });
+=======
+Route::get('/mahasiswa/edit', function () {
+    return view('mahasiswa.edit');
+})->name('mahasiswa.edit');
+
+Route::get('/superadmin', function () {
+    return view('superadmin.dashboard');
+})->name('superadmin.dashboard');
+>>>>>>> 1ac5fdd82e5ef02be6b558f8e7553952f5a7912d
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
