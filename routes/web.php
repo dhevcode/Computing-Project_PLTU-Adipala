@@ -15,3 +15,11 @@ Route::get('/dashboardadmin', function () {
 Route::get('/mahasiswa/create', function () {
     return view('mahasiswa.create');
 })->name('mahasiswa.create');
+
+Route::get('/superadmin', function () {
+    return view('superadmin.dashboard');
+})->name('superadmin.dashboard');
+
+Route::get('/superadmin/create', function () {
+    return view('superadmin.create');
+})->name('superadmin.create');
