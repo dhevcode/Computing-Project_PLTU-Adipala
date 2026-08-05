@@ -219,23 +219,38 @@
                 Gunakan Kredensial Admin Untuk Membuka Dashboard
             </div>
 
-            <form>
+            <form action="{{ route('login') }}" method="POST">
+            @csrf
 
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email">
+            {{-- Pesan Error Jika Login Gagal --}}
+            @if(session('error'))
+                <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 13px;">
+                    {{ session('error') }}
                 </div>
+            @endif
 
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password">
-                </div>
+            <div class="form-group">
+                <label>Email</label>
+                {{-- Tambahkan name="email" --}}
+                <input type="email" name="email" value="{{ old('email') }}" required placeholder="Masukkan email...">
+                @error('email')
+                    <small style="color: red; font-size: 12px;">{{ $message }}</small>
+                @enderror
+            </div>
 
-                <button type="submit">
-                    Masuk ke dashboard
-                </button>
+            <div class="form-group">
+                <label>Password</label>
+                {{-- Tambahkan name="password" --}}
+                <input type="password" name="password" required placeholder="Masukkan password...">
+                @error('password')
+                    <small style="color: red; font-size: 12px;">{{ $message }}</small>
+                @enderror
+            </div>
 
-            </form>
+            <button type="submit">
+                Masuk ke dashboard
+            </button>
+        </form>
 
             <div class="warning">
                 <span>⚠</span>

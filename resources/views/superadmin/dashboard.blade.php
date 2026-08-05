@@ -545,6 +545,98 @@
 
     </div>
 
+<<<<<<< HEAD
+=======
+    <div class="header-right">
+
+        <a href="{{ route('superadmin.create') }}" class="btn-add">
+    <i class="fa-solid fa-plus"></i>
+    Tambah Admin
+</a>
+
+        <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+            @csrf
+            <button type="submit" class="logout" style="background: none; border: none; cursor: pointer;">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </form>
+
+    </div>
+
+</header>
+
+<div class="content">
+
+<div class="card">
+
+    <div class="card-title">
+        Data Admin
+    </div>
+
+    <div class="card-subtitle">
+        Menampilkan data admin
+    </div>
+
+    <table class="table-admin">
+
+        <thead>
+
+        <tr>
+
+            <th>Nama Lengkap</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Bagian</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Aksi</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+    @forelse($admins as $admin)
+        <tr>
+            <td>{{ $admin->nama_lengkap }}</td>
+            <td>{{ $admin->username }}</td>
+            <td>••••••••</td> {{-- Password di-hide demi keamanan --}}
+            <td>{{ $admin->divisi->nama_divisi ?? '-' }}</td> {{-- Menampilkan relasi divisi jika ada --}}
+            <td>{{ $admin->role }}</td>
+            <td>
+                @if($admin->is_active)
+                    <div class="status" style="background: #0A5E86;">
+                        Aktif
+                    </div>
+                @else
+                    <div class="status" style="background: #D9534F;">
+                        Nonaktif
+                    </div>
+                @endif
+            </td>
+            <td>
+                <div class="action">
+                    <a href="#" class="edit" title="Edit Admin"><i class="fa-regular fa-pen-to-square"></i></a>
+                    <a href="#" class="delete" title="Hapus Admin"><i class="fa-regular fa-trash-can"></i></a>
+                </div>
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="7" style="text-align: center; color: #888; padding: 20px;">
+                Belum ada data Admin yang terdaftar.
+            </td>
+        </tr>
+    @endforelse
+</tbody>
+
+    </table>
+
+</div>
+
+</div>
+
+>>>>>>> f81c535715504504ee1961a09cf1e2cd412976ef
 </body>
 
 </html>
