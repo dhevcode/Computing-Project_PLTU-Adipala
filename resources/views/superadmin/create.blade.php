@@ -1,461 +1,471 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Tambah Data Admin</title>
+    <title>Tambah Data Admin</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
-<style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
-}
+        body {
+            background: #EEF2F5;
+        }
 
-body{
-    background:#EEF2F5;
-}
+        /* ================= HEADER ================= */
 
-/* ===== HEADER (SAMA DENGAN DASHBOARD) ===== */
+        .header {
 
-.header{
+            position: fixed;
 
-    position:fixed;
-    top:0;
-    left:0;
-    right:0;
+            top: 0;
 
-    height:58px;
+            left: 0;
 
-    background:linear-gradient(90deg,#0A6D71,#053A3E);
+            right: 0;
 
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+            height: 72px;
 
-    z-index:999;
+            background: #0A5F63;
 
-    box-shadow:0 3px 12px rgba(0,0,0,.08);
+            display: flex;
 
-}
+            justify-content: space-between;
 
-.header-left{
+            align-items: center;
 
-    display:flex;
-    align-items:center;
+            z-index: 9999;
 
-}
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .08);
 
-.logo-box{
+        }
 
-    width:135px;
-    height:58px;
 
-    background:#fff;
+        .header-left {
 
-    clip-path:polygon(0 0,100% 0,82% 100%,0 100%);
+            display: flex;
+            align-items: center;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+        }
 
-}
+        .logo-box {
 
-.logo-box img{
+            width: 230px;
 
-    width:90px;
+            height: 72px;
 
-}
+            background: white;
 
-.header-title{
+            clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%);
 
-    margin-left:16px;
-    color:white;
+            display: flex;
 
-}
+            justify-content: center;
 
-.header-title h2{
+            align-items: center;
 
-    font-size:16px;
-    font-weight:700;
+        }
 
-}
+        .logo-box img {
 
-.header-title p{
+            width: 150px;
 
-    font-size:9px;
-    opacity:.9;
+        }
 
-}
 
-.header-right{
+        .header-title {
 
-    margin-right:18px;
+            margin-left: 16px;
+            color: white;
 
-}
+        }
 
-.logout{
+        .header-title h2 {
 
-    color:white;
-    font-size:18px;
-    text-decoration:none;
+            font-size: 16px;
+            font-weight: 700;
 
-}
+        }
 
-/* ===== CONTENT ===== */
+        .header-title p {
 
-.content{
+            font-size: 9px;
+            opacity: .9;
 
-    max-width:1280px;
+        }
 
-    margin:90px auto 30px;
+        .header-right {
 
-    padding:0 28px;
+            margin-right: 18px;
 
-}
+        }
 
-.card{
+        .logout {
 
-    background:#fff;
+            color: white;
+            font-size: 18px;
+            text-decoration: none;
 
-    border-radius:26px;
+        }
 
-    padding:22px;
+        /* ===== CONTENT ===== */
 
-    box-shadow:0 4px 16px rgba(0,0,0,.10);
+        .content {
 
-    border:1px solid #ECECEC;
+            max-width: 1280px;
 
-}
+            margin: 90px auto 30px;
 
-.card:hover{
+            padding: 0 28px;
 
-    box-shadow:0 8px 22px rgba(0,0,0,.12);
+        }
 
-}
+        .card {
 
-.card h2{
+            background: #fff;
 
-    font-size:18px;
+            border-radius: 26px;
 
-    font-weight:700;
+            padding: 22px;
 
-    color:#1D1D1D;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .10);
 
-}
+            border: 1px solid #ECECEC;
 
-.subtitle{
+        }
 
-    margin-top:4px;
+        .card:hover {
 
-    font-size:12px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, .12);
 
-    color:#A8A8A8;
+        }
 
-    margin-bottom:18px;
+        .card h2 {
 
-}
+            font-size: 18px;
 
-/* ===== FORM ===== */
+            font-weight: 700;
 
-.form-group{
+            color: #1D1D1D;
 
-    margin-bottom:16px;
+        }
 
-}
+        .subtitle {
 
-label{
+            margin-top: 4px;
 
-    display:block;
+            font-size: 12px;
 
-    margin-bottom:6px;
+            color: #A8A8A8;
 
-    font-size:13px;
+            margin-bottom: 18px;
 
-    font-weight:500;
+        }
 
-    color:#222;
+        /* ===== FORM ===== */
 
-}
+        .form-group {
 
-input{
+            margin-bottom: 16px;
 
-    width:100%;
+        }
 
-    height:38px;
+        label {
 
-    border:1px solid #E4E4E4;
+            display: block;
 
-    border-radius:6px;
+            margin-bottom: 6px;
 
-    padding:0 12px;
+            font-size: 13px;
 
-    outline:none;
+            font-weight: 500;
 
-    font-size:13px;
+            color: #222;
 
-    transition:.2s;
+        }
 
-}
+        input {
 
-input:focus{
+            width: 100%;
 
-    border-color:#0A6D71;
+            height: 38px;
 
-    box-shadow:0 0 0 3px rgba(10,109,113,.12);
+            border: 1px solid #E4E4E4;
 
-}
+            border-radius: 6px;
 
-.grid{
+            padding: 0 12px;
 
-    display:grid;
+            outline: none;
 
-    grid-template-columns:1fr 1fr;
+            font-size: 13px;
 
-    gap:18px;
+            transition: .2s;
 
-    margin-top:4px;
+        }
 
-}
+        input:focus {
 
-/* ================= BUTTON ================= */
+            border-color: #0A6D71;
 
-.button-group{
+            box-shadow: 0 0 0 3px rgba(10, 109, 113, .12);
 
-    display:flex;
+        }
 
-    justify-content:flex-end;
+        .grid {
 
-    gap:12px;
+            display: grid;
 
-    margin-top:22px;
+            grid-template-columns: 1fr 1fr;
 
-}
+            gap: 18px;
 
-.btn-save{
+            margin-top: 4px;
 
-    width:88px;
+        }
 
-    height:36px;
+        /* ================= BUTTON ================= */
 
-    border:none;
+        .button-group {
 
-    border-radius:6px;
+            display: flex;
 
-    background:#5B97A1;
+            justify-content: flex-end;
 
-    color:white;
+            gap: 12px;
 
-    font-size:12px;
+            margin-top: 22px;
 
-    font-weight:600;
+        }
 
-    cursor:pointer;
+        .btn-save {
 
-    transition:.2s;
+            width: 88px;
 
-}
+            height: 36px;
 
-.btn-save:hover{
+            border: none;
 
-    background:#4F8790;
+            border-radius: 6px;
 
-}
+            background: #5B97A1;
 
-.btn-cancel{
+            color: white;
 
-    width:88px;
+            font-size: 12px;
 
-    height:36px;
+            font-weight: 600;
 
-    border-radius:6px;
+            cursor: pointer;
 
-    background:#5B97A1;
+            transition: .2s;
 
-    color:white;
+        }
 
-    text-decoration:none;
+        .btn-save:hover {
 
-    display:flex;
+            background: #4F8790;
 
-    justify-content:center;
+        }
 
-    align-items:center;
+        .btn-cancel {
 
-    font-size:12px;
+            width: 88px;
 
-    font-weight:600;
+            height: 36px;
 
-    transition:.2s;
+            border-radius: 6px;
 
-}
+            background: #5B97A1;
 
-.btn-cancel:hover{
+            color: white;
 
-    background:#4F8790;
+            text-decoration: none;
 
-}
+            display: flex;
 
-select{
+            justify-content: center;
 
-    width:100%;
+            align-items: center;
 
-    height:38px;
+            font-size: 12px;
 
-    border:1px solid #E4E4E4;
+            font-weight: 600;
 
-    border-radius:6px;
+            transition: .2s;
 
-    padding:0 12px;
+        }
 
-    outline:none;
+        .btn-cancel:hover {
 
-    font-size:13px;
+            background: #4F8790;
 
-    background:white;
+        }
 
-    color:#444;
+        select {
 
-    transition:.2s;
+            width: 100%;
 
-}
+            height: 38px;
 
-select:focus{
+            border: 1px solid #E4E4E4;
 
-    border-color:#0A6D71;
+            border-radius: 6px;
 
-    box-shadow:0 0 0 3px rgba(10,109,113,.12);
+            padding: 0 12px;
 
-}
+            outline: none;
 
-</style>
+            font-size: 13px;
+
+            background: white;
+
+            color: #444;
+
+            transition: .2s;
+
+        }
+
+        select:focus {
+
+            border-color: #0A6D71;
+
+            box-shadow: 0 0 0 3px rgba(10, 109, 113, .12);
+
+        }
+    </style>
 
 </head>
 
 <body>
 
-<header class="header">
+    <header class="header">
 
-    <div class="header-left">
+        <div class="header-left">
 
-        <div class="logo-box">
+            <div class="logo-box">
 
-            <img src="{{ asset('assets/image/logo-pln.png') }}">
+                <img src="{{ asset('assets/image/logo-pln.png') }}">
 
-        </div>
+            </div>
 
-        <div class="header-title">
+            <div class="header-title">
 
-            <h2>Monitoring Mahasiswa PKL</h2>
+                <h2>Monitoring Mahasiswa PKL</h2>
 
-            <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
+                <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
 
-        </div>
-
-    </div>
-
-    <div class="header-right">
-
-        <a href="{{ route('superadmin.dashboard') }}" class="logout">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        </a>
-
-    </div>
-
-</header>
-
-<div class="content">
-
-    <div class="card">
-
-        <h2>Tambahkan data Admin</h2>
-
-        <p class="subtitle">
-            Masukkan data admin untuk memantau mahasiswa selama pelaksanaan PKL.
-        </p>
-
-        <div class="form-group">
-
-            <label>Nama lengkap</label>
-
-            <input type="text">
+            </div>
 
         </div>
 
-        <div class="grid">
+        <div class="header-right">
+
+            <a href="{{ route('superadmin.dashboard') }}" class="logout">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </a>
+
+        </div>
+
+    </header>
+
+    <div class="content">
+
+        <div class="card">
+
+            <h2>Tambahkan data Admin</h2>
+
+            <p class="subtitle">
+                Masukkan data admin untuk memantau mahasiswa selama pelaksanaan PKL.
+            </p>
 
             <div class="form-group">
 
-                <label>Username</label>
+                <label>Nama lengkap</label>
 
                 <input type="text">
 
             </div>
 
-            <div class="form-group">
+            <div class="grid">
 
-                <label>Password</label>
+                <div class="form-group">
 
-                <input type="password">
+                    <label>Username</label>
+
+                    <input type="text">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Password</label>
+
+                    <input type="password">
+
+                </div>
+
+            </div>
+
+            <div class="grid">
+
+                <div class="form-group">
+
+                    <label>Bagian</label>
+
+                    <select>
+                        <option selected disabled>Pilih Bagian</option>
+                        <option>Umum</option>
+                        <option>Operasi</option>
+                        <option>Pemeliharaan</option>
+                        <option>Keuangan</option>
+                        <option>SDM</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Role</label>
+
+                    <select>
+                        <option selected disabled>Pilih Role</option>
+                        <option>Admin</option>
+                        <option>Super Admin</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="button-group">
+
+                <button type="submit" class="btn-save">
+                    Simpan
+                </button>
+
+                <a href="{{ route('superadmin.dashboard') }}" class="btn-cancel">
+                    Batal
+                </a>
 
             </div>
 
         </div>
 
-        <div class="grid">
-
-    <div class="form-group">
-
-        <label>Bagian</label>
-
-        <select>
-    <option selected disabled>Pilih Bagian</option>
-    <option>Umum</option>
-    <option>Operasi</option>
-    <option>Pemeliharaan</option>
-    <option>Keuangan</option>
-    <option>SDM</option>
-</select>
-
     </div>
-
-    <div class="form-group">
-
-        <label>Role</label>
-
-        <select>
-    <option selected disabled>Pilih Role</option>
-    <option>Admin</option>
-    <option>Super Admin</option>
-</select>
-
-    </div>
-
-</div>
-
-<div class="button-group">
-
-    <button type="submit" class="btn-save">
-        Simpan
-    </button>
-
-    <a href="{{ route('superadmin.dashboard') }}" class="btn-cancel">
-        Batal
-    </a>
-
-</div>
-
-    </div>
-
-</div>
 
 </body>
+
 </html>

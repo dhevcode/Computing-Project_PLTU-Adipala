@@ -16,6 +16,10 @@ Route::get('/mahasiswa/create', function () {
     return view('mahasiswa.create');
 })->name('mahasiswa.create');
 
+Route::get('/mahasiswa/edit', function () {
+    return view('mahasiswa.edit');
+})->name('mahasiswa.edit');
+
 Route::get('/superadmin', function () {
     return view('superadmin.dashboard');
 })->name('superadmin.dashboard');
