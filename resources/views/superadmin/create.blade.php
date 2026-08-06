@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Data Admin</title>
+    <title>Tambah Admin Baru - Monitoring PKL</title>
 
+<<<<<<< HEAD
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
@@ -228,10 +229,17 @@
             background: #8e8e8e;
         }
     </style>
+=======
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/superadmin/create.css') }}">
+    
+>>>>>>> 427ec68cbf2ba1ccf18a64a339cc2450dd4af7e2
 </head>
 
 <body>
 
+    <!-- HEADER -->
     <header class="header">
         <div class="header-left">
             <div class="logo-box">
@@ -243,37 +251,51 @@
             </div>
         </div>
         <div class="header-right">
-            <a href="{{ route('superadmin.dashboard') }}" class="logout" title="Kembali ke Dashboard">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <a href="{{ route('superadmin.dashboard') }}" class="btn-header-action" title="Kembali ke Dashboard">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Kembali</span>
             </a>
+
+            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                @csrf
+                <button type="submit" class="btn-header-icon" title="Logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            </form>
         </div>
     </header>
 
+    <!-- CONTENT -->
     <div class="content">
         <div class="card">
-            <h2>Tambahkan data Admin</h2>
-            <p class="subtitle">
-                Masukkan data admin untuk memantau mahasiswa selama pelaksanaan PKL.
-            </p>
+            <div class="card-title-box">
+                <div class="icon-badge">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <div>
+                    <h2>Tambah Admin Baru</h2>
+                    <p>Isi formulir berikut untuk mendaftarkan akun administrator baru ke dalam sistem.</p>
+                </div>
+            </div>
 
             <form action="{{ route('superadmin.store') }}" method="POST">
                 @csrf
 
                 <div class="form-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required placeholder="Contoh: John Doe">
+                    <label>Nama Lengkap Admin</label>
+                    <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required placeholder="Contoh: Ahmad Rizki">
                     @error('nama_lengkap') <p class="error-text">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="grid">
                     <div class="form-group">
                         <label>Username</label>
-                        <input type="text" name="username" value="{{ old('username') }}" required placeholder="Contoh: adminjohn">
+                        <input type="text" name="username" value="{{ old('username') }}" required placeholder="Contoh: ahmad_admin">
                         @error('username') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="form-group">
-                        <label>Email</label>
+                        <label>Alamat Email</label>
                         <input type="email" name="email" value="{{ old('email') }}" required placeholder="admin@perusahaan.com">
                         @error('email') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
@@ -281,21 +303,21 @@
 
                 <div class="grid">
                     <div class="form-group">
-                        <label>Password</label>
+                        <label>Kata Sandi (Password)</label>
                         <input type="password" name="password" required placeholder="Minimal 6 karakter">
                         @error('password') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="form-group">
-                        <label>Bagian / Divisi</label>
+                        <label>Bagian / Divisi Penugasan</label>
                         <select name="id_divisi" id="select_divisi" required>
-                            <option value="" disabled {{ old('id_divisi') ? '' : 'selected' }}>Pilih Bagian</option>
+                            <option value="" disabled selected>Pilih Bagian / Divisi</option>
                             @foreach($divisi as $d)
                             <option value="{{ $d->id_divisi }}" {{ old('id_divisi') == $d->id_divisi ? 'selected' : '' }}>
                                 {{ $d->nama_divisi }}
                             </option>
                             @endforeach
-                            <option value="new" style="font-weight: bold; color: #0A6D71;" {{ old('id_divisi') == 'new' ? 'selected' : '' }}>
+                            <option value="new" style="font-weight: 700; color: #0A5F63;" {{ old('id_divisi') == 'new' ? 'selected' : '' }}>
                                 + Tambah Bagian/Divisi Baru...
                             </option>
                         </select>
@@ -303,28 +325,42 @@
                     </div>
                 </div>
 
-                <!-- FIELD NAMA DIVISI BARU -->
+                <!-- FIELD INPUT NAMA DIVISI BARU -->
                 <div id="field_divisi_baru" class="box-divisi-baru d-none">
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label style="color: #0A6D71;">Nama Divisi Baru</label>
-                        <input type="text" name="nama_divisi_baru" id="nama_divisi_baru" value="{{ old('nama_divisi_baru') }}" placeholder="Misal: Operasi & Pemeliharaan">
+                        <label style="color: #0A5F63;"><i class="fa-solid fa-folder-plus" style="margin-right: 6px;"></i>Nama Divisi Baru</label>
+                        <input type="text" name="nama_divisi_baru" id="nama_divisi_baru" value="{{ old('nama_divisi_baru') }}" placeholder="Misal: Operasi & Pemeliharaan Boiler">
                         @error('nama_divisi_baru') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Role</label>
-                    <select name="role" required>
-                        <option value="" disabled {{ old('role') ? '' : 'selected' }}>Pilih Role</option>
-                        <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="Super Admin" {{ old('role') == 'Super Admin' ? 'selected' : '' }}>Super Admin</option>
-                    </select>
-                    @error('role') <p class="error-text">{{ $message }}</p> @enderror
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Hak Akses (Role)</label>
+                        <select name="role" required>
+                            <option value="" disabled selected>Pilih Hak Akses</option>
+                            <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="Super Admin" {{ old('role') == 'Super Admin' ? 'selected' : '' }}>Super Admin</option>
+                        </select>
+                        @error('role') <p class="error-text">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status Akun Saat Ini</label>
+                        <select name="is_active" required>
+                            <option value="1" {{ old('is_active', '1') == '1' ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Nonaktif</option>
+                        </select>
+                        @error('is_active') <p class="error-text">{{ $message }}</p> @enderror
+                    </div>
                 </div>
 
                 <div class="button-group">
                     <a href="{{ route('superadmin.dashboard') }}" class="btn-cancel">Batal</a>
-                    <button type="submit" class="btn-save">Simpan</button>
+                    <button type="submit" class="btn-save">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Simpan Admin</span>
+                    </button>
                 </div>
             </form>
         </div>
