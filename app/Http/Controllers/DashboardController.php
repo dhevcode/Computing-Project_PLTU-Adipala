@@ -47,10 +47,31 @@ class DashboardController extends Controller
             });
         }
 
+        if ($request->filled('jenis_kelamin')) {
+            $query->whereHas('mahasiswa', function ($q) use ($request) {
+                $q->where('jenis_kelamin', $request->jenis_kelamin);
+            });
+        }
+
         if ($request->filled('divisi_id')) {
             $query->where('divisi_id', $request->divisi_id);
         }
 
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('tanggal_mulai')) {
+            $query->whereDate('tanggal_mulai', $request->tanggal_mulai);
+        }
+
+        if ($request->filled('tanggal_selesai')) {
+            $query->whereDate('tanggal_selesai', $request->tanggal_selesai);
+        }
+
+        if ($request->filled('tahun')) {
+            $query->whereYear('tanggal_mulai', $request->tahun);
+        }
         // 3. Menghitung Cards Statistik
         // Magang Hari Ini: Sedang Magang dan tanggal hari ini di dalam rentang
         $magangHariIni = (clone $query)
@@ -98,7 +119,13 @@ class DashboardController extends Controller
         $univLabels = $univStats->pluck('nama_universitas')->toArray();
         $univData = $univStats->pluck('total')->toArray();
 
+        $pengajuans = $query
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+
         return view('dashboard', compact(
+            'pengajuans',
             'magangHariIni',
             'totalMahasiswa',
             'belumSelesai',

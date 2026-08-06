@@ -261,6 +261,45 @@
             gap: 15px;
         }
 
+        .filter-action {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn-filter {
+            background: #0A5F63;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-filter:hover {
+            background: #084C50;
+        }
+
+        .btn-reset {
+            background: #F3F4F6;
+            color: #444;
+            border: 1px solid #D8D8D8;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .btn-reset:hover {
+            background: #E5E7EB;
+        }
+
         .input-group {
             display: flex;
             flex-direction: column;
@@ -493,8 +532,6 @@
             </div>
         </div>
 
-
-
         <!-- CHARTS SECTION -->
         <div class="chart-grid">
 
@@ -561,21 +598,19 @@
             <h3><i class="fa-solid fa-filter"></i> Filter Data Dashboard</h3>
 
             <div class="filter-grid">
-
                 <!-- PENCARIAN -->
                 <div class="input-group">
                     <label>Pencarian</label>
                     <input type="text"
                         name="search"
                         value="{{ request('search') }}"
-                        placeholder="Nama / NIM..."
-                        onchange="this.form.submit()">
+                        placeholder="Nama / NIM...">
                 </div>
 
                 <!-- JURUSAN -->
                 <div class="input-group">
                     <label>Jurusan</label>
-                    <select name="jurusan_id" onchange="this.form.submit()">
+                    <select name="jurusan_id">
                         <option value="">Semua Jurusan</option>
                         @foreach($listJurusan as $j)
                         <option value="{{ $j->id_jurusan }}"
@@ -589,7 +624,7 @@
                 <!-- UNIVERSITAS -->
                 <div class="input-group">
                     <label>Universitas</label>
-                    <select name="universitas_id" onchange="this.form.submit()">
+                    <select name="universitas_id" >
                         <option value="">Semua Universitas</option>
                         @foreach($listUniversitas as $u)
                         <option value="{{ $u->id_universitas }}"
@@ -603,7 +638,7 @@
                 <!-- DIVISI -->
                 <div class="input-group">
                     <label>Divisi</label>
-                    <select name="divisi_id" onchange="this.form.submit()">
+                    <select name="divisi_id">
                         <option value="">Semua Divisi</option>
                         @foreach($listDivisi as $d)
                         <option value="{{ $d->id_divisi }}"
@@ -617,7 +652,7 @@
                 <!-- JENIS KELAMIN -->
                 <div class="input-group">
                     <label>Jenis Kelamin</label>
-                    <select name="jenis_kelamin" onchange="this.form.submit()">
+                    <select name="jenis_kelamin">
                         <option value="">Semua</option>
                         <option value="Laki-laki" {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
                             Laki-laki
@@ -631,7 +666,7 @@
                 <!-- Status -->
                 <div class="input-group">
                     <label>Status Magang</label>
-                    <select name="status" onchange="this.form.submit()">
+                    <select name="status">
                         <option value="">Semua Status</option>
                         <option value="Akan Magang" {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>
                             Akan Magang
@@ -650,8 +685,7 @@
                     <label>Tanggal Masuk</label>
                     <input type="date"
                         name="tanggal_mulai"
-                        value="{{ request('tanggal_mulai') }}"
-                        onchange="this.form.submit()">
+                        value="{{ request('tanggal_mulai') }}">
                 </div>
 
                 <!-- TANGGAL SELESAI -->
@@ -659,14 +693,13 @@
                     <label>Tanggal Selesai</label>
                     <input type="date"
                         name="tanggal_selesai"
-                        value="{{ request('tanggal_selesai') }}"
-                        onchange="this.form.submit()">
+                        value="{{ request('tanggal_selesai') }}">
                 </div>
 
                 <!-- TAHUN -->
                 <div class="input-group">
                     <label>Tahun</label>
-                    <select name="tahun" onchange="this.form.submit()">
+                    <select name="tahun">
                         <option value="">Semua Tahun</option>
 
                         @for($i = date('Y') + 2; $i >= 2020; $i--)
@@ -678,6 +711,17 @@
                     </select>
                 </div>
 
+            </div>
+            <div class="filter-action">
+                <a href="{{ route('admin.dashboard') }}" class="btn-reset">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Reset
+                </a>
+
+                <button type="submit" class="btn-filter">
+                    <i class="fa-solid fa-filter"></i>
+                    Terapkan Filter
+                </button>
             </div>
         </form>
 

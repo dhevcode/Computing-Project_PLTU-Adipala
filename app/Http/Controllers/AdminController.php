@@ -63,6 +63,35 @@ class AdminController extends Controller
             $pengajuanQuery->where('divisi_id', $request->divisi_id);
         }
 
+        // Filter Jenis Kelamin
+        if ($request->filled('jenis_kelamin')) {
+            $mahasiswaQuery->where('jenis_kelamin', $request->jenis_kelamin);
+
+            $pengajuanQuery->whereHas('mahasiswa', function ($q) use ($request) {
+                $q->where('jenis_kelamin', $request->jenis_kelamin);
+            });
+        }
+
+        // Filter Status
+        if ($request->filled('status')) {
+            $pengajuanQuery->where('status', $request->status);
+        }
+
+        // Filter Tanggal Mulai
+        if ($request->filled('tanggal_mulai')) {
+            $pengajuanQuery->whereDate('tanggal_mulai', $request->tanggal_mulai);
+        }
+
+        // Filter Tanggal Selesai
+        if ($request->filled('tanggal_selesai')) {
+            $pengajuanQuery->whereDate('tanggal_selesai', $request->tanggal_selesai);
+        }
+
+        // Filter Tahun
+        if ($request->filled('tahun')) {
+            $pengajuanQuery->whereYear('tanggal_mulai', $request->tahun);
+        }
+
         /*
         |--------------------------------------------------------------------------
         | CARD STATISTIK
@@ -160,9 +189,9 @@ class AdminController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $listDivisi = Divisi::all();
-        $listJurusan = Jurusan::all();
-        $listUniversitas = Universitas::all();
+        $listDivisi = Divisi::orderBy('nama_divisi')->get();
+        $listJurusan = Jurusan::orderBy('nama_jurusan')->get();
+        $listUniversitas = Universitas::orderBy('nama_universitas')->get();
 
         // Ambil data monitoring ter-filter dengan relasinya
         $pengajuans = $pengajuanQuery->with(['mahasiswa.universitas', 'mahasiswa.jurusan', 'divisi'])
@@ -207,6 +236,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'nama_lengkap' => 'required|string|max:150',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'nim' => 'required|string|max:30|unique:mahasiswa,nim',
             'email' => 'required|email|max:150',
             'no_telepon' => 'required|string|max:20',
@@ -259,6 +289,7 @@ class AdminController extends Controller
         $mahasiswa = Mahasiswa::create([
             'nim' => $request->nim,
             'nama_lengkap' => $request->nama_lengkap,
+            'jenis_kelamin' => $request->jenis_kelamin,
             'email' => $request->email,
             'no_telepon' => $request->no_telepon,
             'universitas_id' => $universitasId,
@@ -315,6 +346,7 @@ class AdminController extends Controller
 
         $request->validate([
             'nama_lengkap' => 'required|string|max:150',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'nim' => 'required|string|max:30|unique:mahasiswa,nim,' . $mahasiswa->id_mhs . ',id_mhs',
             'email' => 'required|email|max:150',
             'no_telepon' => 'required|string|max:20',
@@ -358,6 +390,7 @@ class AdminController extends Controller
         $mahasiswa->update([
             'nim' => $request->nim,
             'nama_lengkap' => $request->nama_lengkap,
+            'jenis_kelamin' => $request->jenis_kelamin,
             'email' => $request->email,
             'no_telepon' => $request->no_telepon,
             'universitas_id' => $universitasId,
@@ -385,9 +418,9 @@ class AdminController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'status' => $this->generateStatus(
-    $request->tanggal_mulai,
-    $request->tanggal_selesai
-),
+            $request->tanggal_mulai,
+            $request->tanggal_selesai
+        ),
             'surat_permohonan' => $suratPath,
         ]);
 
@@ -444,6 +477,33 @@ class AdminController extends Controller
         // Filter Divisi
         if ($request->filled('divisi_id')) {
             $pengajuanQuery->where('divisi_id', $request->divisi_id);
+        }
+
+        // Filter Jenis Kelamin
+        if ($request->filled('jenis_kelamin')) {
+            $pengajuanQuery->whereHas('mahasiswa', function ($q) use ($request) {
+                $q->where('jenis_kelamin', $request->jenis_kelamin);
+            });
+        }
+
+        // Filter Status
+        if ($request->filled('status')) {
+            $pengajuanQuery->where('status', $request->status);
+        }
+
+        // Filter Tanggal Mulai
+        if ($request->filled('tanggal_mulai')) {
+            $pengajuanQuery->whereDate('tanggal_mulai', $request->tanggal_mulai);
+        }
+
+        // Filter Tanggal Selesai
+        if ($request->filled('tanggal_selesai')) {
+            $pengajuanQuery->whereDate('tanggal_selesai', $request->tanggal_selesai);
+        }
+
+        // Filter Tahun
+        if ($request->filled('tahun')) {
+            $pengajuanQuery->whereYear('tanggal_mulai', $request->tahun);
         }
 
         $data = $pengajuanQuery->latest()->get();
