@@ -8,15 +8,20 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (!$request->user() || strtolower(trim($request->user()->role)) !== strtolower(trim($role))) {
-            abort(403, 'Unauthorized action.');
+        // 1. Jika belum login, lempar ke halaman login
+        if (!$request->user()) {
+            return redirect()->route('login');
+        }
+
+        // 2. Normalisasi string role user dan role yang diperbolehkan
+        $userRole = strtolower(trim($request->user()->role));
+        $allowedRoles = array_map(fn($role) => strtolower(trim($role)), $roles);
+
+        // 3. Cek apakah role user terdaftar
+        if (!in_array($userRole, $allowedRoles)) {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
         return $next($request);

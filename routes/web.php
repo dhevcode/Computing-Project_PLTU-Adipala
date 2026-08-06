@@ -4,27 +4,35 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
-// Route untuk halaman utama
+// Route Halaman Utama (Mencegah Infinite Redirect Loop)
 Route::get('/', function () {
+    if (Auth::check()) {
+        $role = strtolower(trim(Auth::user()->role));
+        return match ($role) {
+            'super admin' => redirect()->route('superadmin.dashboard'),
+            'admin'       => redirect()->route('admin.dashboard'),
+            default       => redirect()->route('login'),
+        };
+    }
     return redirect()->route('login');
 });
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-
-// Guest Routes
+// Guest Routes (Khusus user yang BELUM login)
 Route::middleware(['guest'])->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.process');
 });
 
-// Authenticated Routes
+// Authenticated Routes (Khusus user yang SUDAH login)
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 Route::redirect('/superadmin', '/superadmin/dashboard');
 
-// Super Admin Group (Only Super Admin role)
+// Super Admin Group (Khusus role Super Admin)
 Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::get('/superadmin/dashboard', [SuperAdminController::class, 'index'])->name('superadmin.dashboard');
     Route::get('/superadmin/create', [SuperAdminController::class, 'create'])->name('superadmin.create');
@@ -34,7 +42,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::delete('/superadmin/delete/{id}', [SuperAdminController::class, 'destroy'])->name('superadmin.destroy');
 });
 
-// Admin Group (Only Admin role)
+// Admin Group (Khusus role Admin)
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/mahasiswa/create', [AdminController::class, 'create'])->name('admin.create');
@@ -44,4 +52,3 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::delete('/admin/mahasiswa/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
     Route::get('/admin/export', [AdminController::class, 'export'])->name('admin.export');
 });
-

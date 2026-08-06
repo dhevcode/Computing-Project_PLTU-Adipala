@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\CheckRole; // <-- 1. Import CheckRole
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,16 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // 2. Daftarkan alias 'role' di sini
         $middleware->alias([
-            'role' => \App\Http\Middleware\CheckRole::class,
+            'role' => CheckRole::class,
         ]);
-        $middleware->redirectUsersTo(function () {
-            if (Auth::user()?->role === 'Super Admin') {
-                return route('superadmin.dashboard');
-            }
-
-            return route('admin.dashboard');
-        });
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

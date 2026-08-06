@@ -11,47 +11,43 @@ class AuthController extends Controller
     {
         return view('auth.login'); // sesuaikan lokasi file login.blade.php
     }
-
     public function login(Request $request)
-    {
-        // 1. Validasi Input
-        $credentials = $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
+{
+    // 1. Validasi Input
+    $credentials = $request->validate([
+        'email'    => 'required|email',
+        'password' => 'required',
+    ]);
 
-        // 2. Cek apakah user ada dan is_active = 1
-        $user = User::where('email', $request->email)->first();
+    // 2. Cek user ada & aktif
+    $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return back()->with('error', 'Email tidak terdaftar.');
-        }
-
-        if (!$user->is_active) {
-            return back()->with('error', 'Akun Anda nonaktif. Silakan hubungi Super Admin.');
-        }
-
-        // 3. Proses Attempt Login
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
-            // Update timestamp last_login_at
-            $user->update([
-                'last_login_at' => now()
-            ]);
-
-            // 4. Redirection Berdasarkan Role
-            return match (strtolower(trim($user->role))) {
-                'super admin' => redirect()->route('superadmin.dashboard'),
-                'admin' => redirect()->route('admin.dashboard'),
-                default => redirect()->route('login')->with('error', 'Role akun tidak dikenali.'),
-            };
-        }
-
-        // Jika password salah
-        return back()->with('error', 'Password yang Anda masukkan salah.');
+    if (!$user) {
+        return back()->with('error', 'Email tidak terdaftar.');
     }
 
+    if (!$user->is_active) {
+        return back()->with('error', 'Akun Anda nonaktif. Silakan hubungi Super Admin.');
+    }
+
+    // 3. Attempt Login
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+
+        $user->update([
+            'last_login_at' => now()
+        ]);
+
+        // 4. Redirection Berdasarkan Role
+        return match (strtolower(trim($user->role))) {
+            'super admin' => redirect()->route('superadmin.dashboard'),
+            'admin'       => redirect()->route('admin.dashboard'),
+            default       => redirect()->route('login')->with('error', 'Role akun tidak dikenali.'),
+        };
+    }
+
+    return back()->with('error', 'Password yang Anda masukkan salah.');
+}
     public function logout(Request $request)
     {
         Auth::logout();
