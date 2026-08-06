@@ -559,47 +559,125 @@
         <!-- FILTER DATA -->
         <form method="GET" action="{{ route('admin.dashboard') }}" class="filter-section">
             <h3><i class="fa-solid fa-filter"></i> Filter Data Dashboard</h3>
+
             <div class="filter-grid">
+
+                <!-- PENCARIAN -->
                 <div class="input-group">
                     <label>Pencarian</label>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama / NIM..." onchange="this.form.submit()">
+                    <input type="text"
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Nama / NIM..."
+                        onchange="this.form.submit()">
                 </div>
 
+                <!-- JURUSAN -->
                 <div class="input-group">
                     <label>Jurusan</label>
                     <select name="jurusan_id" onchange="this.form.submit()">
                         <option value="">Semua Jurusan</option>
                         @foreach($listJurusan as $j)
-                        <option value="{{ $j->id_jurusan }}" {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
+                        <option value="{{ $j->id_jurusan }}"
+                            {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
                             {{ $j->nama_jurusan }}
                         </option>
                         @endforeach
                     </select>
                 </div>
 
+                <!-- UNIVERSITAS -->
                 <div class="input-group">
                     <label>Universitas</label>
                     <select name="universitas_id" onchange="this.form.submit()">
                         <option value="">Semua Universitas</option>
                         @foreach($listUniversitas as $u)
-                        <option value="{{ $u->id_universitas }}" {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
+                        <option value="{{ $u->id_universitas }}"
+                            {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
                             {{ $u->nama_universitas }}
                         </option>
                         @endforeach
                     </select>
                 </div>
 
+                <!-- DIVISI -->
                 <div class="input-group">
                     <label>Divisi</label>
                     <select name="divisi_id" onchange="this.form.submit()">
                         <option value="">Semua Divisi</option>
                         @foreach($listDivisi as $d)
-                        <option value="{{ $d->id_divisi }}" {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
+                        <option value="{{ $d->id_divisi }}"
+                            {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
                             {{ $d->nama_divisi }}
                         </option>
                         @endforeach
                     </select>
                 </div>
+
+                <!-- JENIS KELAMIN -->
+                <div class="input-group">
+                    <label>Jenis Kelamin</label>
+                    <select name="jenis_kelamin" onchange="this.form.submit()">
+                        <option value="">Semua</option>
+                        <option value="Laki-laki" {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+                            Laki-laki
+                        </option>
+                        <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+                            Perempuan
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Status -->
+                <div class="input-group">
+                    <label>Status Magang</label>
+                    <select name="status" onchange="this.form.submit()">
+                        <option value="">Semua Status</option>
+                        <option value="Akan Magang" {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>
+                            Akan Magang
+                        </option>
+                        <option value="Sedang Magang" {{ request('status') == 'Sedang Magang' ? 'selected' : '' }}>
+                            Sedang Magang
+                        </option>
+                        <option value="Selesai Magang" {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>
+                            Selesai Magang
+                        </option>
+                    </select>
+                </div>
+
+                <!-- TANGGAL MASUK -->
+                <div class="input-group">
+                    <label>Tanggal Masuk</label>
+                    <input type="date"
+                        name="tanggal_mulai"
+                        value="{{ request('tanggal_mulai') }}"
+                        onchange="this.form.submit()">
+                </div>
+
+                <!-- TANGGAL SELESAI -->
+                <div class="input-group">
+                    <label>Tanggal Selesai</label>
+                    <input type="date"
+                        name="tanggal_selesai"
+                        value="{{ request('tanggal_selesai') }}"
+                        onchange="this.form.submit()">
+                </div>
+
+                <!-- TAHUN -->
+                <div class="input-group">
+                    <label>Tahun</label>
+                    <select name="tahun" onchange="this.form.submit()">
+                        <option value="">Semua Tahun</option>
+
+                        @for($i = date('Y') + 2; $i >= 2020; $i--)
+                        <option value="{{ $i }}"
+                            {{ request('tahun') == $i ? 'selected' : '' }}>
+                            {{ $i }}
+                        </option>
+                        @endfor
+                    </select>
+                </div>
+
             </div>
         </form>
 
@@ -623,10 +701,6 @@
                 Menampilkan data monitoring mahasiswa PKL
             </div>
 
-            <div class="table-card-subtitle">
-                Menampilkan data monitoring mahasiswa PKL
-            </div>
-
             <div style="overflow-x: auto; width: 100%;">
                 <table class="table-admin">
                     <thead>
@@ -634,6 +708,7 @@
                             <th>No</th>
                             <th>NIM</th>
                             <th>Nama Lengkap</th>
+                            <th>Jenis Kelamin</th>
                             <th>Universitas</th>
                             <th>Jurusan</th>
                             <th>Divisi</th>
@@ -649,6 +724,7 @@
                             <td>{{ $pengajuans->firstItem() + $index }}</td>
                             <td>{{ $row->mahasiswa->nim ?? '-' }}</td>
                             <td>{{ $row->mahasiswa->nama_lengkap ?? '-' }}</td>
+                            <td>{{ $row->mahasiswa->jenis_kelamin ?? '-' }}</td>
                             <td>{{ $row->mahasiswa->universitas->nama_universitas ?? '-' }}</td>
                             <td>{{ $row->mahasiswa->jurusan->nama_jurusan ?? '-' }}</td>
                             <td>{{ $row->divisi->nama_divisi ?? '-' }}</td>

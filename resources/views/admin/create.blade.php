@@ -343,13 +343,33 @@
             <form action="{{ route('admin.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                <div class="form-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required placeholder="Contoh: Jane Doe">
-                    @error('nama_lengkap') <p class="error-text">{{ $message }}</p> @enderror
-                </div>
-
                 <div class="grid">
+
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required placeholder="Contoh: Jane Doe">
+                        @error('nama_lengkap') <p class="error-text">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jenis Kelamin</label>
+                        <select name="jenis_kelamin" required>
+                            <option value="" disabled {{ old('jenis_kelamin') ? '' : 'selected' }}>
+                                Pilih Jenis Kelamin
+                            </option>
+                            <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+                                Laki-laki
+                            </option>
+                            <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+                                Perempuan
+                            </option>
+                        </select>
+
+                        @error('jenis_kelamin')
+                        <p class="error-text">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <div class="form-group">
                         <label>NIM</label>
                         <input type="text" name="nim" value="{{ old('nim') }}" required placeholder="Masukkan NIM...">
