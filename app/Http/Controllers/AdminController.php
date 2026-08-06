@@ -10,6 +10,7 @@ use App\Models\Universitas;
 use App\Models\PengajuanMagang;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -32,12 +33,12 @@ class AdminController extends Controller
 
             $mahasiswaQuery->where(function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
-                  ->orWhere('nim', 'like', "%{$search}%");
+                    ->orWhere('nim', 'like', "%{$search}%");
             });
 
             $pengajuanQuery->whereHas('mahasiswa', function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
-                  ->orWhere('nim', 'like', "%{$search}%");
+                    ->orWhere('nim', 'like', "%{$search}%");
             });
         }
 
@@ -100,9 +101,22 @@ class AdminController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $chartDivisi = Divisi::withCount('pengajuanMagang')->get();
+        $chartDivisi = (clone $pengajuanQuery)
+            ->join('divisi', 'pengajuan_magang.divisi_id', '=', 'divisi.id_divisi')
+            ->whereDate('tanggal_mulai', '<=', $today)
+            ->whereDate('tanggal_selesai', '>=', $today)
+            ->select(
+                'divisi.nama_divisi',
+                DB::raw('COUNT(DISTINCT pengajuan_magang.mahasiswa_id) as total')
+            )
+            ->groupBy('divisi.id_divisi', 'divisi.nama_divisi')
+            ->orderBy('divisi.nama_divisi')
+            ->get();
+
         $bidangLabels = $chartDivisi->pluck('nama_divisi');
-        $bidangData = $chartDivisi->pluck('pengajuan_magang_count');
+
+        $bidangData = $chartDivisi->pluck('total');
+
 
         /*
         |--------------------------------------------------------------------------
@@ -152,9 +166,9 @@ class AdminController extends Controller
 
         // Ambil data monitoring ter-filter dengan relasinya
         $pengajuans = $pengajuanQuery->with(['mahasiswa.universitas', 'mahasiswa.jurusan', 'divisi'])
-                                     ->latest()
-                                     ->paginate(10)
-                                     ->withQueryString();
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.dashboard', compact(
             'magangHariIni',
@@ -201,7 +215,7 @@ class AdminController extends Controller
             'divisi_id' => 'required',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'status' => 'required|in:Akan Magang,Sedang Magang,Selesai Magang',
+            
             'nama_pembimbing' => 'nullable|string|max:150',
             'surat_permohonan' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:4096',
         ]);
@@ -267,13 +281,16 @@ class AdminController extends Controller
             'nama_pembimbing' => $request->nama_pembimbing,
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
-            'status' => $request->status,
+            'status' => $this->generateStatus(
+    $request->tanggal_mulai,
+    $request->tanggal_selesai
+),
             'surat_permohonan' => $suratPath,
             'created_by' => Auth::id(),
         ]);
 
         return redirect()->route('admin.dashboard')
-                         ->with('success', 'Data Mahasiswa Magang berhasil ditambahkan!');
+            ->with('success', 'Data Mahasiswa Magang berhasil ditambahkan!');
     }
 
     public function edit($id)
@@ -306,7 +323,7 @@ class AdminController extends Controller
             'divisi_id' => 'required',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'status' => 'required|in:Akan Magang,Sedang Magang,Selesai Magang',
+            
             'nama_pembimbing' => 'nullable|string|max:150',
             'surat_permohonan' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:4096',
         ]);
@@ -353,7 +370,7 @@ class AdminController extends Controller
             if ($suratPath && file_exists(public_path('uploads/surat_permohonan/' . $suratPath))) {
                 @unlink(public_path('uploads/surat_permohonan/' . $suratPath));
             }
-            
+
             $file = $request->file('surat_permohonan');
             $suratPath = time() . '_' . $file->getClientOriginalName();
             if (!file_exists(public_path('uploads/surat_permohonan'))) {
@@ -367,12 +384,15 @@ class AdminController extends Controller
             'nama_pembimbing' => $request->nama_pembimbing,
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
-            'status' => $request->status,
+            'status' => $this->generateStatus(
+    $request->tanggal_mulai,
+    $request->tanggal_selesai
+),
             'surat_permohonan' => $suratPath,
         ]);
 
         return redirect()->route('admin.dashboard')
-                         ->with('success', 'Data Mahasiswa Magang berhasil diperbarui!');
+            ->with('success', 'Data Mahasiswa Magang berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -391,7 +411,7 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.dashboard')
-                         ->with('success', 'Data Mahasiswa Magang berhasil dihapus!');
+            ->with('success', 'Data Mahasiswa Magang berhasil dihapus!');
     }
 
     public function export(Request $request)
@@ -403,7 +423,7 @@ class AdminController extends Controller
             $search = $request->search;
             $pengajuanQuery->whereHas('mahasiswa', function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
-                  ->orWhere('nim', 'like', "%{$search}%");
+                    ->orWhere('nim', 'like', "%{$search}%");
             });
         }
 
@@ -437,10 +457,10 @@ class AdminController extends Controller
             "Expires"             => "0"
         ];
 
-        $callback = function() use ($data) {
+        $callback = function () use ($data) {
             $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM UTF-8
-            
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM UTF-8
+
             fputcsv($file, ['No', 'NIM', 'Nama Lengkap', 'Email', 'No Telepon', 'Universitas', 'Jurusan', 'Divisi', 'Tanggal Mulai', 'Tanggal Selesai', 'Status', 'Nama Pembimbing']);
 
             foreach ($data as $index => $row) {
@@ -464,5 +484,25 @@ class AdminController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    private function generateStatus($tanggalMulai, $tanggalSelesai)
+    {
+        $today = Carbon::today();
+
+        if ($today->lt(Carbon::parse($tanggalMulai))) {
+            return 'Akan Magang';
+        }
+
+        if (
+            $today->between(
+                Carbon::parse($tanggalMulai),
+                Carbon::parse($tanggalSelesai)
+            )
+        ) {
+            return 'Sedang Magang';
+        }
+
+        return 'Selesai Magang';
     }
 }

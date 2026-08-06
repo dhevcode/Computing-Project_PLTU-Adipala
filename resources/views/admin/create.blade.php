@@ -30,7 +30,9 @@
         /* ================= HEADER ================= */
         .header {
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 72px;
             background: #0A5F63;
             display: flex;
@@ -40,6 +42,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, .08);
         }
 
+        /* Logo */
         .logo-box {
             width: 230px;
             height: 72px;
@@ -52,6 +55,13 @@
 
         .logo-box img {
             width: 150px;
+        }
+
+        /* Title */
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
         }
 
         .header-title {
@@ -71,11 +81,33 @@
             opacity: .9;
         }
 
+        /* Right */
         .header-right {
             display: flex;
             align-items: center;
             gap: 10px;
             padding-right: 16px;
+        }
+
+        .btn-add {
+            background: white;
+            border: none;
+            height: 32px;
+            padding: 0 15px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #0A5F63;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: .2s;
+            text-decoration: none;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
         }
 
         .logout {
@@ -88,7 +120,6 @@
             cursor: pointer;
             border-radius: 8px;
             transition: .2s;
-            text-decoration: none;
         }
 
         .logout:hover {
@@ -288,9 +319,14 @@
             </div>
         </div>
         <div class="header-right">
-            <a href="{{ route('admin.dashboard') }}" class="logout" title="Kembali ke Dashboard">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            </a>
+
+            
+            <form action="{{ route('logout') }}" method="POST" style="margin: 0; display: inline-block;">
+                @csrf
+                <button type="submit" class="logout" style="background: none; border: none; cursor: pointer; color: white;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            </form>
         </div>
     </header>
 
@@ -424,7 +460,7 @@
                         @error('nama_pembimbing') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label>Status Magang</label>
                         <select name="status" required>
                             <option value="Akan Magang" {{ old('status') == 'Akan Magang' ? 'selected' : '' }}>Akan Magang</option>
@@ -433,7 +469,7 @@
                         </select>
                         @error('status') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
-                </div>
+                </div> -->
 
                 <div class="upload-section">
                     <label>Surat Pengantar / Dokumen Pendukung (PDF/Doc/Docx/Image)</label>

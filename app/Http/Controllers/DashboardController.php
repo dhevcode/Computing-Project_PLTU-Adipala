@@ -31,7 +31,7 @@ class DashboardController extends Controller
             $search = $request->search;
             $query->whereHas('mahasiswa', function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
-                  ->orWhere('nim', 'like', "%{$search}%");
+                    ->orWhere('nim', 'like', "%{$search}%");
             });
         }
 
@@ -75,7 +75,10 @@ class DashboardController extends Controller
         // 5. Data Chart: Jumlah Mahasiswa per Divisi
         $divisiStats = (clone $query)
             ->join('divisi', 'pengajuan_magang.divisi_id', '=', 'divisi.id_divisi')
-            ->select('divisi.nama_divisi', DB::raw('count(pengajuan_magang.id_pengajuan) as total'))
+            ->select(
+                'divisi.nama_divisi',
+                DB::raw('COUNT(DISTINCT pengajuan_magang.mahasiswa_id) as total')
+            )
             ->groupBy('divisi.id_divisi', 'divisi.nama_divisi')
             ->get();
 
