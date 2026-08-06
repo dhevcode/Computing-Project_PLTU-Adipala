@@ -356,9 +356,9 @@
 
     <div class="content">
         @if(session('success'))
-            <div style="background: #e6f4f4; color: #0A5F63; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #bfe3e3; font-size: 13px; font-weight: 600;">
-                <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
-            </div>
+        <div style="background: #e6f4f4; color: #0A5F63; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #bfe3e3; font-size: 13px; font-weight: 600;">
+            <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
+        </div>
         @endif
 
         <div class="card">
@@ -383,48 +383,49 @@
                 </thead>
                 <tbody>
                     @forelse($admins as $admin)
-                        <tr>
-                            <td>{{ $admin->nama_lengkap }}</td>
-                            <td>{{ $admin->username }}</td>
-                            <td>{{ $admin->email }}</td>
-                            <td>{{ $admin->divisi->nama_divisi ?? '-' }}</td>
-                            <td>{{ $admin->role }}</td>
-                            <td>
-                                @if($admin->is_active)
-                                    <div class="status" style="background: #0A5E86;">
-                                        Aktif
-                                    </div>
-                                @else
-                                    <div class="status" style="background: #D9534F;">
-                                        Nonaktif
-                                    </div>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="action">
-                                    <a href="{{ route('superadmin.edit', $admin->id_users) }}" class="edit" title="Edit Admin">
-                                        <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
-                                    <form action="{{ route('superadmin.destroy', $admin->id_users) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus admin ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="delete" style="background: none; border: none; padding: 0; cursor: pointer;" title="Hapus Admin">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>{{ $admin->nama_lengkap }}</td>
+                        <td>{{ $admin->username }}</td>
+                        <td>{{ $admin->email }}</td>
+                        <td>{{ $admin->divisi->nama_divisi ?? '-' }}</td>
+                        <td>{{ $admin->role }}</td>
+                        <td>
+                            @if($admin->is_active)
+                            <div class="status" style="background: #0A5E86;">
+                                Aktif
+                            </div>
+                            @else
+                            <div class="status" style="background: #D9534F;">
+                                Nonaktif
+                            </div>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="action">
+                                <a href="{{ route('superadmin.edit', $admin->id_users) }}" class="edit" title="Edit Admin">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                                <form action="{{ route('superadmin.destroy', $admin->id_users) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus admin ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="delete" style="background: none; border: none; padding: 0; cursor: pointer;" title="Hapus Admin">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="7" style="text-align: center; color: #888; padding: 20px;">
-                                Belum ada data Admin yang terdaftar.
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #888; padding: 20px;">
+                            Belum ada data Admin yang terdaftar.
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 </body>
+
 </html>

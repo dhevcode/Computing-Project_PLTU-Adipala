@@ -29,7 +29,9 @@
         /* ===== HEADER ===== */
         .header {
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 72px;
             background: #0A5F63;
             display: flex;
@@ -107,7 +109,7 @@
             background: #fff;
             border-radius: 24px;
             padding: 28px;
-            box-shadow: 0 4px 16px rgba(0,0,0,.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
             border: 1px solid #E8EDF2;
         }
 
@@ -137,7 +139,8 @@
             color: #1E1E1E;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             height: 42px;
             border: 1px solid #E4E4E4;
@@ -150,7 +153,8 @@
             color: #444;
         }
 
-        input:focus, select:focus {
+        input:focus,
+        select:focus {
             border-color: #0b6f77;
             box-shadow: 0 0 0 3px rgba(11, 110, 114, .12);
         }
@@ -287,9 +291,9 @@
                         <select name="id_divisi" id="select_divisi" required>
                             <option value="" disabled {{ old('id_divisi') ? '' : 'selected' }}>Pilih Bagian</option>
                             @foreach($divisi as $d)
-                                <option value="{{ $d->id_divisi }}" {{ old('id_divisi') == $d->id_divisi ? 'selected' : '' }}>
-                                    {{ $d->nama_divisi }}
-                                </option>
+                            <option value="{{ $d->id_divisi }}" {{ old('id_divisi') == $d->id_divisi ? 'selected' : '' }}>
+                                {{ $d->nama_divisi }}
+                            </option>
                             @endforeach
                             <option value="new" style="font-weight: bold; color: #0A6D71;" {{ old('id_divisi') == 'new' ? 'selected' : '' }}>
                                 + Tambah Bagian/Divisi Baru...
@@ -327,25 +331,25 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const selectDivisi = document.getElementById('select_divisi');
-        const newDivisiBox = document.getElementById('field_divisi_baru');
-        const inputNamaDivisi = document.getElementById('nama_divisi_baru');
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectDivisi = document.getElementById('select_divisi');
+            const newDivisiBox = document.getElementById('field_divisi_baru');
+            const inputNamaDivisi = document.getElementById('nama_divisi_baru');
 
-        function checkDivisiSelection() {
-            if (selectDivisi.value === 'new') {
-                newDivisiBox.classList.remove('d-none');
-                inputNamaDivisi.required = true;
-            } else {
-                newDivisiBox.classList.add('d-none');
-                inputNamaDivisi.required = false;
-                inputNamaDivisi.value = '';
+            function checkDivisiSelection() {
+                if (selectDivisi.value === 'new') {
+                    newDivisiBox.classList.remove('d-none');
+                    inputNamaDivisi.required = true;
+                } else {
+                    newDivisiBox.classList.add('d-none');
+                    inputNamaDivisi.required = false;
+                    inputNamaDivisi.value = '';
+                }
             }
-        }
 
-        selectDivisi.addEventListener('change', checkDivisiSelection);
-        checkDivisiSelection();
-    });
+            selectDivisi.addEventListener('change', checkDivisiSelection);
+            checkDivisiSelection();
+        });
     </script>
 
 </body>

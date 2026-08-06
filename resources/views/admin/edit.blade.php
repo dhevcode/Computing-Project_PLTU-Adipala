@@ -18,7 +18,8 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        html, body {
+        html,
+        body {
             background-image: url('{{ asset("assets/image/bg-pln.png") }}');
             background-size: cover;
             background-position: center;
@@ -169,7 +170,8 @@
             color: #1E1E1E;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             height: 42px;
             border: 1px solid #E4E4E4;
@@ -182,7 +184,8 @@
             color: #444;
         }
 
-        input:focus, select:focus {
+        input:focus,
+        select:focus {
             border-color: #0B6E72;
             box-shadow: 0 0 0 3px rgba(11, 110, 114, .12);
         }
@@ -320,7 +323,7 @@
         </div>
         <div class="header-right">
 
-            
+
             <form action="{{ route('logout') }}" method="POST" style="margin: 0; display: inline-block;">
                 @csrf
                 <button type="submit" class="logout" style="background: none; border: none; cursor: pointer; color: white;">
@@ -359,9 +362,9 @@
                         <select name="universitas_id" id="select_universitas" required>
                             <option value="" disabled>Pilih Universitas</option>
                             @foreach($universitas as $u)
-                                <option value="{{ $u->id_universitas }}" {{ old('universitas_id', $pengajuan->mahasiswa->universitas_id) == $u->id_universitas ? 'selected' : '' }}>
-                                    {{ $u->nama_universitas }}
-                                </option>
+                            <option value="{{ $u->id_universitas }}" {{ old('universitas_id', $pengajuan->mahasiswa->universitas_id) == $u->id_universitas ? 'selected' : '' }}>
+                                {{ $u->nama_universitas }}
+                            </option>
                             @endforeach
                             <option value="new" style="font-weight: bold; color: #0B6E72;" {{ old('universitas_id') == 'new' ? 'selected' : '' }}>
                                 + Tambah Universitas Baru...
@@ -384,9 +387,9 @@
                         <select name="jurusan_id" id="select_jurusan" required>
                             <option value="" disabled>Pilih Jurusan</option>
                             @foreach($jurusan as $j)
-                                <option value="{{ $j->id_jurusan }}" {{ old('jurusan_id', $pengajuan->mahasiswa->jurusan_id) == $j->id_jurusan ? 'selected' : '' }}>
-                                    {{ $j->nama_jurusan }}
-                                </option>
+                            <option value="{{ $j->id_jurusan }}" {{ old('jurusan_id', $pengajuan->mahasiswa->jurusan_id) == $j->id_jurusan ? 'selected' : '' }}>
+                                {{ $j->nama_jurusan }}
+                            </option>
                             @endforeach
                             <option value="new" style="font-weight: bold; color: #0B6E72;" {{ old('jurusan_id') == 'new' ? 'selected' : '' }}>
                                 + Tambah Jurusan Baru...
@@ -407,9 +410,9 @@
                         <select name="divisi_id" id="select_divisi" required>
                             <option value="" disabled>Pilih Divisi</option>
                             @foreach($divisi as $d)
-                                <option value="{{ $d->id_divisi }}" {{ old('divisi_id', $pengajuan->divisi_id) == $d->id_divisi ? 'selected' : '' }}>
-                                    {{ $d->nama_divisi }}
-                                </option>
+                            <option value="{{ $d->id_divisi }}" {{ old('divisi_id', $pengajuan->divisi_id) == $d->id_divisi ? 'selected' : '' }}>
+                                {{ $d->nama_divisi }}
+                            </option>
                             @endforeach
                             <option value="new" style="font-weight: bold; color: #0B6E72;" {{ old('divisi_id') == 'new' ? 'selected' : '' }}>
                                 + Tambah Divisi Baru...
@@ -474,17 +477,17 @@
 
                 <div class="upload-section">
                     <label>Surat Pengantar / Dokumen Pendukung (PDF/Doc/Docx/Image)</label>
-                    
+
                     @if($pengajuan->surat_permohonan)
-                        <div style="background: #F4F7F6; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid #E4E4E4;">
-                            <i class="fa-solid fa-file-invoice" style="color: #0A5F63; font-size: 18px;"></i>
-                            <div style="flex: 1;">
-                                <p style="font-size: 12px; color: #666; font-weight: 500;">Dokumen saat ini:</p>
-                                <a href="{{ asset('uploads/surat_permohonan/' . $pengajuan->surat_permohonan) }}" target="_blank" style="color: #0A5F63; font-size: 13px; font-weight: 600; text-decoration: none;">
-                                    {{ $pengajuan->surat_permohonan }}
-                                </a>
-                            </div>
+                    <div style="background: #F4F7F6; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid #E4E4E4;">
+                        <i class="fa-solid fa-file-invoice" style="color: #0A5F63; font-size: 18px;"></i>
+                        <div style="flex: 1;">
+                            <p style="font-size: 12px; color: #666; font-weight: 500;">Dokumen saat ini:</p>
+                            <a href="{{ asset('uploads/surat_permohonan/' . $pengajuan->surat_permohonan) }}" target="_blank" style="color: #0A5F63; font-size: 13px; font-weight: 600; text-decoration: none;">
+                                {{ $pengajuan->surat_permohonan }}
+                            </a>
                         </div>
+                    </div>
                     @endif
 
                     <div class="upload-box" onclick="document.getElementById('uploadFile').click()">
@@ -506,48 +509,59 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Toggle new input fields
-        const selectors = [
-            { select: 'select_universitas', field: 'field_universitas_baru', input: 'nama_universitas_baru' },
-            { select: 'select_jurusan', field: 'field_jurusan_baru', input: 'nama_jurusan_baru' },
-            { select: 'select_divisi', field: 'field_divisi_baru', input: 'nama_divisi_baru' }
-        ];
-
-        selectors.forEach(item => {
-            const selectEl = document.getElementById(item.select);
-            const boxEl = document.getElementById(item.field);
-            const inputEl = document.getElementById(item.input);
-
-            function toggle() {
-                if (selectEl.value === 'new') {
-                    boxEl.classList.remove('d-none');
-                    inputEl.required = true;
-                } else {
-                    boxEl.classList.add('d-none');
-                    inputEl.required = false;
-                    inputEl.value = '';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle new input fields
+            const selectors = [{
+                    select: 'select_universitas',
+                    field: 'field_universitas_baru',
+                    input: 'nama_universitas_baru'
+                },
+                {
+                    select: 'select_jurusan',
+                    field: 'field_jurusan_baru',
+                    input: 'nama_jurusan_baru'
+                },
+                {
+                    select: 'select_divisi',
+                    field: 'field_divisi_baru',
+                    input: 'nama_divisi_baru'
                 }
-            }
+            ];
 
-            selectEl.addEventListener('change', toggle);
-            toggle(); // Run on load
+            selectors.forEach(item => {
+                const selectEl = document.getElementById(item.select);
+                const boxEl = document.getElementById(item.field);
+                const inputEl = document.getElementById(item.input);
+
+                function toggle() {
+                    if (selectEl.value === 'new') {
+                        boxEl.classList.remove('d-none');
+                        inputEl.required = true;
+                    } else {
+                        boxEl.classList.add('d-none');
+                        inputEl.required = false;
+                        inputEl.value = '';
+                    }
+                }
+
+                selectEl.addEventListener('change', toggle);
+                toggle(); // Run on load
+            });
+
+            // Display selected file name
+            const fileInput = document.getElementById('uploadFile');
+            const fileInfo = document.getElementById('file-info');
+
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    fileInfo.textContent = 'File terpilih: ' + fileInput.files[0].name;
+                    fileInfo.classList.remove('d-none');
+                } else {
+                    fileInfo.classList.add('d-none');
+                    fileInfo.textContent = '';
+                }
+            });
         });
-
-        // Display selected file name
-        const fileInput = document.getElementById('uploadFile');
-        const fileInfo = document.getElementById('file-info');
-
-        fileInput.addEventListener('change', function() {
-            if (fileInput.files.length > 0) {
-                fileInfo.textContent = 'File terpilih: ' + fileInput.files[0].name;
-                fileInfo.classList.remove('d-none');
-            } else {
-                fileInfo.classList.add('d-none');
-                fileInfo.textContent = '';
-            }
-        });
-    });
     </script>
 
 </body>
