@@ -42,6 +42,14 @@
 
     <!-- CONTENT -->
     <div class="content">
+<<<<<<< HEAD
+        @if(session('success'))
+        <div style="background: #e6f4f4; color: #0A5F63; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #bfe3e3; font-size: 13px; font-weight: 600;">
+            <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
+        </div>
+        @endif
+=======
+>>>>>>> 427ec68cbf2ba1ccf18a64a339cc2450dd4af7e2
 
         <!-- QUICK STATS WIDGETS -->
         <div class="stats-grid">
@@ -91,6 +99,63 @@
                 </div>
             </div>
 
+<<<<<<< HEAD
+            <table class="table-admin">
+                <thead>
+                    <tr>
+                        <th>Nama Lengkap</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Bagian</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($admins as $admin)
+                    <tr>
+                        <td>{{ $admin->nama_lengkap }}</td>
+                        <td>{{ $admin->username }}</td>
+                        <td>{{ $admin->email }}</td>
+                        <td>{{ $admin->divisi->nama_divisi ?? '-' }}</td>
+                        <td>{{ $admin->role }}</td>
+                        <td>
+                            @if($admin->is_active)
+                            <div class="status" style="background: #0A5E86;">
+                                Aktif
+                            </div>
+                            @else
+                            <div class="status" style="background: #D9534F;">
+                                Nonaktif
+                            </div>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="action">
+                                <a href="{{ route('superadmin.edit', $admin->id_users) }}" class="edit" title="Edit Admin">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                                <form action="{{ route('superadmin.destroy', $admin->id_users) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus admin ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="delete" style="background: none; border: none; padding: 0; cursor: pointer;" title="Hapus Admin">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #888; padding: 20px;">
+                            Belum ada data Admin yang terdaftar.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+=======
             @if(session('success'))
                 <div class="alert alert-success">
                     <i class="fa-solid fa-circle-check"></i>
@@ -177,6 +242,7 @@
                     </tbody>
                 </table>
             </div>
+>>>>>>> 427ec68cbf2ba1ccf18a64a339cc2450dd4af7e2
         </div>
     </div>
 
