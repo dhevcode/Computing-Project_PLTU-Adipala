@@ -17,10 +17,6 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
     <style>
-        /* =========================================================
-           GLOBAL
-        ========================================================= */
-
         * {
             margin: 0;
             padding: 0;
@@ -38,8 +34,8 @@
             color: #333;
         }
 
-
         /* ================= HEADER ================= */
+
         .header {
             position: fixed;
             top: 0;
@@ -54,32 +50,12 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, .08);
         }
 
-        .logout {
-            width: 38px;
-            height: 38px;
-
+        .header-left {
             display: flex;
             align-items: center;
-            justify-content: center;
-
-            color: white;
-            cursor: pointer;
-
-            border-radius: 8px;
-
-            background: none;
-            border: none;
-
-            font-size: 17px;
-
-            transition: .2s;
+            gap: 18px;
         }
 
-        .logout:hover {
-            background: rgba(255, 255, 255, .15);
-        }
-
-        /* ================= LOGO ================= */
         .logo-box {
             width: 230px;
             height: 72px;
@@ -92,13 +68,6 @@
 
         .logo-box img {
             width: 150px;
-        }
-
-        /* ================= TITLE ================= */
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 18px;
         }
 
         .header-title {
@@ -118,7 +87,6 @@
             opacity: .9;
         }
 
-        /* ================= HEADER RIGHT ================= */
         .header-right {
             display: flex;
             align-items: center;
@@ -126,14 +94,14 @@
             padding-right: 16px;
         }
 
-        /* ================= HAMBURGER BUTTON ================= */
-        .menu-btn {
+        .menu-btn,
+        .logout {
             width: 38px;
             height: 38px;
             border: none;
             background: transparent;
             color: white;
-            font-size: 21px;
+            font-size: 18px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -142,58 +110,44 @@
             transition: .2s;
         }
 
-        .menu-btn:hover {
-            background: rgba(255, 255, 255, .12);
+        .menu-btn:hover,
+        .logout:hover {
+            background: rgba(255, 255, 255, .15);
         }
 
         /* ================= SIDEBAR ================= */
+
         .sidebar {
             position: fixed;
             top: 82px;
             right: -270px;
-
             width: 250px;
-            height: 470px;
-
+            height: 420px;
             background: rgba(210, 210, 210, 0.96);
             backdrop-filter: blur(8px);
-
             border-radius: 25px;
-
             padding: 25px 18px;
-
             z-index: 9998;
-
             box-shadow: -5px 5px 20px rgba(0, 0, 0, .12);
-
             transition: right .3s ease;
         }
 
-        /* Sidebar ketika dibuka */
         .sidebar.active {
             right: 10px;
         }
 
-
-        /* ================= SIDEBAR MENU ================= */
         .sidebar-menu {
             display: flex;
             align-items: center;
             gap: 12px;
-
             width: 100%;
             padding: 11px 10px;
-
             margin-bottom: 8px;
-
             color: white;
             text-decoration: none;
-
             border-radius: 12px;
-
             font-size: 16px;
             font-weight: 400;
-
             transition: .2s;
         }
 
@@ -203,33 +157,23 @@
             text-align: center;
         }
 
-
-        /* Hover */
-        .sidebar-menu:hover {
+        .sidebar-menu:hover,
+        .sidebar-menu.active {
             background: rgba(255, 255, 255, .15);
             transform: translateX(3px);
         }
 
-
-        /* Menu aktif */
         .sidebar-menu.active {
-            background: rgba(255, 255, 255, .15);
             font-weight: 500;
         }
 
-
-        /* ================= SIDEBAR OVERLAY ================= */
         .sidebar-overlay {
             position: fixed;
             inset: 0;
-
             background: rgba(0, 0, 0, .15);
-
             z-index: 9997;
-
             opacity: 0;
             visibility: hidden;
-
             transition: .3s;
         }
 
@@ -238,21 +182,12 @@
             visibility: visible;
         }
 
-
-        /* =========================================================
-           CONTENT
-        ========================================================= */
+        /* ================= CONTENT ================= */
 
         .content {
             margin-top: 25px;
-
             padding: 90px 18px 30px;
         }
-
-
-        /* =========================================================
-           PAGE TITLE
-        ========================================================= */
 
         .page-title {
             margin-bottom: 18px;
@@ -260,329 +195,231 @@
 
         .page-title h1 {
             color: #0A5F63;
-
             font-size: 22px;
-
             font-weight: 700;
         }
 
         .page-title p {
             color: #777;
-
             font-size: 11px;
-
             margin-top: 3px;
         }
 
-
-        /* =========================================================
-           FILTER CARD
-        ========================================================= */
+        /* ================= FILTER ================= */
 
         .filter-section {
             background: white;
-
             border-radius: 14px;
-
             padding: 20px;
-
             box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
-
             border: 1px solid #E5E8EC;
-
             margin-bottom: 20px;
         }
 
-
         .filter-header {
             display: flex;
-
             align-items: center;
-
             gap: 10px;
-
             margin-bottom: 17px;
         }
 
         .filter-icon {
             width: 34px;
             height: 34px;
-
             border-radius: 9px;
-
             background: #E8F5F5;
-
             color: #0A5F63;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             font-size: 14px;
         }
 
         .filter-header h3 {
             font-size: 15px;
-
             font-weight: 700;
-
             color: #0A6B70;
         }
 
         .filter-header p {
             font-size: 10px;
-
             color: #888;
-
             margin-top: 2px;
         }
 
-
-        /* FILTER GRID */
-
         .filter-grid {
             display: grid;
-
             grid-template-columns: repeat(4, 1fr);
-
             gap: 15px;
         }
 
-
-        /* INPUT GROUP */
-
         .input-group {
             display: flex;
-
             flex-direction: column;
-
             gap: 6px;
         }
 
         .input-group label {
             font-size: 11px;
-
             font-weight: 600;
-
             color: #4E4E4E;
         }
-
-
-        /* INPUT & SELECT */
 
         .input-group input,
         .input-group select {
             width: 100%;
-
             height: 38px;
-
             border: 1px solid #E4E4E4;
-
             border-radius: 8px;
-
             padding: 0 12px;
-
             font-size: 11px;
-
             outline: none;
-
             background: white;
-
             color: #444;
-
             transition: .2s;
         }
 
         .input-group input:focus,
         .input-group select:focus {
             border-color: #0A6D71;
-
-            box-shadow:
-                0 0 0 3px rgba(10, 109, 113, .12);
+            box-shadow: 0 0 0 3px rgba(10, 109, 113, .12);
         }
-
-
-        /* FILTER BUTTON */
 
         .filter-actions {
             margin-top: 17px;
-
             display: flex;
-
             justify-content: flex-end;
-
             gap: 8px;
         }
 
-        .btn-filter {
+        .btn-filter,
+        .btn-reset {
             height: 36px;
-
             padding: 0 16px;
-
-            border: none;
-
             border-radius: 7px;
-
-            background: #0A5F63;
-
-            color: white;
-
             font-size: 11px;
-
             font-weight: 600;
-
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-filter {
+            border: none;
+            background: #0A5F63;
+            color: white;
         }
 
         .btn-reset {
-            height: 36px;
-
-            padding: 0 16px;
-
             border: 1px solid #D8D8D8;
-
-            border-radius: 7px;
-
             background: white;
-
             color: #666;
-
-            font-size: 11px;
-
-            font-weight: 600;
-
-            cursor: pointer;
         }
 
+        .btn-filter:hover {
+            background: #084C4F;
+        }
 
-        /* =========================================================
-           TABLE CARD
-        ========================================================= */
+        .btn-reset:hover {
+            background: #F5F5F5;
+        }
+
+        /* ================= TABLE ================= */
 
         .table-card {
             background: white;
-
             border-radius: 14px;
-
             padding: 20px;
-
             box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
-
             border: 1px solid #E5E8EC;
         }
 
-
-        /* TABLE HEADER */
-
         .table-header {
             display: flex;
-
             justify-content: space-between;
-
             align-items: center;
-
             margin-bottom: 15px;
         }
 
         .table-title h3 {
             color: #0A6B70;
-
             font-size: 17px;
-
             font-weight: 700;
         }
 
         .table-title p {
             color: #777;
-
             font-size: 10px;
-
             margin-top: 3px;
         }
 
+        .table-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-        /* EXPORT BUTTON */
-
+        .btn-add,
         .btn-export {
             height: 34px;
-
             padding: 0 14px;
-
-            background: #FFC107;
-
-            color: #333;
-
-            border: none;
-
             border-radius: 7px;
-
             font-size: 11px;
-
             font-weight: 600;
-
-            display: flex;
-
+            display: inline-flex;
             align-items: center;
-
             gap: 7px;
-
             cursor: pointer;
-
             text-decoration: none;
         }
 
-        .btn-export:hover {
-            transform: translateY(-1px);
+        .btn-add {
+            background: #0A5F63;
+            color: white;
         }
 
+        .btn-add:hover {
+            background: #084C4F;
+        }
 
-        /* =========================================================
-           TABLE
-        ========================================================= */
+        .btn-export {
+            background: #FFC107;
+            color: #333;
+        }
+
+        .btn-export:hover {
+            background: #E0A800;
+        }
 
         .table-wrapper {
             width: 100%;
-
             overflow-x: auto;
         }
 
         .table-admin {
             width: 100%;
-
             border-collapse: collapse;
-
             min-width: 1050px;
         }
 
-
         .table-admin thead th {
             text-align: left;
-
             font-size: 10px;
-
             font-weight: 600;
-
             color: #4E4E4E;
-
             padding: 11px 8px;
-
             background: #F8FAFA;
-
             border-bottom: 1px solid #D8D8D8;
-
             white-space: nowrap;
         }
 
-
         .table-admin tbody td {
             font-size: 11px;
-
             color: #2F2F2F;
-
             padding: 13px 8px;
-
             border-bottom: 1px solid #E9E9E9;
-
             white-space: nowrap;
         }
 
@@ -590,130 +427,74 @@
             background: #FAFEFE;
         }
 
-
-        /* =========================================================
-           STATUS
-        ========================================================= */
+        /* ================= STATUS ================= */
 
         .status {
             display: inline-flex;
-
             min-width: 90px;
-
             height: 23px;
-
             padding: 0 10px;
-
             border-radius: 999px;
-
             justify-content: center;
-
             align-items: center;
-
             font-size: 9px;
-
             font-weight: 600;
         }
 
-
-        /* =========================================================
-           ACTION
-        ========================================================= */
+        /* ================= ACTION ================= */
 
         .action {
             display: flex;
-
             align-items: center;
-
-            gap: 9px;
+            gap: 10px;
         }
 
-        .edit {
-            color: #444;
-
-            font-size: 13px;
-
+        .detail {
+            color: #0A6B70;
+            font-size: 14px;
             text-decoration: none;
         }
 
         .delete {
             color: #FF5A5A;
-
-            font-size: 13px;
-
+            font-size: 14px;
             text-decoration: none;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 0;
         }
 
-        .email-btn {
-            color: #0A6B70;
-
-            font-size: 13px;
-
-            text-decoration: none;
+        .detail:hover {
+            color: #084C4F;
         }
 
+        .delete:hover {
+            color: #D93636;
+        }
 
-        /* =========================================================
-           PAGINATION
-        ========================================================= */
+        /* ================= PAGINATION ================= */
 
-        .pagination {
+        .pagination-wrapper {
             margin-top: 18px;
-
             display: flex;
-
             justify-content: center;
-
-            align-items: center;
-
-            gap: 5px;
         }
 
-        .page-number {
-            width: 30px;
-            height: 30px;
-
-            border-radius: 7px;
-
-            border: 1px solid #E0E0E0;
-
+        .pagination-wrapper nav {
             display: flex;
-
-            align-items: center;
-
             justify-content: center;
-
-            font-size: 10px;
-
-            color: #666;
-
-            background: white;
         }
 
-        .page-number.active {
-            background: #0A5F63;
-
-            color: white;
-
-            border-color: #0A5F63;
-        }
-
-
-        /* =========================================================
-           RESPONSIVE
-        ========================================================= */
+        /* ================= RESPONSIVE ================= */
 
         @media(max-width: 1100px) {
-
             .filter-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-
         }
 
-
         @media(max-width: 700px) {
-
             .header-title {
                 display: none;
             }
@@ -726,37 +507,32 @@
                 width: 120px;
             }
 
-            .btn-add {
-                padding: 0 10px;
-            }
-
-            .btn-add span {
-                display: none;
-            }
-
             .filter-grid {
                 grid-template-columns: 1fr;
             }
 
             .table-header {
                 align-items: flex-start;
-
                 flex-direction: column;
-
                 gap: 12px;
             }
 
+            .table-actions {
+                width: 100%;
+            }
+
+            .btn-add,
+            .btn-export {
+                flex: 1;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 
-
 <body>
 
-
-    <!-- =========================================================
-         HEADER
-    ========================================================= -->
+    <!-- ================= HEADER ================= -->
 
     <header class="header">
 
@@ -773,15 +549,12 @@
 
         </div>
 
-        <!-- HEADER RIGHT -->
         <div class="header-right">
 
-            <!-- Hamburger -->
             <button type="button" class="menu-btn" id="menuBtn" title="Menu">
                 <i class="fa-solid fa-bars"></i>
             </button>
 
-            <!-- Logout -->
             <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                 @csrf
 
@@ -794,12 +567,13 @@
 
     </header>
 
+
     <!-- ================= SIDEBAR ================= -->
+
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="sidebar" id="sidebar">
 
-        <!-- Dashboard -->
         <a href="{{ route('admin.dashboard') }}"
             class="sidebar-menu {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
@@ -810,9 +584,8 @@
         </a>
 
 
-        <!-- Data Mahasiswa -->
-        <a href="{{ route('admin.dashboard') }}"
-            class="sidebar-menu">
+        <a href="{{ route('admin.data') }}"
+            class="sidebar-menu {{ request()->routeIs('admin.data') ? 'active' : '' }}">
 
             <i class="fa-regular fa-user"></i>
 
@@ -821,7 +594,6 @@
         </a>
 
 
-        <!-- Dokumen Verification -->
         <a href="#"
             class="sidebar-menu">
 
@@ -832,7 +604,6 @@
         </a>
 
 
-        <!-- Sertifikat -->
         <a href="#"
             class="sidebar-menu">
 
@@ -842,33 +613,31 @@
 
         </a>
 
-
-        <!-- Tambah Mahasiswa -->
-        <a href="{{ route('admin.create') }}"
-            class="sidebar-menu">
-
-            <i class="fa-solid fa-user-plus"></i>
-
-            <span>Tambah Mahasiswa</span>
-
-        </a>
-
     </div>
 
 
-
-    <!-- =========================================================
-         CONTENT
-    ========================================================= -->
+    <!-- ================= CONTENT ================= -->
 
     <div class="content">
 
+        <!-- PAGE TITLE -->
 
-        <!-- =====================================================
-             FILTER
-        ===================================================== -->
+        <div class="page-title">
 
-        <div class="filter-section">
+            <h1>Data Mahasiswa</h1>
+
+            <p>
+                Kelola, cari, dan pantau seluruh data mahasiswa magang.
+            </p>
+
+        </div>
+
+
+        <!-- ================= FILTER ================= -->
+
+        <form method="GET"
+            action="{{ route('admin.data') }}"
+            class="filter-section">
 
             <div class="filter-header">
 
@@ -883,7 +652,7 @@
                     </h3>
 
                     <p>
-                        Gunakan filter berikut untuk mencari data mahasiswa.
+                        Gunakan filter untuk mencari data mahasiswa berdasarkan kriteria tertentu.
                     </p>
 
                 </div>
@@ -893,17 +662,16 @@
 
             <div class="filter-grid">
 
-
                 <!-- PENCARIAN -->
 
                 <div class="input-group">
 
-                    <label>
-                        Pencarian
-                    </label>
+                    <label>Pencarian</label>
 
                     <input
                         type="text"
+                        name="search"
+                        value="{{ request('search') }}"
                         placeholder="Nama / NIM...">
 
                 </div>
@@ -913,27 +681,25 @@
 
                 <div class="input-group">
 
-                    <label>
-                        Jurusan
-                    </label>
+                    <label>Jurusan</label>
 
-                    <select>
+                    <select name="jurusan_id">
 
-                        <option>
+                        <option value="">
                             Semua Jurusan
                         </option>
 
-                        <option>
-                            Teknik Informatika
-                        </option>
+                        @foreach($listJurusan as $j)
 
-                        <option>
-                            Teknik Elektro
-                        </option>
+                            <option
+                                value="{{ $j->id_jurusan }}"
+                                {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
 
-                        <option>
-                            Teknik Mesin
-                        </option>
+                                {{ $j->nama_jurusan }}
+
+                            </option>
+
+                        @endforeach
 
                     </select>
 
@@ -944,27 +710,25 @@
 
                 <div class="input-group">
 
-                    <label>
-                        Universitas
-                    </label>
+                    <label>Universitas</label>
 
-                    <select>
+                    <select name="universitas_id">
 
-                        <option>
+                        <option value="">
                             Semua Universitas
                         </option>
 
-                        <option>
-                            Politeknik Negeri Cilacap
-                        </option>
+                        @foreach($listUniversitas as $u)
 
-                        <option>
-                            Universitas Jenderal Soedirman
-                        </option>
+                            <option
+                                value="{{ $u->id_universitas }}"
+                                {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
 
-                        <option>
-                            Universitas Muhammadiyah Purwokerto
-                        </option>
+                                {{ $u->nama_universitas }}
+
+                            </option>
+
+                        @endforeach
 
                     </select>
 
@@ -975,31 +739,25 @@
 
                 <div class="input-group">
 
-                    <label>
-                        Divisi
-                    </label>
+                    <label>Divisi</label>
 
-                    <select>
+                    <select name="divisi_id">
 
-                        <option>
+                        <option value="">
                             Semua Divisi
                         </option>
 
-                        <option>
-                            Operasi
-                        </option>
+                        @foreach($listDivisi as $d)
 
-                        <option>
-                            Keuangan
-                        </option>
+                            <option
+                                value="{{ $d->id_divisi }}"
+                                {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
 
-                        <option>
-                            SDM
-                        </option>
+                                {{ $d->nama_divisi }}
 
-                        <option>
-                            IT
-                        </option>
+                            </option>
+
+                        @endforeach
 
                     </select>
 
@@ -1010,22 +768,28 @@
 
                 <div class="input-group">
 
-                    <label>
-                        Jenis Kelamin
-                    </label>
+                    <label>Jenis Kelamin</label>
 
-                    <select>
+                    <select name="jenis_kelamin">
 
-                        <option>
+                        <option value="">
                             Semua Jenis Kelamin
                         </option>
 
-                        <option>
+                        <option
+                            value="Laki-laki"
+                            {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+
                             Laki-laki
+
                         </option>
 
-                        <option>
+                        <option
+                            value="Perempuan"
+                            {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+
                             Perempuan
+
                         </option>
 
                     </select>
@@ -1033,30 +797,30 @@
                 </div>
 
 
-                <!-- TANGGAL MASUK -->
+                <!-- TANGGAL MULAI -->
 
                 <div class="input-group">
 
-                    <label>
-                        Tanggal Masuk
-                    </label>
+                    <label>Tanggal Masuk</label>
 
                     <input
-                        type="date">
+                        type="date"
+                        name="tanggal_mulai"
+                        value="{{ request('tanggal_mulai') }}">
 
                 </div>
 
 
-                <!-- TANGGAL KELUAR -->
+                <!-- TANGGAL SELESAI -->
 
                 <div class="input-group">
 
-                    <label>
-                        Tanggal Keluar
-                    </label>
+                    <label>Tanggal Selesai</label>
 
                     <input
-                        type="date">
+                        type="date"
+                        name="tanggal_selesai"
+                        value="{{ request('tanggal_selesai') }}">
 
                 </div>
 
@@ -1065,31 +829,25 @@
 
                 <div class="input-group">
 
-                    <label>
-                        Tahun
-                    </label>
+                    <label>Tahun</label>
 
-                    <select>
+                    <select name="tahun">
 
-                        <option>
+                        <option value="">
                             Semua Tahun
                         </option>
 
-                        <option>
-                            2026
-                        </option>
+                        @for($i = date('Y') + 2; $i >= 2020; $i--)
 
-                        <option>
-                            2025
-                        </option>
+                            <option
+                                value="{{ $i }}"
+                                {{ request('tahun') == $i ? 'selected' : '' }}>
 
-                        <option>
-                            2024
-                        </option>
+                                {{ $i }}
 
-                        <option>
-                            2023
-                        </option>
+                            </option>
+
+                        @endfor
 
                     </select>
 
@@ -1100,26 +858,36 @@
 
                 <div class="input-group">
 
-                    <label>
-                        Status Magang
-                    </label>
+                    <label>Status Magang</label>
 
-                    <select>
+                    <select name="status">
 
-                        <option>
+                        <option value="">
                             Semua Status
                         </option>
 
-                        <option>
+                        <option
+                            value="Akan Magang"
+                            {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>
+
                             Akan Magang
+
                         </option>
 
-                        <option>
+                        <option
+                            value="Sedang Magang"
+                            {{ request('status') == 'Sedang Magang' ? 'selected' : '' }}>
+
                             Sedang Magang
+
                         </option>
 
-                        <option>
+                        <option
+                            value="Selesai Magang"
+                            {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>
+
                             Selesai Magang
+
                         </option>
 
                     </select>
@@ -1129,73 +897,85 @@
             </div>
 
 
-            <!-- BUTTON FILTER -->
+            <!-- FILTER BUTTON -->
 
             <div class="filter-actions">
 
-                <button
-                    type="button"
+                <a
+                    href="{{ route('admin.data') }}"
                     class="btn-reset">
 
                     <i class="fa-solid fa-rotate-left"></i>
+
                     Reset
 
-                </button>
+                </a>
 
 
                 <button
-                    type="button"
+                    type="submit"
                     class="btn-filter">
 
                     <i class="fa-solid fa-filter"></i>
+
                     Terapkan Filter
 
                 </button>
 
             </div>
 
-        </div>
+        </form>
 
 
-
-        <!-- =====================================================
-             TABLE
-        ===================================================== -->
+        <!-- ================= TABLE ================= -->
 
         <div class="table-card">
-
-
-            <!-- TABLE HEADER -->
 
             <div class="table-header">
 
                 <div class="table-title">
 
                     <h3>
-                        Data Monitoring Mahasiswa
+                        Data Mahasiswa
                     </h3>
 
                     <p>
-                        Menampilkan data monitoring mahasiswa PKL
+                        Menampilkan data mahasiswa yang terdaftar dalam sistem.
                     </p>
 
                 </div>
 
 
-                <!-- EXPORT -->
+                <div class="table-actions">
 
-                <a
-                    href="#"
-                    class="btn-export">
+                    <!-- TAMBAH MAHASISWA -->
 
-                    <i class="fa-solid fa-file-export"></i>
+                    <a
+                        href="{{ route('admin.create') }}"
+                        class="btn-add">
 
-                    Ekspor Data
+                        <i class="fa-solid fa-user-plus"></i>
 
-                </a>
+                        Tambah Mahasiswa
+
+                    </a>
+
+
+                    <!-- EXPORT -->
+
+                    <a
+                        href="{{ route('admin.export', request()->query()) }}"
+                        class="btn-export">
+
+                        <i class="fa-solid fa-file-export"></i>
+
+                        Ekspor Data
+
+                    </a>
+
+                </div>
 
             </div>
-
 
 
             <!-- TABLE -->
@@ -1204,54 +984,29 @@
 
                 <table class="table-admin">
 
-
                     <thead>
 
                         <tr>
 
-                            <th>
-                                No
-                            </th>
+                            <th>No</th>
 
-                            <th>
-                                NIM
-                            </th>
+                            <th>NIM</th>
 
-                            <th>
-                                Nama Lengkap
-                            </th>
+                            <th>Nama Lengkap</th>
 
-                            <th>
-                                Jenis Kelamin
-                            </th>
+                            <th>Jenis Kelamin</th>
 
-                            <th>
-                                Universitas
-                            </th>
+                            <th>Universitas</th>
 
-                            <th>
-                                Jurusan
-                            </th>
+                            <th>Jurusan</th>
 
-                            <th>
-                                Divisi
-                            </th>
+                            <th>Divisi</th>
 
-                            <th>
-                                Periode Magang
-                            </th>
+                            <th>Periode Magang</th>
 
-                            <th>
-                                Status
-                            </th>
+                            <th>Status</th>
 
-                            <th>
-                                Surat
-                            </th>
-
-                            <th>
-                                Aksi
-                            </th>
+                            <th>Aksi</th>
 
                         </tr>
 
@@ -1260,447 +1015,184 @@
 
                     <tbody>
 
+                        @forelse($pengajuans as $index => $row)
 
-                        <!-- DATA 1 -->
+                            <tr>
 
-                        <tr>
+                                <!-- NO -->
 
-                            <td>
-                                1
-                            </td>
-
-                            <td>
-                                220301001
-                            </td>
-
-                            <td>
-                                Ahmad Fauzan
-                            </td>
-
-                            <td>
-                                Laki-laki
-                            </td>
-
-                            <td>
-                                Politeknik Negeri Cilacap
-                            </td>
-
-                            <td>
-                                Teknik Informatika
-                            </td>
-
-                            <td>
-                                IT
-                            </td>
-
-                            <td>
-                                01 Jul 2026 - 30 Sep 2026
-                            </td>
-
-                            <td>
-
-                                <span
-                                    class="status"
-                                    style="
-                                        background:#E8F4F4;
-                                        color:#2B7C82;
-                                    ">
-
-                                    Sedang Magang
-
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                                <a
-                                    href="#"
-                                    title="Lihat Surat"
-                                    style="
-                                        color:#0A6B70;
-                                        font-size:14px;
-                                    ">
-
-                                    <i
-                                        class="fa-regular fa-file-pdf">
-                                    </i>
-
-                                </a>
-
-                            </td>
-
-                            <td>
-
-                                <div class="action">
-
-                                    <a
-                                        href="#"
-                                        class="email-btn"
-                                        title="Kirim Surat Balasan">
-
-                                        <i
-                                            class="fa-regular fa-envelope">
-                                        </i>
-
-                                    </a>
+                                <td>
+                                    {{ $pengajuans->firstItem() + $index }}
+                                </td>
 
 
-                                    <a
-                                        href="#"
-                                        class="edit"
-                                        title="Ubah">
+                                <!-- NIM -->
 
-                                        <i
-                                            class="fa-regular fa-pen-to-square">
-                                        </i>
-
-                                    </a>
+                                <td>
+                                    {{ $row->mahasiswa->nim ?? '-' }}
+                                </td>
 
 
-                                    <a
-                                        href="#"
-                                        class="delete"
-                                        title="Hapus">
+                                <!-- NAMA -->
 
-                                        <i
-                                            class="fa-regular fa-trash-can">
-                                        </i>
-
-                                    </a>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
+                                <td>
+                                    {{ $row->mahasiswa->nama_lengkap ?? '-' }}
+                                </td>
 
 
+                                <!-- JENIS KELAMIN -->
 
-                        <!-- DATA 2 -->
+                                <td>
+                                    {{ $row->mahasiswa->jenis_kelamin ?? '-' }}
+                                </td>
 
-                        <tr>
 
-                            <td>
-                                2
-                            </td>
+                                <!-- UNIVERSITAS -->
 
-                            <td>
-                                220301002
-                            </td>
+                                <td>
+                                    {{ $row->mahasiswa->universitas->nama_universitas ?? '-' }}
+                                </td>
 
-                            <td>
-                                Siti Aisyah
-                            </td>
 
-                            <td>
-                                Perempuan
-                            </td>
+                                <!-- JURUSAN -->
 
-                            <td>
-                                Universitas Jenderal Soedirman
-                            </td>
+                                <td>
+                                    {{ $row->mahasiswa->jurusan->nama_jurusan ?? '-' }}
+                                </td>
 
-                            <td>
-                                Teknik Elektro
-                            </td>
 
-                            <td>
-                                Operasi
-                            </td>
+                                <!-- DIVISI -->
 
-                            <td>
-                                15 Jul 2026 - 15 Okt 2026
-                            </td>
+                                <td>
+                                    {{ $row->divisi->nama_divisi ?? '-' }}
+                                </td>
 
-                            <td>
 
-                                <span
-                                    class="status"
-                                    style="
-                                        background:#E8F4F4;
-                                        color:#2B7C82;
-                                    ">
+                                <!-- PERIODE -->
 
-                                    Sedang Magang
+                                <td>
 
-                                </span>
+                                    {{ \Carbon\Carbon::parse($row->tanggal_mulai)->format('d M Y') }}
 
-                            </td>
+                                    s.d.
 
-                            <td>
+                                    {{ \Carbon\Carbon::parse($row->tanggal_selesai)->format('d M Y') }}
 
-                                <a
-                                    href="#"
-                                    style="
-                                        color:#0A6B70;
-                                        font-size:14px;
-                                    ">
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    @if($row->status === 'Akan Magang')
+
+                                        <span
+                                            class="status"
+                                            style="background:#FFEED9; color:#D9822B;">
+
+                                            Akan Magang
+
+                                        </span>
+
+                                    @elseif($row->status === 'Sedang Magang')
+
+                                        <span
+                                            class="status"
+                                            style="background:#E8F4F4; color:#2B7C82;">
+
+                                            Sedang Magang
+
+                                        </span>
+
+                                    @elseif($row->status === 'Selesai Magang')
+
+                                        <span
+                                            class="status"
+                                            style="background:#EAEAEA; color:#666;">
+
+                                            Selesai Magang
+
+                                        </span>
+
+                                    @else
+
+                                        <span
+                                            class="status"
+                                            style="background:#F5F5F5; color:#888;">
+
+                                            -
+
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                <!-- AKSI -->
+
+                                <td>
+
+                                    <div class="action">
+
+                                        <!-- DETAIL -->
+
+                                        <a href="{{ route('admin.detail', $row->id_pengajuan) }}" class="detail" title="Detail">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </a>
+
+
+                                        <!-- HAPUS -->
+
+                                        <form
+                                            action="{{ route('admin.destroy', $row->id_pengajuan) }}"
+                                            method="POST"
+                                            style="display:inline; margin:0;"
+                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')">
+
+                                            @csrf
+
+                                            @method('DELETE')
+
+                                            <button
+                                                type="submit"
+                                                class="delete"
+                                                title="Hapus">
+
+                                                <i class="fa-regular fa-trash-can"></i>
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td
+                                    colspan="10"
+                                    style="text-align:center; color:#888; padding:30px;">
 
                                     <i
-                                        class="fa-regular fa-file-pdf">
+                                        class="fa-regular fa-folder-open"
+                                        style="font-size:25px; margin-bottom:8px; display:block;">
+
                                     </i>
 
-                                </a>
+                                    Belum ada data mahasiswa yang sesuai dengan filter.
 
-                            </td>
+                                </td>
 
-                            <td>
+                            </tr>
 
-                                <div class="action">
-
-                                    <a
-                                        href="#"
-                                        class="email-btn"
-                                        title="Kirim Surat Balasan">
-
-                                        <i
-                                            class="fa-regular fa-envelope">
-                                        </i>
-
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="edit"
-                                        title="Ubah">
-
-                                        <i
-                                            class="fa-regular fa-pen-to-square">
-                                        </i>
-
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="delete"
-                                        title="Hapus">
-
-                                        <i
-                                            class="fa-regular fa-trash-can">
-                                        </i>
-
-                                    </a>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-
-                        <!-- DATA 3 -->
-
-                        <tr>
-
-                            <td>
-                                3
-                            </td>
-
-                            <td>
-                                220301003
-                            </td>
-
-                            <td>
-                                Budi Santoso
-                            </td>
-
-                            <td>
-                                Laki-laki
-                            </td>
-
-                            <td>
-                                Universitas Muhammadiyah Purwokerto
-                            </td>
-
-                            <td>
-                                Teknik Mesin
-                            </td>
-
-                            <td>
-                                Keuangan
-                            </td>
-
-                            <td>
-                                01 Mei 2026 - 30 Jun 2026
-                            </td>
-
-                            <td>
-
-                                <span
-                                    class="status"
-                                    style="
-                                        background:#EAEAEA;
-                                        color:#666;
-                                    ">
-
-                                    Selesai Magang
-
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                                <a
-                                    href="#"
-                                    style="
-                                        color:#0A6B70;
-                                        font-size:14px;
-                                    ">
-
-                                    <i
-                                        class="fa-regular fa-file-pdf">
-                                    </i>
-
-                                </a>
-
-                            </td>
-
-                            <td>
-
-                                <div class="action">
-
-                                    <a
-                                        href="#"
-                                        class="email-btn"
-                                        title="Kirim Surat Balasan">
-
-                                        <i
-                                            class="fa-regular fa-envelope">
-                                        </i>
-
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="edit"
-                                        title="Ubah">
-
-                                        <i
-                                            class="fa-regular fa-pen-to-square">
-                                        </i>
-
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="delete"
-                                        title="Hapus">
-
-                                        <i
-                                            class="fa-regular fa-trash-can">
-                                        </i>
-
-                                    </a>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-
-                        <!-- DATA 4 -->
-
-                        <tr>
-
-                            <td>
-                                4
-                            </td>
-
-                            <td>
-                                220301004
-                            </td>
-
-                            <td>
-                                Dinda Maharani
-                            </td>
-
-                            <td>
-                                Perempuan
-                            </td>
-
-                            <td>
-                                Politeknik Negeri Cilacap
-                            </td>
-
-                            <td>
-                                Teknik Informatika
-                            </td>
-
-                            <td>
-                                SDM
-                            </td>
-
-                            <td>
-                                01 Agu 2026 - 31 Okt 2026
-                            </td>
-
-                            <td>
-
-                                <span
-                                    class="status"
-                                    style="
-                                        background:#FFEED9;
-                                        color:#D9822B;
-                                    ">
-
-                                    Akan Magang
-
-                                </span>
-
-                            </td>
-
-                            <td>
-                                -
-                            </td>
-
-                            <td>
-
-                                <div class="action">
-
-                                    <a
-                                        href="#"
-                                        class="email-btn"
-                                        title="Kirim Surat Balasan">
-
-                                        <i
-                                            class="fa-regular fa-envelope">
-                                        </i>
-
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="edit"
-                                        title="Ubah">
-
-                                        <i
-                                            class="fa-regular fa-pen-to-square">
-                                        </i>
-
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="delete"
-                                        title="Hapus">
-
-                                        <i
-                                            class="fa-regular fa-trash-can">
-                                        </i>
-
-                                    </a>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
+                        @endforelse
 
                     </tbody>
 
@@ -1709,64 +1201,53 @@
             </div>
 
 
-
             <!-- PAGINATION -->
 
-            <div class="pagination">
+            <div class="pagination-wrapper">
 
-                <div class="page-number">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </div>
-
-                <div class="page-number active">
-                    1
-                </div>
-
-                <div class="page-number">
-                    2
-                </div>
-
-                <div class="page-number">
-                    3
-                </div>
-
-                <div class="page-number">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </div>
+                {{ $pengajuans->appends(request()->query())->links() }}
 
             </div>
 
-
         </div>
-
 
     </div>
 
+
+    <!-- ================= SCRIPT ================= -->
+
     <script>
+
         document.addEventListener('DOMContentLoaded', function() {
 
             const menuBtn = document.getElementById('menuBtn');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
 
+
             // Buka / tutup sidebar
+
             menuBtn.addEventListener('click', function() {
 
                 sidebar.classList.toggle('active');
+
                 overlay.classList.toggle('active');
 
             });
 
 
             // Tutup sidebar ketika klik area luar
+
             overlay.addEventListener('click', function() {
 
                 sidebar.classList.remove('active');
+
                 overlay.classList.remove('active');
 
             });
 
         });
+
     </script>
 
 </body>

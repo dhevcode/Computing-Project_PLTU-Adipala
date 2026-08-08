@@ -715,20 +715,133 @@
                     </div>
                 </div> -->
 
-                    <div class="upload-section">
-                        <label>Surat Pengantar / Dokumen Pendukung (PDF/Doc/Docx/Image)</label>
-                        <div class="upload-box" onclick="document.getElementById('uploadFile').click()">
-                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                            <p class="upload-text">Klik di sini untuk mengunggah dokumen</p>
-                            <span>Maksimal ukuran 4MB</span>
-                            <input type="file" id="uploadFile" name="surat_permohonan" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;">
-                            <div id="file-info" class="file-selected-name d-none"></div>
-                        </div>
-                        @error('surat_permohonan') <p class="error-text">{{ $message }}</p> @enderror
-                    </div>
+                    <!-- ================= DOKUMEN MAGANG ================= -->
+<div class="upload-section">
 
+    <label>Dokumen Persyaratan Magang</label>
+
+    <p style="font-size: 12px; color: #888; margin-bottom: 15px;">
+        Unggah dokumen persyaratan mahasiswa dalam format PDF, DOC, atau DOCX.
+        Maksimal ukuran setiap file 4MB.
+    </p>
+
+    <div class="grid">
+
+        <!-- SURAT PENGANTAR -->
+        <div>
+
+            <div class="upload-box"
+                onclick="document.getElementById('surat_pengantar').click()">
+
+                <i class="fa-solid fa-file-signature upload-icon"></i>
+
+                <p class="upload-text">
+                    Surat Pengantar Kampus
+                </p>
+
+                <span>
+                    PDF / DOC / DOCX • Maks. 4MB
+                </span>
+
+                <input
+                    type="file"
+                    id="surat_pengantar"
+                    name="surat_permohonan"
+                    accept=".pdf,.doc,.docx"
+                    style="display: none;">
+
+                <div
+                    id="surat_pengantar-info"
+                    class="file-selected-name d-none">
+                </div>
+
+            </div>
+
+            @error('surat_permohonan')
+            <p class="error-text">{{ $message }}</p>
+            @enderror
+
+        </div>
+
+
+        <!-- PROPOSAL -->
+        <div>
+
+            <div class="upload-box"
+                onclick="document.getElementById('proposal').click()">
+
+                <i class="fa-solid fa-file-lines upload-icon"></i>
+
+                <p class="upload-text">
+                    Proposal Magang
+                </p>
+
+                <span>
+                    PDF / DOC / DOCX • Maks. 4MB
+                </span>
+
+                <input
+                    type="file"
+                    id="proposal"
+                    name="proposal"
+                    accept=".pdf,.doc,.docx"
+                    style="display: none;">
+
+                <div
+                    id="proposal-info"
+                    class="file-selected-name d-none">
+                </div>
+
+            </div>
+
+            @error('proposal')
+            <p class="error-text">{{ $message }}</p>
+            @enderror
+
+        </div>
+
+    </div>
+
+
+    <!-- CV -->
+    <div style="margin-top: 20px;">
+
+        <div class="upload-box"
+            onclick="document.getElementById('cv').click()">
+
+            <i class="fa-solid fa-file-user upload-icon"></i>
+
+            <p class="upload-text">
+                CV / Curriculum Vitae
+            </p>
+
+            <span>
+                PDF / DOC / DOCX • Maks. 4MB
+            </span>
+
+            <input
+                type="file"
+                id="cv"
+                name="cv"
+                accept=".pdf,.doc,.docx"
+                style="display: none;">
+
+            <div
+                id="cv-info"
+                class="file-selected-name d-none">
+            </div>
+
+        </div>
+
+        @error('cv')
+        <p class="error-text">{{ $message }}</p>
+        @enderror
+
+    </div>
+
+</div>
                     <div class="button-area">
-                        <a href="{{ route('admin.dashboard') }}" class="btn-cancel">Batal</a>
+                        <a href="{{ route('admin.data') }}" class="btn-cancel">Batal</a>
                         <button class="btn-save" type="submit">Simpan</button>
                     </div>
             </form>
@@ -775,19 +888,48 @@
                 toggle(); // Run on load
             });
 
-            // Display selected file name
-            const fileInput = document.getElementById('uploadFile');
-            const fileInfo = document.getElementById('file-info');
+            // ================= FILE UPLOAD =================
 
-            fileInput.addEventListener('change', function() {
-                if (fileInput.files.length > 0) {
-                    fileInfo.textContent = 'File terpilih: ' + fileInput.files[0].name;
-                    fileInfo.classList.remove('d-none');
-                } else {
-                    fileInfo.classList.add('d-none');
-                    fileInfo.textContent = '';
-                }
-            });
+const uploadFiles = [
+    {
+        input: 'surat_pengantar',
+        info: 'surat_pengantar-info'
+    },
+    {
+        input: 'proposal',
+        info: 'proposal-info'
+    },
+    {
+        input: 'cv',
+        info: 'cv-info'
+    }
+];
+
+uploadFiles.forEach(function(item) {
+
+    const fileInput = document.getElementById(item.input);
+    const fileInfo = document.getElementById(item.info);
+
+    fileInput.addEventListener('change', function() {
+
+        if (fileInput.files.length > 0) {
+
+            fileInfo.textContent =
+                'File terpilih: ' + fileInput.files[0].name;
+
+            fileInfo.classList.remove('d-none');
+
+        } else {
+
+            fileInfo.textContent = '';
+
+            fileInfo.classList.add('d-none');
+
+        }
+
+    });
+
+});
         });
     </script>
 

@@ -20,6 +20,8 @@ class PengajuanMagang extends Model
         'tanggal_selesai',
         'status',
         'surat_permohonan',
+        'proposal',
+        'cv',
         'created_by'
     ];
 

@@ -219,6 +219,177 @@ class AdminController extends Controller
         ));
     }
 
+    public function data(Request $request)
+{
+    // Query utama data mahasiswa magang
+    $query = PengajuanMagang::with([
+        'mahasiswa.universitas',
+        'mahasiswa.jurusan',
+        'divisi'
+    ]);
+
+    // =========================
+    // PENCARIAN NAMA / NIM
+    // =========================
+
+    if ($request->filled('search')) {
+
+        $search = $request->search;
+
+        $query->whereHas('mahasiswa', function ($q) use ($search) {
+
+            $q->where('nama_lengkap', 'like', "%{$search}%")
+              ->orWhere('nim', 'like', "%{$search}%");
+
+        });
+    }
+
+
+    // =========================
+    // FILTER JURUSAN
+    // =========================
+
+    if ($request->filled('jurusan_id')) {
+
+        $query->whereHas('mahasiswa', function ($q) use ($request) {
+
+            $q->where('jurusan_id', $request->jurusan_id);
+
+        });
+    }
+
+
+    // =========================
+    // FILTER UNIVERSITAS
+    // =========================
+
+    if ($request->filled('universitas_id')) {
+
+        $query->whereHas('mahasiswa', function ($q) use ($request) {
+
+            $q->where('universitas_id', $request->universitas_id);
+
+        });
+    }
+
+
+    // =========================
+    // FILTER DIVISI
+    // =========================
+
+    if ($request->filled('divisi_id')) {
+
+        $query->where(
+            'divisi_id',
+            $request->divisi_id
+        );
+    }
+
+
+    // =========================
+    // FILTER JENIS KELAMIN
+    // =========================
+
+    if ($request->filled('jenis_kelamin')) {
+
+        $query->whereHas('mahasiswa', function ($q) use ($request) {
+
+            $q->where(
+                'jenis_kelamin',
+                $request->jenis_kelamin
+            );
+
+        });
+    }
+
+
+    // =========================
+    // FILTER STATUS
+    // =========================
+
+    if ($request->filled('status')) {
+
+        $query->where(
+            'status',
+            $request->status
+        );
+    }
+
+
+    // =========================
+    // FILTER TANGGAL MULAI
+    // =========================
+
+    if ($request->filled('tanggal_mulai')) {
+
+        $query->whereDate(
+            'tanggal_mulai',
+            $request->tanggal_mulai
+        );
+    }
+
+
+    // =========================
+    // FILTER TANGGAL SELESAI
+    // =========================
+
+    if ($request->filled('tanggal_selesai')) {
+
+        $query->whereDate(
+            'tanggal_selesai',
+            $request->tanggal_selesai
+        );
+    }
+
+
+    // =========================
+    // FILTER TAHUN
+    // =========================
+
+    if ($request->filled('tahun')) {
+
+        $query->whereYear(
+            'tanggal_mulai',
+            $request->tahun
+        );
+    }
+
+
+    // =========================
+    // DATA MAHASISWA
+    // =========================
+
+    $pengajuans = $query
+        ->latest('id_pengajuan')
+        ->paginate(10)
+        ->withQueryString();
+
+
+    // =========================
+    // DATA DROPDOWN FILTER
+    // =========================
+
+    $listJurusan = Jurusan::orderBy(
+        'nama_jurusan'
+    )->get();
+
+    $listUniversitas = Universitas::orderBy(
+        'nama_universitas'
+    )->get();
+
+    $listDivisi = Divisi::orderBy(
+        'nama_divisi'
+    )->get();
+
+
+    return view('admin.data', compact(
+        'pengajuans',
+        'listJurusan',
+        'listUniversitas',
+        'listDivisi'
+    ));
+}
+
     public function create()
     {
         $divisi = Divisi::all();
@@ -245,9 +416,10 @@ class AdminController extends Controller
             'divisi_id' => 'required',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            
-            'nama_pembimbing' => 'nullable|string|max:150',
-            'surat_permohonan' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:4096',
+            'nama_pembimbing' => 'required|string|max:150',
+            'surat_permohonan' => 'required|file|mimes:pdf,doc,docx|max:4096',
+            'proposal' => 'required|file|mimes:pdf,doc,docx|max:4096',
+            'cv' => 'required|file|mimes:pdf,doc,docx|max:4096',
         ]);
 
         $universitasId = $request->universitas_id;
@@ -306,6 +478,59 @@ class AdminController extends Controller
             $file->move(public_path('uploads/surat_permohonan'), $suratPath);
         }
 
+        // =========================
+// UPLOAD PROPOSAL
+// =========================
+
+$proposalPath = null;
+
+if ($request->hasFile('proposal')) {
+
+    $file = $request->file('proposal');
+
+    $fileName = time() . '_proposal_' . $file->getClientOriginalName();
+
+    $proposalFolder = public_path('uploads/proposal');
+
+    if (!file_exists($proposalFolder)) {
+        mkdir($proposalFolder, 0777, true);
+    }
+
+    $file->move(
+        $proposalFolder,
+        $fileName
+    );
+
+    $proposalPath = $fileName;
+}
+
+
+// =========================
+// UPLOAD CV
+// =========================
+
+$cvPath = null;
+
+if ($request->hasFile('cv')) {
+
+    $file = $request->file('cv');
+
+    $fileName = time() . '_cv_' . $file->getClientOriginalName();
+
+    $cvFolder = public_path('uploads/cv');
+
+    if (!file_exists($cvFolder)) {
+        mkdir($cvFolder, 0777, true);
+    }
+
+    $file->move(
+        $cvFolder,
+        $fileName
+    );
+
+    $cvPath = $fileName;
+}
+
         PengajuanMagang::create([
             'mahasiswa_id' => $mahasiswa->id_mhs,
             'divisi_id' => $divisiId,
@@ -317,12 +542,26 @@ class AdminController extends Controller
     $request->tanggal_selesai
 ),
             'surat_permohonan' => $suratPath,
+            'proposal' => $proposalPath,
+            'cv' => $cvPath,
             'created_by' => Auth::id(),
         ]);
 
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('admin.data')
             ->with('success', 'Data Mahasiswa Magang berhasil ditambahkan!');
     }
+
+    public function detail($id)
+    {
+        $pengajuan = PengajuanMagang::with([
+            'mahasiswa.universitas',
+            'mahasiswa.jurusan',
+            'divisi'
+        ])->findOrFail($id);
+
+        return view('admin.detail', compact('pengajuan'));
+    }
+
 
     public function edit($id)
     {
@@ -358,6 +597,8 @@ class AdminController extends Controller
             
             'nama_pembimbing' => 'nullable|string|max:150',
             'surat_permohonan' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:4096',
+            'proposal' => 'nullable|file|mimes:pdf,doc,docx|max:4096',
+            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:4096',
         ]);
 
         $universitasId = $request->universitas_id;
@@ -412,6 +653,75 @@ class AdminController extends Controller
             $file->move(public_path('uploads/surat_permohonan'), $suratPath);
         }
 
+        // =========================
+// UPDATE PROPOSAL
+// =========================
+
+$proposalPath = $pengajuan->proposal;
+
+if ($request->hasFile('proposal')) {
+
+    // Hapus proposal lama
+    if (
+        $proposalPath &&
+        file_exists(public_path('uploads/proposal/' . $proposalPath))
+    ) {
+        @unlink(
+            public_path('uploads/proposal/' . $proposalPath)
+        );
+    }
+
+    $file = $request->file('proposal');
+
+    $proposalPath = time() . '_proposal_' . $file->getClientOriginalName();
+
+    $proposalFolder = public_path('uploads/proposal');
+
+    if (!file_exists($proposalFolder)) {
+        mkdir($proposalFolder, 0777, true);
+    }
+
+    $file->move(
+        $proposalFolder,
+        $proposalPath
+    );
+}
+
+
+// =========================
+// UPDATE CV
+// =========================
+
+$cvPath = $pengajuan->cv;
+
+if ($request->hasFile('cv')) {
+
+    // Hapus CV lama
+    if (
+        $cvPath &&
+        file_exists(public_path('uploads/cv/' . $cvPath))
+    ) {
+        @unlink(
+            public_path('uploads/cv/' . $cvPath)
+        );
+    }
+
+    $file = $request->file('cv');
+
+    $cvPath = time() . '_cv_' . $file->getClientOriginalName();
+
+    $cvFolder = public_path('uploads/cv');
+
+    if (!file_exists($cvFolder)) {
+        mkdir($cvFolder, 0777, true);
+    }
+
+    $file->move(
+        $cvFolder,
+        $cvPath
+    );
+}
+
         $pengajuan->update([
             'divisi_id' => $divisiId,
             'nama_pembimbing' => $request->nama_pembimbing,
@@ -422,6 +732,8 @@ class AdminController extends Controller
             $request->tanggal_selesai
         ),
             'surat_permohonan' => $suratPath,
+            'proposal' => $proposalPath,
+    'cv' => $cvPath,
         ]);
 
         return redirect()->route('admin.dashboard')
