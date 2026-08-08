@@ -52,3 +52,6 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::delete('/admin/mahasiswa/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
     Route::get('/admin/export', [AdminController::class, 'export'])->name('admin.export');
 });
+
+Route::view('/admin/data', 'admin.data')->name('admin.data');
+Route::view('/admin/dokumen', 'admin.dokumen')->name('admin.dokumen');

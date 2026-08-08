@@ -43,7 +43,32 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, .08);
         }
 
-        /* Logo */
+        .logout {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+            cursor: pointer;
+
+            border-radius: 8px;
+
+            background: none;
+            border: none;
+
+            font-size: 17px;
+
+            transition: .2s;
+        }
+
+        .logout:hover {
+            background: rgba(255, 255, 255, .15);
+        }
+
+        /* ================= LOGO ================= */
         .logo-box {
             width: 230px;
             height: 72px;
@@ -58,7 +83,7 @@
             width: 150px;
         }
 
-        /* Title */
+        /* ================= TITLE ================= */
         .header-left {
             display: flex;
             align-items: center;
@@ -82,7 +107,7 @@
             opacity: .9;
         }
 
-        /* Right */
+        /* ================= HEADER RIGHT ================= */
         .header-right {
             display: flex;
             align-items: center;
@@ -90,42 +115,118 @@
             padding-right: 16px;
         }
 
-        .btn-add {
-            background: white;
+        /* ================= HAMBURGER BUTTON ================= */
+        .menu-btn {
+            width: 38px;
+            height: 38px;
             border: none;
-            height: 32px;
-            padding: 0 15px;
-            border-radius: 7px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #0A5F63;
+            background: transparent;
+            color: white;
+            font-size: 21px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            transition: .2s;
-            text-decoration: none;
-        }
-
-        .btn-add:hover {
-            transform: translateY(-2px);
-        }
-
-        .logout {
-            width: 32px;
-            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            cursor: pointer;
             border-radius: 8px;
             transition: .2s;
         }
 
-        .logout:hover {
-            background: rgba(255, 255, 255, .15);
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, .12);
         }
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            position: fixed;
+            top: 82px;
+            right: -270px;
+
+            width: 250px;
+            height: 470px;
+
+            background: rgba(210, 210, 210, 0.96);
+            backdrop-filter: blur(8px);
+
+            border-radius: 25px;
+
+            padding: 25px 18px;
+
+            z-index: 9998;
+
+            box-shadow: -5px 5px 20px rgba(0, 0, 0, .12);
+
+            transition: right .3s ease;
+        }
+
+        /* Sidebar ketika dibuka */
+        .sidebar.active {
+            right: 10px;
+        }
+
+
+        /* ================= SIDEBAR MENU ================= */
+        .sidebar-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            width: 100%;
+            padding: 11px 10px;
+
+            margin-bottom: 8px;
+
+            color: white;
+            text-decoration: none;
+
+            border-radius: 12px;
+
+            font-size: 16px;
+            font-weight: 400;
+
+            transition: .2s;
+        }
+
+        .sidebar-menu i {
+            width: 30px;
+            font-size: 23px;
+            text-align: center;
+        }
+
+
+        /* Hover */
+        .sidebar-menu:hover {
+            background: rgba(255, 255, 255, .15);
+            transform: translateX(3px);
+        }
+
+
+        /* Menu aktif */
+        .sidebar-menu.active {
+            background: rgba(255, 255, 255, .15);
+            font-weight: 500;
+        }
+
+
+        /* ================= SIDEBAR OVERLAY ================= */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0, 0, 0, .15);
+
+            z-index: 9997;
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition: .3s;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
 
         /* ================= CONTENT ================= */
         .content {
@@ -312,26 +413,101 @@
 <body>
 
     <header class="header">
+
         <div class="header-left">
+
             <div class="logo-box">
                 <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
             </div>
+
             <div class="header-title">
                 <h2>Monitoring Mahasiswa PKL</h2>
                 <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
             </div>
+
         </div>
+
+        <!-- HEADER RIGHT -->
         <div class="header-right">
 
+            <!-- Hamburger -->
+            <button type="button" class="menu-btn" id="menuBtn" title="Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
-            <form action="{{ route('logout') }}" method="POST" style="margin: 0; display: inline-block;">
+            <!-- Logout -->
+            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                 @csrf
-                <button type="submit" class="logout" style="background: none; border: none; cursor: pointer; color: white;">
+
+                <button type="submit" class="logout" title="Logout">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 </button>
             </form>
+
         </div>
+
     </header>
+
+    <!-- ================= SIDEBAR ================= -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="sidebar" id="sidebar">
+
+        <!-- Dashboard -->
+        <a href="{{ route('admin.dashboard') }}"
+            class="sidebar-menu {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+
+            <i class="fa-regular fa-chart-bar"></i>
+
+            <span>Dashboard</span>
+
+        </a>
+
+
+        <!-- Data Mahasiswa -->
+        <a href="{{ route('admin.dashboard') }}"
+            class="sidebar-menu">
+
+            <i class="fa-regular fa-user"></i>
+
+            <span>Data Mahasiswa</span>
+
+        </a>
+
+
+        <!-- Dokumen Verification -->
+        <a href="#"
+            class="sidebar-menu">
+
+            <i class="fa-regular fa-file-lines"></i>
+
+            <span>Dokumen Verification</span>
+
+        </a>
+
+
+        <!-- Sertifikat -->
+        <a href="#"
+            class="sidebar-menu">
+
+            <i class="fa-regular fa-file"></i>
+
+            <span>Sertifikat</span>
+
+        </a>
+
+
+        <!-- Tambah Mahasiswa -->
+        <a href="{{ route('admin.create') }}"
+            class="sidebar-menu">
+
+            <i class="fa-solid fa-user-plus"></i>
+
+            <span>Tambah Mahasiswa</span>
+
+        </a>
+
+    </div>
 
     <div class="content">
         <div class="card">
