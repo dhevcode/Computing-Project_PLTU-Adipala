@@ -129,3 +129,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::view('/admin/dokumen', 'admin.dokumen')
         ->name('admin.dokumen');
 });
+
+Route::get('/admin/sertifikat', function () {
+    return view('admin.sertifikat');
+})->name('admin.sertifikat');
