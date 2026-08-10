@@ -1148,310 +1148,557 @@
    MODAL UPLOAD SERTIFIKAT
 ====================================================== */
 
-.certificate-modal-overlay {
-    position: fixed;
-    inset: 0;
+        .certificate-modal-overlay {
+            position: fixed;
+            inset: 0;
 
-    z-index: 10000;
+            z-index: 10000;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    background: rgba(0, 0, 0, .20);
+            background: rgba(0, 0, 0, .20);
 
-    backdrop-filter: blur(1px);
+            backdrop-filter: blur(1px);
 
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
 
-    transition:
-        opacity .2s ease,
-        visibility .2s ease;
-}
+            transition:
+                opacity .2s ease,
+                visibility .2s ease;
+        }
 
 
-/* =====================================================
+        /* =====================================================
    MODAL ACTIVE
 ====================================================== */
 
-.certificate-modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
+        .certificate-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
 
 
-/* =====================================================
+        /* =====================================================
    MODAL BOX
 ====================================================== */
 
-.certificate-modal {
-    width: 520px;
-    min-height: 260px;
+        .certificate-modal {
+            width: 520px;
+            min-height: 260px;
 
-    background: #ffffff;
+            background: #ffffff;
 
-    border-radius: 16px;
+            border-radius: 16px;
 
-    padding: 28px 30px 24px;
+            padding: 28px 30px 24px;
 
-    box-shadow:
-        0 15px 45px rgba(0, 0, 0, .22);
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, .22);
 
-    transform:
-        translateY(8px)
-        scale(.98);
+            transform:
+                translateY(8px) scale(.98);
 
-    transition:
-        transform .2s ease;
-}
-
-
-.certificate-modal-overlay.active
-.certificate-modal {
-    transform:
-        translateY(0)
-        scale(1);
-}
+            transition:
+                transform .2s ease;
+        }
 
 
-/* =====================================================
+        .certificate-modal-overlay.active .certificate-modal {
+            transform:
+                translateY(0) scale(1);
+        }
+
+
+        /* =====================================================
    JUDUL
 ====================================================== */
 
-.certificate-modal h3 {
-    margin: 0;
+        .certificate-modal h3 {
+            margin: 0;
 
-    color: #202020;
+            color: #202020;
 
-    font-family:
-        'Poppins',
-        sans-serif;
+            font-family:
+                'Poppins',
+                sans-serif;
 
-    font-size: 17px;
+            font-size: 17px;
 
-    font-weight: 500;
+            font-weight: 500;
 
-    line-height: 1.4;
-}
+            line-height: 1.4;
+        }
 
 
-/* =====================================================
+        /* =====================================================
    DESKRIPSI
 ====================================================== */
 
-.modal-description {
-    margin-top: 6px;
-    margin-bottom: 22px;
+        .modal-description {
+            margin-top: 6px;
+            margin-bottom: 22px;
 
-    color: #555;
+            color: #555;
 
-    font-family:
-        'Poppins',
-        sans-serif;
+            font-family:
+                'Poppins',
+                sans-serif;
 
-    font-size: 13px;
+            font-size: 13px;
 
-    line-height: 1.5;
-}
+            line-height: 1.5;
+        }
 
 
-/* =====================================================
+        /* =====================================================
    FILE GROUP
 ====================================================== */
 
-.modal-file-group {
-    width: 100%;
+        .modal-file-group {
+            width: 100%;
 
-    display: flex;
-    flex-direction: column;
+            display: flex;
+            flex-direction: column;
 
-    gap: 8px;
-}
-
-
-.modal-file-group label {
-    color: #222;
-
-    font-family:
-        'Poppins',
-        sans-serif;
-
-    font-size: 13px;
-
-    font-weight: 400;
-}
+            gap: 8px;
+        }
 
 
-/* =====================================================
+        .modal-file-group label {
+            color: #222;
+
+            font-family:
+                'Poppins',
+                sans-serif;
+
+            font-size: 13px;
+
+            font-weight: 400;
+        }
+
+
+        /* =====================================================
    FILE INPUT
 ====================================================== */
 
-.modal-file-group input[type="file"] {
-    width: 100%;
+        .modal-file-group input[type="file"] {
+            width: 100%;
 
-    height: 42px;
+            height: 42px;
 
-    padding: 0;
+            padding: 0;
 
-    border:
-        1px solid #888;
+            border:
+                1px solid #888;
 
-    border-radius: 6px;
+            border-radius: 6px;
 
-    background: #fff;
+            background: #fff;
 
-    color: #222;
+            color: #222;
 
-    font-family:
-        'Poppins',
-        sans-serif;
+            font-family:
+                'Poppins',
+                sans-serif;
 
-    font-size: 12px;
+            font-size: 12px;
 
-    cursor: pointer;
-}
-
-
-/* Tombol Choose File */
-
-.modal-file-group
-input[type="file"]::file-selector-button {
-
-    height: 40px;
-
-    padding: 0 13px;
-
-    margin-right: 10px;
-
-    border: none;
-
-    border-right:
-        1px solid #888;
-
-    background: #f5f5f5;
-
-    color: #222;
-
-    font-family:
-        'Poppins',
-        sans-serif;
-
-    font-size: 12px;
-
-    cursor: pointer;
-}
+            cursor: pointer;
+        }
 
 
-/* =====================================================
+        /* Tombol Choose File */
+
+        .modal-file-group input[type="file"]::file-selector-button {
+
+            height: 40px;
+
+            padding: 0 13px;
+
+            margin-right: 10px;
+
+            border: none;
+
+            border-right:
+                1px solid #888;
+
+            background: #f5f5f5;
+
+            color: #222;
+
+            font-family:
+                'Poppins',
+                sans-serif;
+
+            font-size: 12px;
+
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
    ACTIONS
 ====================================================== */
 
-.modal-actions {
+        .modal-actions {
 
-    display: flex;
+            display: flex;
 
-    justify-content: flex-end;
+            justify-content: flex-end;
 
-    align-items: center;
+            align-items: center;
 
-    gap: 10px;
+            gap: 10px;
 
-    margin-top: 20px;
-}
+            margin-top: 20px;
+        }
 
 
-/* =====================================================
+        /* =====================================================
    BUTTON
 ====================================================== */
 
-.modal-btn {
+        .modal-btn {
 
-    height: 38px;
+            height: 38px;
 
-    padding:
-        0 18px;
+            padding:
+                0 18px;
 
-    border-radius: 7px;
+            border-radius: 7px;
 
-    font-family:
-        'Poppins',
-        sans-serif;
+            font-family:
+                'Poppins',
+                sans-serif;
 
-    font-size: 12px;
+            font-size: 12px;
 
-    cursor: pointer;
+            cursor: pointer;
 
-    display: inline-flex;
+            display: inline-flex;
 
-    align-items: center;
+            align-items: center;
 
-    justify-content: center;
+            justify-content: center;
 
-    gap: 7px;
+            gap: 7px;
 
-    transition: .2s;
-}
+            transition: .2s;
+        }
 
 
-/* =====================================================
+        /* =====================================================
    BATAL
 ====================================================== */
 
-.modal-cancel {
-    background: #fff;
+        .modal-cancel {
+            background: #fff;
 
-    color: #4e969b;
+            color: #4e969b;
 
-    border:
-        1px solid #8fc1c4;
-}
-
-
-.modal-cancel:hover {
-    background: #f1f8f8;
-}
+            border:
+                1px solid #8fc1c4;
+        }
 
 
-/* =====================================================
+        .modal-cancel:hover {
+            background: #f1f8f8;
+        }
+
+
+        /* =====================================================
    SIMPAN & KIRIM
 ====================================================== */
 
-.modal-save {
-    background: #4e969b;
+        .modal-save {
+            background: #4e969b;
 
-    color: white;
+            color: white;
 
-    border:
-        1px solid #4e969b;
-}
-
-
-.modal-save:hover {
-    background: #3d8589;
-}
+            border:
+                1px solid #4e969b;
+        }
 
 
-/* =====================================================
+        .modal-save:hover {
+            background: #3d8589;
+        }
+
+
+        /* =====================================================
    MOBILE
 ====================================================== */
 
-@media (max-width: 600px) {
+        @media (max-width: 600px) {
 
-    .certificate-modal {
+            .certificate-modal {
 
-        width:
-            calc(100% - 30px);
+                width:
+                    calc(100% - 30px);
 
-        min-height: auto;
+                min-height: auto;
 
-        padding:
-            24px 22px 22px;
-    }
+                padding:
+                    24px 22px 22px;
+            }
 
-}
+        }
+
+        /* =========================================================
+   MODAL UPLOAD LAPORAN
+========================================================= */
+
+        .laporan-modal-overlay {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.35);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            z-index: 10000;
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition:
+                opacity .2s ease,
+                visibility .2s ease;
+        }
+
+        .laporan-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+
+        /* ================= MODAL ================= */
+
+        .laporan-modal {
+            width: 520px;
+            max-width: calc(100% - 40px);
+
+            background: #ffffff;
+
+            border-radius: 16px;
+
+            padding: 25px 27px 21px;
+
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, .20);
+
+            transform:
+                scale(.95) translateY(10px);
+
+            transition:
+                transform .2s ease;
+        }
+
+        .laporan-modal-overlay.active .laporan-modal {
+            transform:
+                scale(1) translateY(0);
+        }
+
+
+        /* ================= TITLE ================= */
+
+        .laporan-modal-title {
+            color: #1F1F1F;
+
+            font-size: 17px;
+
+            font-weight: 600;
+
+            line-height: 1.3;
+
+            margin-bottom: 5px;
+        }
+
+
+        /* ================= DESCRIPTION ================= */
+
+        .laporan-modal-description {
+            color: #666;
+
+            font-size: 11px;
+
+            line-height: 1.55;
+
+            margin-bottom: 18px;
+        }
+
+
+        /* ================= LABEL ================= */
+
+        .laporan-modal-label {
+            display: block;
+
+            color: #333;
+
+            font-size: 11px;
+
+            font-weight: 500;
+
+            margin-bottom: 7px;
+        }
+
+
+        /* ================= FILE ================= */
+
+        .laporan-file {
+            width: 100%;
+
+            height: 42px;
+
+            border: 1px solid #999;
+
+            border-radius: 8px;
+
+            padding: 0 10px;
+
+            background: #fff;
+
+            color: #222;
+
+            font-family: 'Poppins', sans-serif;
+
+            font-size: 11px;
+
+            cursor: pointer;
+
+            outline: none;
+        }
+
+        .laporan-file:hover {
+            border-color: #4C9FA3;
+        }
+
+        .laporan-file:focus {
+            border-color: #4C9FA3;
+
+            box-shadow:
+                0 0 0 3px rgba(76, 159, 163, .12);
+        }
+
+
+        /* ================= EMAIL ================= */
+
+        .laporan-email {
+            margin-top: 8px;
+
+            color: #666;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+
+        /* ================= ACTION ================= */
+
+        .laporan-modal-actions {
+            display: flex;
+
+            justify-content: flex-end;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-top: 17px;
+        }
+
+
+        /* ================= BATAL ================= */
+
+        .btn-laporan-cancel {
+            height: 32px;
+
+            padding: 0 16px;
+
+            border-radius: 7px;
+
+            background: white;
+
+            border: 1px solid #A8D1D3;
+
+            color: #4C9FA3;
+
+            font-family: 'Poppins', sans-serif;
+
+            font-size: 10px;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .btn-laporan-cancel:hover {
+            background: #F1F9F9;
+        }
+
+
+        /* ================= SIMPAN ================= */
+
+        .btn-laporan-submit {
+            height: 32px;
+
+            padding: 0 15px;
+
+            border-radius: 7px;
+
+            background: #4C9FA3;
+
+            border: 1px solid #4C9FA3;
+
+            color: white;
+
+            font-family: 'Poppins', sans-serif;
+
+            font-size: 10px;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            transition: .2s;
+        }
+
+        .btn-laporan-submit:hover {
+            background: #0A6B70;
+
+            border-color: #0A6B70;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 600px) {
+
+            .laporan-modal {
+                width: calc(100% - 30px);
+
+                padding: 21px;
+            }
+
+            .laporan-modal-title {
+                font-size: 16px;
+            }
+
+        }
     </style>
 
 </head>
@@ -2039,7 +2286,11 @@ input[type="file"]::file-selector-button {
 
                                 <button
                                     type="button"
-                                    class="btn btn-upload">
+                                    class="btn btn-upload btn-upload-laporan"
+
+                                    data-nama="{{ $item->nama ?? $item->mahasiswa->nama ?? '-' }}"
+
+                                    data-email="{{ $item->email ?? $item->mahasiswa->email ?? '-' }}">
 
                                     <i class="fa-solid fa-arrow-up"></i>
 
@@ -2082,15 +2333,15 @@ input[type="file"]::file-selector-button {
                                 <div class="actions">
 
                                     <button
-    type="button"
-    class="btn btn-upload"
-    onclick="openCertificateModal()">
+                                        type="button"
+                                        class="btn btn-upload"
+                                        onclick="openCertificateModal()">
 
-    <i class="fa-solid fa-arrow-up"></i>
+                                        <i class="fa-solid fa-arrow-up"></i>
 
-    Upload Sertifikat
+                                        Upload Sertifikat
 
-</button>
+                                    </button>
 
                                 </div>
 
@@ -2144,7 +2395,11 @@ input[type="file"]::file-selector-button {
 
                                 <button
                                     type="button"
-                                    class="btn btn-upload">
+                                    class="btn btn-upload btn-upload-laporan"
+
+                                    data-nama="{{ $item->nama ?? $item->mahasiswa->nama ?? '-' }}"
+
+                                    data-email="{{ $item->email ?? $item->mahasiswa->email ?? '-' }}">
 
                                     <i class="fa-solid fa-arrow-up"></i>
 
@@ -2178,15 +2433,15 @@ input[type="file"]::file-selector-button {
                                 <div class="actions">
 
                                     <button
-    type="button"
-    class="btn btn-upload"
-    onclick="openCertificateModal()">
+                                        type="button"
+                                        class="btn btn-upload"
+                                        onclick="openCertificateModal()">
 
-    <i class="fa-solid fa-arrow-up"></i>
+                                        <i class="fa-solid fa-arrow-up"></i>
 
-    Upload Sertifikat
+                                        Upload Sertifikat
 
-</button>
+                                    </button>
 
                                 </div>
 
@@ -2264,15 +2519,15 @@ input[type="file"]::file-selector-button {
                                 <div class="actions">
 
                                     <button
-    type="button"
-    class="btn btn-upload"
-    onclick="openCertificateModal()">
+                                        type="button"
+                                        class="btn btn-upload"
+                                        onclick="openCertificateModal()">
 
-    <i class="fa-solid fa-arrow-up"></i>
+                                        <i class="fa-solid fa-arrow-up"></i>
 
-    Upload Sertifikat
+                                        Upload Sertifikat
 
-</button>
+                                    </button>
 
                                 </div>
 
@@ -2316,7 +2571,11 @@ input[type="file"]::file-selector-button {
 
                                 <button
                                     type="button"
-                                    class="btn btn-upload available">
+                                    class="btn btn-upload btn-upload-laporan"
+
+                                    data-nama="{{ $item->nama ?? $item->mahasiswa->nama ?? '-' }}"
+
+                                    data-email="{{ $item->email ?? $item->mahasiswa->email ?? '-' }}">
 
                                     <i class="fa-solid fa-arrow-up"></i>
 
@@ -2411,14 +2670,17 @@ input[type="file"]::file-selector-button {
 
                                 <button
                                     type="button"
-                                    class="btn btn-upload available">
+                                    class="btn btn-upload btn-upload-laporan"
+
+                                    data-nama="{{ $item->nama ?? $item->mahasiswa->nama ?? '-' }}"
+
+                                    data-email="{{ $item->email ?? $item->mahasiswa->email ?? '-' }}">
 
                                     <i class="fa-solid fa-arrow-up"></i>
 
                                     Upload
 
                                 </button>
-
                             </td>
 
                             <td>
@@ -2445,15 +2707,15 @@ input[type="file"]::file-selector-button {
                                 <div class="actions">
 
                                     <button
-    type="button"
-    class="btn btn-upload"
-    onclick="openCertificateModal()">
+                                        type="button"
+                                        class="btn btn-upload"
+                                        onclick="openCertificateModal()">
 
-    <i class="fa-solid fa-arrow-up"></i>
+                                        <i class="fa-solid fa-arrow-up"></i>
 
-    Upload Sertifikat
+                                        Upload Sertifikat
 
-</button>
+                                    </button>
 
                                 </div>
 
@@ -2479,77 +2741,181 @@ input[type="file"]::file-selector-button {
 
     </main>
 
+    <!-- =========================================================
+     MODAL UPLOAD LAPORAN
+========================================================= -->
+
+    <div
+        class="laporan-modal-overlay"
+        id="laporanModal">
+
+
+        <div
+            class="laporan-modal">
+
+
+            <!-- ================= TITLE ================= -->
+
+            <div class="laporan-modal-title">
+
+                Tambah laporan mahasiswa
+
+            </div>
+
+
+            <!-- ================= DESCRIPTION ================= -->
+
+            <div class="laporan-modal-description">
+
+                Laporan diunggah untuk
+                <strong id="laporanNama">
+                    mahasiswa
+                </strong>.
+                Pastikan laporan yang diunggah merupakan
+                laporan PKL yang sesuai.
+
+            </div>
+
+
+            <!-- ================= FILE ================= -->
+
+            <label
+                for="laporanFile"
+                class="laporan-modal-label">
+
+                Berkas laporan (PDF)
+
+            </label>
+
+
+            <input
+                type="file"
+                id="laporanFile"
+                class="laporan-file"
+
+                accept=".pdf,application/pdf">
+
+
+            <!-- ================= EMAIL ================= -->
+
+            <div class="laporan-email">
+
+                Email mahasiswa:
+                <span id="laporanEmail">
+                    -
+                </span>
+
+            </div>
+
+
+            <!-- ================= BUTTON ================= -->
+
+            <div class="laporan-modal-actions">
+
+
+                <!-- BATAL -->
+
+                <button
+                    type="button"
+                    class="btn-laporan-cancel"
+                    id="cancelLaporan">
+
+                    Batal
+
+                </button>
+
+
+                <!-- SIMPAN -->
+
+                <button
+                    type="button"
+                    class="btn-laporan-submit"
+                    id="submitLaporan">
+
+                    <i class="fa-regular fa-paper-plane"></i>
+
+                    Simpan & kirim
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
     <!-- =====================================================
      MODAL UPLOAD SERTIFIKAT
 ====================================================== -->
 
-<div class="certificate-modal-overlay" id="certificateModal">
+    <div class="certificate-modal-overlay" id="certificateModal">
 
-    <div class="certificate-modal">
-
-
-        <!-- JUDUL -->
-
-        <h3>
-            Unggah sertifikat digital
-        </h3>
+        <div class="certificate-modal">
 
 
-        <!-- DESKRIPSI -->
+            <!-- JUDUL -->
 
-        <p class="modal-description">
-            Pastikan seluruh persyaratan sudah terpenuhi.
-        </p>
+            <h3>
+                Unggah sertifikat digital
+            </h3>
 
 
-        <!-- FILE -->
+            <!-- DESKRIPSI -->
 
-        <div class="modal-file-group">
+            <p class="modal-description">
+                Pastikan seluruh persyaratan sudah terpenuhi.
+            </p>
 
-            <label for="certificateFile">
-                Berkas sertifikat (PDF/Gambar)
-            </label>
 
-            <input
-                type="file"
-                id="certificateFile"
-                name="certificate"
-                accept=".pdf,.jpg,.jpeg,.png">
+            <!-- FILE -->
+
+            <div class="modal-file-group">
+
+                <label for="certificateFile">
+                    Berkas sertifikat (PDF/Gambar)
+                </label>
+
+                <input
+                    type="file"
+                    id="certificateFile"
+                    name="certificate"
+                    accept=".pdf,.jpg,.jpeg,.png">
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="modal-btn modal-cancel"
+                    onclick="closeCertificateModal()">
+
+                    Batal
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="modal-btn modal-save"
+                    onclick="saveCertificate()">
+
+                    <i class="fa-regular fa-paper-plane"></i>
+
+                    Simpan & kirim
+
+                </button>
+
+            </div>
+
 
         </div>
-
-
-        <!-- BUTTON -->
-
-        <div class="modal-actions">
-
-            <button
-                type="button"
-                class="modal-btn modal-cancel"
-                onclick="closeCertificateModal()">
-
-                Batal
-
-            </button>
-
-
-            <button
-                type="button"
-                class="modal-btn modal-save"
-                onclick="saveCertificate()">
-
-                <i class="fa-regular fa-paper-plane"></i>
-
-                Simpan & kirim
-
-            </button>
-
-        </div>
-
 
     </div>
-
-</div>
 
 
 
@@ -2641,94 +3007,275 @@ input[type="file"]::file-selector-button {
 
         }
 
-    /* =====================================================
+        /* =====================================================
    MODAL SERTIFIKAT
 ====================================================== */
 
-const certificateModal =
-    document.getElementById('certificateModal');
+        const certificateModal =
+            document.getElementById('certificateModal');
 
 
-function openCertificateModal() {
+        function openCertificateModal() {
 
-    certificateModal.classList.add('active');
+            certificateModal.classList.add('active');
 
-}
-
-
-function closeCertificateModal() {
-
-    certificateModal.classList.remove('active');
-
-}
+        }
 
 
-/* =====================================================
-   KLIK AREA LUAR MODAL
-====================================================== */
+        function closeCertificateModal() {
 
-certificateModal.addEventListener(
-    'click',
-    function (event) {
+            certificateModal.classList.remove('active');
 
-        if (event.target === certificateModal) {
+        }
+
+
+        /* =====================================================
+           KLIK AREA LUAR MODAL
+        ====================================================== */
+
+        certificateModal.addEventListener(
+            'click',
+            function(event) {
+
+                if (event.target === certificateModal) {
+
+                    closeCertificateModal();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           ESC UNTUK MENUTUP
+        ====================================================== */
+
+        document.addEventListener(
+            'keydown',
+            function(event) {
+
+                if (event.key === 'Escape') {
+
+                    closeCertificateModal();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           SIMPAN & KIRIM
+        ====================================================== */
+
+        function saveCertificate() {
+
+            const file =
+                document.getElementById('certificateFile');
+
+
+            if (!file.files.length) {
+
+                alert('Silakan pilih berkas sertifikat terlebih dahulu.');
+
+                return;
+
+            }
+
+
+            /*
+             * Untuk sementara popup ditutup.
+             *
+             * Nanti bagian ini bisa disambungkan
+             * ke route/controller upload sertifikat.
+             */
 
             closeCertificateModal();
 
         }
 
-    }
-);
+        /* =========================================================
+   MODAL UPLOAD LAPORAN
+========================================================= */
+
+        const laporanModal =
+            document.getElementById('laporanModal');
+
+        const laporanButtons =
+            document.querySelectorAll('.btn-upload-laporan');
+
+        const cancelLaporan =
+            document.getElementById('cancelLaporan');
+
+        const submitLaporan =
+            document.getElementById('submitLaporan');
+
+        const laporanNama =
+            document.getElementById('laporanNama');
+
+        const laporanEmail =
+            document.getElementById('laporanEmail');
+
+        const laporanFile =
+            document.getElementById('laporanFile');
 
 
-/* =====================================================
-   ESC UNTUK MENUTUP
-====================================================== */
+        /* =========================================================
+           BUKA POPUP
+        ========================================================= */
 
-document.addEventListener(
-    'keydown',
-    function (event) {
+        laporanButtons.forEach(function(button) {
 
-        if (event.key === 'Escape') {
+            button.addEventListener('click', function() {
 
-            closeCertificateModal();
+                const nama =
+                    this.dataset.nama;
 
-        }
-
-    }
-);
+                const email =
+                    this.dataset.email;
 
 
-/* =====================================================
-   SIMPAN & KIRIM
-====================================================== */
+                /*
+                 * Masukkan data mahasiswa
+                 * ke dalam popup
+                 */
 
-function saveCertificate() {
+                laporanNama.textContent =
+                    nama;
 
-    const file =
-        document.getElementById('certificateFile');
-
-
-    if (!file.files.length) {
-
-        alert('Silakan pilih berkas sertifikat terlebih dahulu.');
-
-        return;
-
-    }
+                laporanEmail.textContent =
+                    email;
 
 
-    /*
-     * Untuk sementara popup ditutup.
-     *
-     * Nanti bagian ini bisa disambungkan
-     * ke route/controller upload sertifikat.
-     */
+                /*
+                 * Reset file sebelumnya
+                 */
 
-    closeCertificateModal();
+                laporanFile.value = '';
 
-}
-    
+
+                /*
+                 * Buka modal
+                 */
+
+                laporanModal.classList.add('active');
+
+            });
+
+        });
+
+
+        /* =========================================================
+           TUTUP - BATAL
+        ========================================================= */
+
+        cancelLaporan.addEventListener('click', function() {
+
+            laporanModal.classList.remove('active');
+
+            laporanFile.value = '';
+
+        });
+
+
+        /* =========================================================
+           KLIK AREA LUAR POPUP
+        ========================================================= */
+
+        laporanModal.addEventListener('click', function(event) {
+
+            if (event.target === laporanModal) {
+
+                laporanModal.classList.remove('active');
+
+                laporanFile.value = '';
+
+            }
+
+        });
+
+
+        /* =========================================================
+           ESC
+        ========================================================= */
+
+        document.addEventListener('keydown', function(event) {
+
+            if (
+                event.key === 'Escape' &&
+                laporanModal.classList.contains('active')
+            ) {
+
+                laporanModal.classList.remove('active');
+
+                laporanFile.value = '';
+
+            }
+
+        });
+
+
+        /* =========================================================
+           SIMPAN & KIRIM
+        ========================================================= */
+
+        submitLaporan.addEventListener('click', function() {
+
+            const file =
+                laporanFile.files[0];
+
+
+            /*
+             * Belum memilih file
+             */
+
+            if (!file) {
+
+                alert(
+                    'Silakan pilih berkas laporan terlebih dahulu.'
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Validasi PDF
+             */
+
+            const isPDF =
+                file.type === 'application/pdf' ||
+                file.name.toLowerCase().endsWith('.pdf');
+
+
+            if (!isPDF) {
+
+                alert(
+                    'Berkas laporan harus berupa PDF.'
+                );
+
+                laporanFile.value = '';
+
+                return;
+
+            }
+
+
+            /*
+             * Untuk sementara popup ditutup.
+             *
+             * Nanti bagian ini bisa disambungkan
+             * ke controller Laravel untuk upload
+             * laporan ke storage/database.
+             */
+
+            laporanModal.classList.remove('active');
+
+            laporanFile.value = '';
+
+        });
     </script>
 
 
