@@ -20,6 +20,10 @@ class Mahasiswa extends Model
         'no_telepon',
         'universitas_id',
         'jurusan_id',
+        'file_laporan',
+    ];
+    protected $casts = [
+        'id_card_verified' => 'boolean',
     ];
 
     public function universitas()
@@ -35,5 +39,13 @@ class Mahasiswa extends Model
     public function pengajuanMagang()
     {
         return $this->hasMany(PengajuanMagang::class, 'mahasiswa_id', 'id_mhs');
+    }
+    public function sertifikat()
+    {
+        return $this->hasOne(
+            Sertifikat::class,
+            'mahasiswa_id',
+            'id_mhs'
+        )->latestOfMany('id_sertifikat');
     }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\SertifikatController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -135,9 +136,37 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
         '/admin/dokumen/{id}/lihat',
         [DocumentController::class, 'lihatSuratBalasan']
     )->name('admin.dokumen.lihat');
+
+    // ================= SERTIFIKAT =================
+Route::get(
+    '/admin/sertifikat',
+    [SertifikatController::class, 'index']
+)->name('admin.sertifikat');
+
+Route::post(
+    '/admin/sertifikat/{id}/upload',
+    [SertifikatController::class, 'upload']
+)->name('admin.sertifikat.upload');
+
+Route::post(
+    '/admin/sertifikat/{id}/laporan',
+    [SertifikatController::class, 'uploadLaporan']
+)->name('admin.laporan.upload');
+
+Route::post(
+    '/admin/sertifikat/{id}/verify-id-card',
+    [SertifikatController::class, 'verifyIdCard']
+)->name('admin.sertifikat.verify-id-card');
+
+// ================= LAPORAN MAHASISWA =================
+Route::post(
+    '/admin/laporan/{id}/upload',
+    [SertifikatController::class, 'uploadLaporan']
+)->name('admin.laporan.upload');
+
+Route::post(
+    '/admin/mahasiswa/{id}/verify-id-card',
+    [AdminController::class, 'verifyIdCard']
+)->name('admin.id-card.verify');
 });
 
-
-Route::get('/admin/sertifikat', function () {
-    return view('admin.sertifikat');
-})->name('admin.sertifikat');

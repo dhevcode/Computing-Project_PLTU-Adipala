@@ -38,4 +38,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Divisi::class, 'id_divisi', 'id_divisi');
     }
+    public function sertifikatUploaded()
+    {
+        return $this->hasMany(
+            Sertifikat::class,
+            'uploaded_by',
+            'id_users'
+        );
+    }
 }

@@ -700,7 +700,7 @@
                 <div class="grid">
                     <div class="form-group">
                         <label>Nama Pembimbing Lapangan</label>
-                        <input type="text" name="nama_pembimbing" value="{{ old('nama_pembimbing') }}" placeholder="Masukkan nama pembimbing (opsional)">
+                        <input type="text" name="nama_pembimbing" value="{{ old('nama_pembimbing') }}" placeholder="Masukkan nama pembimbing">
                         @error('nama_pembimbing') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 

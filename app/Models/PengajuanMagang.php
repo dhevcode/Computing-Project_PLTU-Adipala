@@ -35,4 +35,12 @@ class PengajuanMagang extends Model
     {
         return $this->belongsTo(Divisi::class, 'divisi_id', 'id_divisi');
     }
+    public function sertifikat()
+{
+    return $this->hasOne(
+        Sertifikat::class,
+        'pengajuan_id',
+        'id_pengajuan'
+    );
+}
 }
