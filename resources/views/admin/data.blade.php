@@ -574,6 +574,7 @@
 
     <div class="sidebar" id="sidebar">
 
+        <!-- Dashboard -->
         <a href="{{ route('admin.dashboard') }}"
             class="sidebar-menu {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
@@ -584,8 +585,9 @@
         </a>
 
 
+        <!-- Data Mahasiswa -->
         <a href="{{ route('admin.data') }}"
-            class="sidebar-menu {{ request()->routeIs('admin.data') ? 'active' : '' }}">
+            class="sidebar-menu">
 
             <i class="fa-regular fa-user"></i>
 
@@ -594,7 +596,8 @@
         </a>
 
 
-        <a href="#"
+        <!-- Dokumen Verification -->
+        <a href="{{ route('admin.dokumen') }}"
             class="sidebar-menu">
 
             <i class="fa-regular fa-file-lines"></i>
@@ -604,7 +607,8 @@
         </a>
 
 
-        <a href="#"
+        <!-- Sertifikat -->
+        <a href="{{ route('admin.sertifikat') }}"
             class="sidebar-menu">
 
             <i class="fa-regular fa-file"></i>
@@ -612,7 +616,6 @@
             <span>Sertifikat</span>
 
         </a>
-
     </div>
 
 

@@ -22,6 +22,7 @@ class PengajuanMagang extends Model
         'surat_permohonan',
         'proposal',
         'cv',
+        'surat_balasan',
         'created_by'
     ];
 

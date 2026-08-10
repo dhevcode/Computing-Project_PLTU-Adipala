@@ -644,7 +644,7 @@
 
 
         <!-- Sertifikat -->
-        <a href="#"
+        <a href="{{ route('admin.sertifikat') }}"
             class="sidebar-menu">
 
             <i class="fa-regular fa-file"></i>
@@ -653,16 +653,6 @@
 
         </a>
 
-
-        <!-- Tambah Mahasiswa -->
-        <a href="{{ route('admin.create') }}"
-            class="sidebar-menu">
-
-            <i class="fa-solid fa-user-plus"></i>
-
-            <span>Tambah Mahasiswa</span>
-
-        </a>
 
     </div>
 

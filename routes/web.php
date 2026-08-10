@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DocumentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -118,17 +119,24 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     // ================= EXPORT DATA =================
     Route::get('/admin/export', [AdminController::class, 'export'])
         ->name('admin.export');
+
+    // ================= DOCUMENT VERIFICATION =================
+    Route::get(
+        '/admin/dokumen',
+        [DocumentController::class, 'index']
+    )->name('admin.dokumen');
+
+    Route::post(
+        '/admin/dokumen/{id}/upload',
+        [DocumentController::class, 'uploadSuratBalasan']
+    )->name('admin.dokumen.upload');
+
+    Route::get(
+        '/admin/dokumen/{id}/lihat',
+        [DocumentController::class, 'lihatSuratBalasan']
+    )->name('admin.dokumen.lihat');
 });
 
-
-// =====================================================
-// DOKUMEN
-// =====================================================
-Route::middleware(['auth', 'role:Admin'])->group(function () {
-
-    Route::view('/admin/dokumen', 'admin.dokumen')
-        ->name('admin.dokumen');
-});
 
 Route::get('/admin/sertifikat', function () {
     return view('admin.sertifikat');

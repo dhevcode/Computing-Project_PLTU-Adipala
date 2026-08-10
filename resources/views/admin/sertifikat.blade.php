@@ -1559,80 +1559,48 @@ input[type="file"]::file-selector-button {
         id="sidebar">
 
 
-        <!-- DASHBOARD -->
-
-        <a
-            href="{{ route('admin.dashboard') }}"
-            class="sidebar-menu">
+        <!-- Dashboard -->
+        <a href="{{ route('admin.dashboard') }}"
+            class="sidebar-menu {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
             <i class="fa-regular fa-chart-bar"></i>
 
-            <span>
-                Dashboard
-            </span>
+            <span>Dashboard</span>
 
         </a>
 
 
-        <!-- DATA MAHASISWA -->
-
-        <a
-            href="{{ route('admin.data') }}"
+        <!-- Data Mahasiswa -->
+        <a href="{{ route('admin.data') }}"
             class="sidebar-menu">
 
             <i class="fa-regular fa-user"></i>
 
-            <span>
-                Data Mahasiswa
-            </span>
+            <span>Data Mahasiswa</span>
 
         </a>
 
 
-        <!-- DOKUMEN -->
-
-        <a
-            href="{{ route('admin.dokumen') }}"
+        <!-- Dokumen Verification -->
+        <a href="{{ route('admin.dokumen') }}"
             class="sidebar-menu">
 
             <i class="fa-regular fa-file-lines"></i>
 
-            <span>
-                Dokumen Verification
-            </span>
+            <span>Dokumen Verification</span>
 
         </a>
 
 
-        <!-- SERTIFIKAT ACTIVE -->
-
-        <a
-            href="{{ route('admin.sertifikat') }}"
-            class="sidebar-menu active">
+        <!-- Sertifikat -->
+        <a href="{{ route('admin.sertifikat') }}"
+            class="sidebar-menu">
 
             <i class="fa-regular fa-file"></i>
 
-            <span>
-                Sertifikat
-            </span>
+            <span>Sertifikat</span>
 
         </a>
-
-
-        <!-- TAMBAH MAHASISWA -->
-
-        <a
-            href="{{ route('admin.create') }}"
-            class="sidebar-menu">
-
-            <i class="fa-solid fa-user-plus"></i>
-
-            <span>
-                Tambah Mahasiswa
-            </span>
-
-        </a>
-
 
     </div>
 

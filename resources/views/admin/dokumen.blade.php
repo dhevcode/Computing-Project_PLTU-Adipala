@@ -1615,75 +1615,46 @@
 
         <!-- DASHBOARD -->
 
-        <a
-            href="{{ route('admin.dashboard') }}"
-            class="sidebar-menu">
+        <!-- Dashboard -->
+        <a href="{{ route('admin.dashboard') }}"
+            class="sidebar-menu {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
             <i class="fa-regular fa-chart-bar"></i>
 
-            <span>
-                Dashboard
-            </span>
+            <span>Dashboard</span>
 
         </a>
 
 
-        <!-- DATA MAHASISWA -->
-
-        <a
-            href="#"
+        <!-- Data Mahasiswa -->
+        <a href="{{ route('admin.data') }}"
             class="sidebar-menu">
 
             <i class="fa-regular fa-user"></i>
 
-            <span>
-                Data Mahasiswa
-            </span>
+            <span>Data Mahasiswa</span>
 
         </a>
 
 
-        <!-- DOKUMEN -->
-
-        <a
-            href="{{ route('admin.dokumen') }}"
-            class="sidebar-menu active">
+        <!-- Dokumen Verification -->
+        <a href="{{ route('admin.dokumen') }}"
+            class="sidebar-menu">
 
             <i class="fa-regular fa-file-lines"></i>
 
-            <span>
-                Dokumen Verification
-            </span>
+            <span>Dokumen Verification</span>
 
         </a>
 
 
-        <!-- SERTIFIKAT -->
-
-        <a
-            href="#"
+        <!-- Sertifikat -->
+        <a href="{{ route('admin.sertifikat') }}"
             class="sidebar-menu">
 
             <i class="fa-regular fa-file"></i>
 
-            <span>
-                Sertifikat
-            </span>
-
-        </a>
-
-
-        <!-- TAMBAH MAHASISWA -->
-
-        <a
-            href="{{ route('admin.create') }}"
-            class="sidebar-menu">
-
-            <i class="fa-solid fa-user-plus"></i>
-
-            <span>
-                Tambah Mahasiswa
-            </span>
+            <span>Sertifikat</span>
 
         </a>
 
@@ -1720,7 +1691,7 @@
                 </div>
 
                 <div class="card-value">
-                    1
+                    {{ $verified }}
                 </div>
 
             </div>
@@ -1741,8 +1712,8 @@
                     Not verified
                 </div>
 
-                <div class="card-value">
-                    3
+               <div class="card-value">
+                    {{ $notVerified }}
                 </div>
 
             </div>
@@ -1764,7 +1735,7 @@
                 </div>
 
                 <div class="card-value">
-                    4
+                    {{ $total }}
                 </div>
 
             </div>
@@ -1777,7 +1748,10 @@
              FILTER DATA
         ================================================== -->
 
-        <form class="filter-section">
+        <form
+            action="{{ route('admin.dokumen') }}"
+            method="GET"
+            class="filter-section">
 
 
             <div class="filter-header">
@@ -1789,7 +1763,7 @@
                     </div>
 
                     <div class="filter-subtitle">
-                        Menampilkan 4 dari 4 mahasiswa
+                        Menampilkan {{ $total }} mahasiswa
                     </div>
 
                 </div>
@@ -1821,8 +1795,10 @@
                     </label>
 
                     <input
-                        type="text"
-                        placeholder="Nama, NIM, kampus...">
+    type="text"
+    name="search"
+    value="{{ request('search') }}"
+    placeholder="Nama, NIM, kampus...">
 
                 </div>
 
@@ -1836,7 +1812,10 @@
                         Tanggal mulai
                     </label>
 
-                    <input type="date">
+                    <input
+    type="date"
+    name="tanggal_mulai"
+    value="{{ request('tanggal_mulai') }}">
 
                 </div>
 
@@ -1850,7 +1829,10 @@
                         Tanggal selesai
                     </label>
 
-                    <input type="date">
+                    <input
+    type="date"
+    name="tanggal_selesai"
+    value="{{ request('tanggal_selesai') }}">
 
                 </div>
 
@@ -1864,21 +1846,25 @@
                         Jurusan
                     </label>
 
-                    <select>
+                    <select name="jurusan_id">
 
-                        <option>
-                            Semua
-                        </option>
+    <option value="">
+        Semua
+    </option>
 
-                        <option>
-                            Informatika
-                        </option>
+    @foreach($jurusan as $j)
 
-                        <option>
-                            Administrasi
-                        </option>
+        <option
+            value="{{ $j->id_jurusan }}"
+            {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
 
-                    </select>
+            {{ $j->nama_jurusan }}
+
+        </option>
+
+    @endforeach
+
+</select>
 
                 </div>
 
@@ -1892,21 +1878,25 @@
                         Universitas
                     </label>
 
-                    <select>
+                    <select name="universitas_id">
 
-                        <option>
-                            Semua
-                        </option>
+    <option value="">
+        Semua
+    </option>
 
-                        <option>
-                            PNC
-                        </option>
+    @foreach($universitas as $u)
 
-                        <option>
-                            Universitas Jenderal Soedirman
-                        </option>
+        <option
+            value="{{ $u->id_universitas }}"
+            {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
 
-                    </select>
+            {{ $u->nama_universitas }}
+
+        </option>
+
+    @endforeach
+
+</select>
 
                 </div>
 
@@ -1920,21 +1910,25 @@
                         Divisi
                     </label>
 
-                    <select>
+                    <select name="divisi_id">
 
-                        <option>
-                            Semua
-                        </option>
+    <option value="">
+        Semua
+    </option>
 
-                        <option>
-                            Umum
-                        </option>
+    @foreach($divisi as $d)
 
-                        <option>
-                            Keuangan
-                        </option>
+        <option
+            value="{{ $d->id_divisi }}"
+            {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
 
-                    </select>
+            {{ $d->nama_divisi }}
+
+        </option>
+
+    @endforeach
+
+</select>
 
                 </div>
 
@@ -1955,21 +1949,25 @@
                         Status
                     </label>
 
-                    <select>
+                    <select name="status_verifikasi">
 
-                        <option>
-                            Semua
-                        </option>
+    <option value="">
+        Semua
+    </option>
 
-                        <option>
-                            Verified
-                        </option>
+    <option
+        value="verified"
+        {{ request('status_verifikasi') == 'verified' ? 'selected' : '' }}>
+        Verified
+    </option>
 
-                        <option>
-                            Not verified
-                        </option>
+    <option
+        value="not_verified"
+        {{ request('status_verifikasi') == 'not_verified' ? 'selected' : '' }}>
+        Not Verified
+    </option>
 
-                    </select>
+</select>
 
                 </div>
 
@@ -1983,25 +1981,57 @@
                         Jenis Kelamin
                     </label>
 
-                    <select>
+                    <select name="jenis_kelamin">
 
-                        <option>
-                            Semua
-                        </option>
+    <option value="">
+        Semua
+    </option>
 
-                        <option>
-                            Laki-laki
-                        </option>
+    <option
+        value="Laki-laki"
+        {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+        Laki-laki
+    </option>
 
-                        <option>
-                            Perempuan
-                        </option>
+    <option
+        value="Perempuan"
+        {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+        Perempuan
+    </option>
 
-                    </select>
+</select>
 
                 </div>
 
             </div>
+            <div style="
+    margin-top:15px;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+">
+
+    <a
+        href="{{ route('admin.dokumen') }}"
+        class="btn-document btn-view"
+        style="height:34px; padding:0 15px;">
+
+        Reset Filter
+
+    </a>
+
+    <button
+        type="submit"
+        class="btn-document btn-upload"
+        style="height:34px; padding:0 15px;">
+
+        <i class="fa-solid fa-filter"></i>
+
+        Terapkan Filter
+
+    </button>
+
+</div>
 
         </form>
 
@@ -2058,327 +2088,140 @@
 
                     <tbody>
 
+    @forelse($pengajuan as $p)
 
-                        <!-- =================================================
-                             DATA 1
-                        ================================================== -->
+        <tr>
 
-                        <tr>
+            <td>
+                <strong>
+                    {{ $p->mahasiswa->nama_lengkap }}
+                </strong>
 
-                            <td>
+                <br>
 
-                                <strong>
-                                    Namira
-                                </strong>
+                <small style="color:#999;">
+                    {{ $p->mahasiswa->nim }}
+                </small>
+            </td>
 
-                                <br>
+            <td>
+                {{ $p->mahasiswa->universitas->nama_universitas ?? '-' }}
+            </td>
 
-                                <small>
-                                    202020
-                                </small>
+            <td>
+                {{ $p->mahasiswa->jurusan->nama_jurusan ?? '-' }}
+            </td>
 
-                            </td>
+            <td>
+                {{ $p->divisi->nama_divisi ?? '-' }}
+            </td>
 
+            <td>
+                {{ $p->mahasiswa->email }}
+            </td>
 
-                            <td>
-                                PNC
-                            </td>
+            <td>
 
+                @if($p->surat_balasan)
 
-                            <td>
-                                Administrasi
-                            </td>
+                    <span class="status status-verified">
+                        Verified
+                    </span>
 
+                @else
 
-                            <td>
-                                Keuangan
-                            </td>
+                    <span class="status status-notverified">
+                        Not verified
+                    </span>
 
+                @endif
 
-                            <td>
-                                namira@gmail.com
-                            </td>
+            </td>
 
+            <td>
 
-                            <td>
+                <div class="action">
 
-                                <span
-                                    class="status status-notverified">
+                    @if($p->surat_balasan)
 
-                                    Not verified
+                        <a
+                            href="{{ route('admin.dokumen.lihat', $p->id_pengajuan) }}"
+                            target="_blank"
+                            class="btn-document btn-view">
 
-                                </span>
+                            <i class="fa-regular fa-eye"></i>
 
-                            </td>
+                            Lihat
 
+                        </a>
 
-                            <td>
+                        <button
+                            type="button"
+                            class="btn-document btn-change"
+                            onclick="document.getElementById('file-{{ $p->id_pengajuan }}').click()">
 
-                                <div class="action">
+                            <i class="fa-solid fa-upload"></i>
 
-                                    <button
-                                        type="button"
-                                        class="btn-document btn-upload upload-surat-btn"
-                                        data-nama="Namira"
-                                        data-email="namiradavinarm@gmail.com">
+                            Ganti
 
-                                        <i class="fa-solid fa-upload"></i>
+                        </button>
 
-                                        Upload Surat
+                    @else
 
-                                    </button>
+                        <button
+                            type="button"
+                            class="btn-document btn-upload"
+                            onclick="document.getElementById('file-{{ $p->id_pengajuan }}').click()">
 
-                                </div>
+                            <i class="fa-solid fa-upload"></i>
 
-                            </td>
+                            Upload Surat
 
-                        </tr>
+                        </button>
 
+                    @endif
 
 
-                        <!-- =================================================
-                             DATA 2
-                        ================================================== -->
+                    <!-- FORM UPLOAD -->
 
-                        <tr>
+                    <form
+                        action="{{ route('admin.dokumen.upload', $p->id_pengajuan) }}"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        style="display:none;">
 
-                            <td>
+                        @csrf
 
-                                <strong>
-                                    Tsamara
-                                </strong>
+                        <input
+                            type="file"
+                            id="file-{{ $p->id_pengajuan }}"
+                            name="surat_balasan"
+                            accept=".pdf,.doc,.docx"
+                            onchange="this.form.submit()">
 
-                                <br>
+                    </form>
 
-                                <small>
-                                    202020
-                                </small>
+                </div>
 
-                            </td>
+            </td>
 
+        </tr>
 
-                            <td>
-                                PNC
-                            </td>
+    @empty
 
+        <tr>
 
-                            <td>
-                                Informatika
-                            </td>
+            <td colspan="7" style="text-align:center; padding:30px;">
 
+                Belum ada data mahasiswa.
 
-                            <td>
-                                Umum
-                            </td>
+            </td>
 
+        </tr>
 
-                            <td>
-                                tsamara@gmail.com
-                            </td>
+    @endforelse
 
-
-                            <td>
-
-                                <span
-                                    class="status status-notverified">
-
-                                    Not verified
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <div class="action">
-
-                                    <button
-                                        type="button"
-                                        class="btn-document btn-upload upload-surat-btn"
-                                        data-nama="Tsamara"
-                                        data-email="tsamara@gmail.com">
-
-                                        <i class="fa-solid fa-upload"></i>
-
-                                        Upload Surat
-
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-
-                        <!-- =================================================
-                             DATA 3
-                        ================================================== -->
-
-                        <tr>
-
-                            <td>
-
-                                <strong>
-                                    Namira
-                                </strong>
-
-                                <br>
-
-                                <small>
-                                    202020
-                                </small>
-
-                            </td>
-
-
-                            <td>
-                                PNC
-                            </td>
-
-
-                            <td>
-                                Administrasi
-                            </td>
-
-
-                            <td>
-                                Keuangan
-                            </td>
-
-
-                            <td>
-                                namira@gmail.com
-                            </td>
-
-
-                            <td>
-
-                                <span
-                                    class="status status-verified">
-
-                                    Verified
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <div class="action">
-
-                                    <!-- LIHAT DOKUMEN -->
-                                    <button
-                                        type="button"
-                                        class="btn-document btn-view btn-lihat-surat"
-                                        data-file="">
-
-                                        <i class="fa-regular fa-eye"></i>
-                                        Lihat
-
-                                    </button>
-
-
-                                    <!-- GANTI DOKUMEN -->
-                                    <button
-                                        type="button"
-                                        class="btn-document btn-change upload-surat-btn"
-                                        data-nama="Namira"
-                                        data-email="namiradavinarm@gmail.com">
-
-                                        <i class="fa-solid fa-upload"></i>
-                                        Ganti
-
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-
-                        <!-- =================================================
-                             DATA 4
-                        ================================================== -->
-
-                        <tr>
-
-                            <td>
-
-                                <strong>
-                                    Tsamara
-                                </strong>
-
-                                <br>
-
-                                <small>
-                                    202020
-                                </small>
-
-                            </td>
-
-
-                            <td>
-                                PNC
-                            </td>
-
-
-                            <td>
-                                Informatika
-                            </td>
-
-
-                            <td>
-                                Umum
-                            </td>
-
-
-                            <td>
-                                tsamara@gmail.com
-                            </td>
-
-
-                            <td>
-
-                                <span
-                                    class="status status-notverified">
-
-                                    Not verified
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <div class="action">
-
-                                    <button
-                                        type="button"
-                                        class="btn-document btn-upload upload-surat-btn"
-                                        data-nama="Namira"
-                                        data-email="namiradavinarm@gmail.com">
-
-                                        <i class="fa-solid fa-upload"></i>
-
-                                        Upload Surat
-
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                    </tbody>
+</tbody>
 
                 </table>
 
