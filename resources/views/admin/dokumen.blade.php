@@ -1668,6 +1668,36 @@
 
     <div class="content">
 
+    @if(session('success'))
+    <div style="
+        margin-bottom: 20px;
+        padding: 14px 18px;
+        background: #E8F8EF;
+        color: #16834A;
+        border: 1px solid #B8E8CC;
+        border-radius: 10px;
+        font-size: 12px;
+    ">
+        <i class="fa-solid fa-circle-check"></i>
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div style="
+        margin-bottom: 20px;
+        padding: 14px 18px;
+        background: #FDECEC;
+        color: #C0392B;
+        border: 1px solid #F5C6C2;
+        border-radius: 10px;
+        font-size: 12px;
+    ">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        {{ session('error') }}
+    </div>
+@endif
+
 
         <!-- =================================================
              STATISTIC CARDS
@@ -2352,291 +2382,167 @@
        MODAL UPLOAD SURAT BALASAN
     ===================================================== */
 
-    const uploadModal =
-        document.getElementById('uploadModal');
-
-    const cancelUpload =
-        document.getElementById('cancelUpload');
-
-    const uploadButtons =
-        document.querySelectorAll('.upload-surat-btn');
-
-    const modalStudentName =
-        document.getElementById('modalStudentName');
-
-    const modalStudentEmail =
-        document.getElementById('modalStudentEmail');
-
-    const suratBalasan =
-        document.getElementById('suratBalasan');
-
-    const uploadForm =
-        document.getElementById('uploadForm');
-
-    const submitUpload =
-        document.getElementById('submitUpload');
-
-
-
     /* =====================================================
-       BUKA MODAL
-    ===================================================== */
+   MODAL UPLOAD SURAT BALASAN
+===================================================== */
 
-    uploadButtons.forEach(function (button) {
+const uploadModal = document.getElementById('uploadModal');
+const uploadButtons = document.querySelectorAll('.upload-surat-btn');
 
-        button.addEventListener('click', function () {
+const modalStudentName = document.getElementById('modalStudentName');
+const modalStudentEmail = document.getElementById('modalStudentEmail');
 
-            const action =
-                this.getAttribute('data-action');
-
-            const nama =
-                this.getAttribute('data-name');
-
-            const email =
-                this.getAttribute('data-email');
+const suratBalasan = document.getElementById('suratBalasan');
+const uploadForm = document.getElementById('uploadForm');
+const submitUpload = document.getElementById('submitUpload');
 
 
-            /* -----------------------------------------
-               SET ACTION FORM
-            ----------------------------------------- */
+/* =====================================================
+   BUKA MODAL
+===================================================== */
 
-            if (uploadForm) {
+uploadButtons.forEach(function (button) {
 
-                uploadForm.action = action;
+    button.addEventListener('click', function () {
 
-            }
+        const action = this.getAttribute('data-action');
+        const nama = this.getAttribute('data-name');
+        const email = this.getAttribute('data-email');
 
+        // Set action form
+        uploadForm.action = action;
 
-            /* -----------------------------------------
-               TAMPILKAN DATA MAHASISWA
-            ----------------------------------------- */
+        // Set data mahasiswa
+        modalStudentName.textContent = nama || '';
+        modalStudentEmail.textContent = email || '';
 
-            if (modalStudentName) {
+        // Reset file
+        suratBalasan.value = '';
 
-                modalStudentName.textContent =
-                    nama || '';
+        // Reset tombol
+        submitUpload.disabled = false;
+        submitUpload.innerHTML =
+            '<i class="fa-regular fa-paper-plane"></i> Simpan & Kirim';
 
-            }
-
-            if (modalStudentEmail) {
-
-                modalStudentEmail.textContent =
-                    email || '';
-
-            }
-
-
-            /* -----------------------------------------
-               RESET FILE
-            ----------------------------------------- */
-
-            if (suratBalasan) {
-
-                suratBalasan.value = '';
-
-            }
-
-
-            /* -----------------------------------------
-               RESET TOMBOL
-            ----------------------------------------- */
-
-            if (submitUpload) {
-
-                submitUpload.disabled = false;
-
-                submitUpload.innerHTML =
-                    '<i class="fa-regular fa-paper-plane"></i> Simpan & Kirim';
-
-            }
-
-
-            /* -----------------------------------------
-               BUKA MODAL
-            ----------------------------------------- */
-
-            if (uploadModal) {
-
-                uploadModal.classList.add('active');
-
-            }
-
-        });
-
+        // Buka modal
+        uploadModal.classList.add('active');
     });
 
+});
 
 
-    /* =====================================================
-       TUTUP MODAL - BATAL
-    ===================================================== */
+/* =====================================================
+   FUNGSI TUTUP MODAL
+===================================================== */
 
-    if (cancelUpload) {
+function closeUploadModal() {
 
-        cancelUpload.addEventListener('click', function () {
+    uploadModal.classList.remove('active');
 
-            uploadModal.classList.remove('active');
+    if (suratBalasan) {
+        suratBalasan.value = '';
+    }
+}
 
-            if (suratBalasan) {
 
-                suratBalasan.value = '';
+/* =====================================================
+   KLIK BACKGROUND
+===================================================== */
 
-            }
+uploadModal.addEventListener('click', function (event) {
 
-        });
+    if (event.target === uploadModal) {
+        closeUploadModal();
+    }
 
+});
+
+
+/* =====================================================
+   ESC
+===================================================== */
+
+document.addEventListener('keydown', function (event) {
+
+    if (
+        event.key === 'Escape' &&
+        uploadModal.classList.contains('active')
+    ) {
+        closeUploadModal();
+    }
+
+});
+
+
+/* =====================================================
+   SUBMIT UPLOAD
+===================================================== */
+
+uploadForm.addEventListener('submit', function (event) {
+
+    const file = suratBalasan.files[0];
+
+    /* FILE BELUM DIPILIH */
+
+    if (!file) {
+
+        event.preventDefault();
+
+        alert(
+            'Silakan pilih berkas surat balasan terlebih dahulu.'
+        );
+
+        return;
     }
 
 
+    /* HARUS PDF */
 
-    /* =====================================================
-       TUTUP KETIKA KLIK BACKGROUND
-    ===================================================== */
+    if (
+        file.type !== 'application/pdf' &&
+        !file.name.toLowerCase().endsWith('.pdf')
+    ) {
 
-    if (uploadModal) {
+        event.preventDefault();
 
-        uploadModal.addEventListener('click', function (event) {
+        alert(
+            'Berkas surat balasan harus berupa PDF.'
+        );
 
-            if (event.target === uploadModal) {
+        suratBalasan.value = '';
 
-                uploadModal.classList.remove('active');
-
-                if (suratBalasan) {
-
-                    suratBalasan.value = '';
-
-                }
-
-            }
-
-        });
-
+        return;
     }
 
 
+    /* MAKSIMAL 4 MB */
 
-    /* =====================================================
-       TUTUP DENGAN ESC
-    ===================================================== */
+    const maxSize = 4 * 1024 * 1024;
 
-    document.addEventListener('keydown', function (event) {
+    if (file.size > maxSize) {
 
-        if (
-            event.key === 'Escape' &&
-            uploadModal &&
-            uploadModal.classList.contains('active')
-        ) {
+        event.preventDefault();
 
-            uploadModal.classList.remove('active');
+        alert(
+            'Ukuran berkas maksimal 4 MB.'
+        );
 
-            if (suratBalasan) {
+        suratBalasan.value = '';
 
-                suratBalasan.value = '';
-
-            }
-
-        }
-
-    });
-
-
-
-    /* =====================================================
-       SIMPAN & KIRIM
-    ===================================================== */
-
-    if (uploadForm) {
-
-        uploadForm.addEventListener('submit', function (event) {
-
-            const file =
-                suratBalasan.files[0];
-
-
-            /* -----------------------------------------
-               CEK FILE
-            ----------------------------------------- */
-
-            if (!file) {
-
-                event.preventDefault();
-
-                alert(
-                    'Silakan pilih berkas surat balasan terlebih dahulu.'
-                );
-
-                return;
-
-            }
-
-
-            /* -----------------------------------------
-               HANYA PDF
-            ----------------------------------------- */
-
-            if (
-                file.type !== 'application/pdf' &&
-                !file.name
-                    .toLowerCase()
-                    .endsWith('.pdf')
-            ) {
-
-                event.preventDefault();
-
-                alert(
-                    'Berkas surat balasan harus berupa PDF.'
-                );
-
-                suratBalasan.value = '';
-
-                return;
-
-            }
-
-
-            /* -----------------------------------------
-               MAKSIMAL 4 MB
-            ----------------------------------------- */
-
-            const maxSize =
-                4 * 1024 * 1024;
-
-            if (file.size > maxSize) {
-
-                event.preventDefault();
-
-                alert(
-                    'Ukuran berkas maksimal 4 MB.'
-                );
-
-                suratBalasan.value = '';
-
-                return;
-
-            }
-
-
-            /* -----------------------------------------
-               FILE VALID
-            ----------------------------------------- */
-
-            submitUpload.disabled = true;
-
-            submitUpload.innerHTML =
-                '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
-
-
-            /*
-             * JANGAN gunakan event.preventDefault()
-             * di sini.
-             *
-             * Form akan dikirim ke Laravel.
-             */
-
-        });
-
+        return;
     }
 
+
+    /* FILE VALID */
+
+    submitUpload.disabled = true;
+
+    submitUpload.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
+
+    // JANGAN preventDefault()
+    // biarkan form dikirim ke Laravel
+});
 
 
     /* =====================================================

@@ -230,6 +230,12 @@ public function uploadSuratBalasan(Request $request, $id)
 
     } catch (Throwable $e) {
 
+    \Log::error('Gagal mengirim email surat balasan', [
+    'message' => $e->getMessage(),
+    'file' => $e->getFile(),
+    'line' => $e->getLine(),
+]);
+
         /*
         |--------------------------------------------------------------------------
         | JIKA EMAIL GAGAL
