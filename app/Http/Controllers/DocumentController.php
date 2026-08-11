@@ -1,12 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SuratBalasanMail;
 use App\Models\PengajuanMagang;
 use App\Models\Universitas;
 use App\Models\Jurusan;
 use App\Models\Divisi;
 use Illuminate\Http\Request;
+use Throwable;
 
 class DocumentController extends Controller
 {
@@ -127,47 +131,174 @@ class DocumentController extends Controller
     }
 
 
-    // UPLOAD SURAT BALASAN
-    public function uploadSuratBalasan(Request $request, $id)
-    {
-        $request->validate([
-            'surat_balasan' => [
-                'required',
-                'file',
-                'mimes:pdf,doc,docx',
-                'max:4096',
-            ],
-        ]);
+    // UPLOAD SURAT BALASAN + KIRIM EMAIL
+public function uploadSuratBalasan(Request $request, $id)
+{
+    $request->validate([
+        'surat_balasan' => [
+            'required',
+            'file',
+            'mimes:pdf',
+            'max:4096',
+        ],
+    ], [
+        'surat_balasan.required' => 'Silakan pilih file surat balasan.',
+        'surat_balasan.file' => 'File yang dipilih tidak valid.',
+        'surat_balasan.mimes' => 'Surat balasan harus berupa file PDF.',
+        'surat_balasan.max' => 'Ukuran file maksimal 4 MB.',
+    ]);
 
-        $pengajuan = PengajuanMagang::findOrFail($id);
+    $pengajuan = PengajuanMagang::with('mahasiswa')
+        ->findOrFail($id);
 
-        $file = $request->file('surat_balasan');
+    // Pastikan mahasiswa memiliki email
+    if (!$pengajuan->mahasiswa || !$pengajuan->mahasiswa->email) {
+        return redirect()
+            ->route('admin.dokumen')
+            ->with('error', 'Email mahasiswa belum tersedia.');
+    }
 
-        $filename =
-            'surat_balasan_' .
-            $pengajuan->mahasiswa_id .
-            '_' .
-            time() .
-            '.' .
-            $file->getClientOriginalExtension();
+    $file = $request->file('surat_balasan');
 
-        $path = $file->storeAs(
-            'uploads/surat_balasan',
-            $filename,
-            'public'
-        );
+    /*
+    |--------------------------------------------------------------------------
+    | SIMPAN FILE BARU
+    |--------------------------------------------------------------------------
+    */
 
-        $pengajuan->update([
-            'surat_balasan' => $path
-        ]);
+    $filename =
+        'surat_balasan_' .
+        $pengajuan->mahasiswa_id .
+        '_' .
+        time() .
+        '.pdf';
+
+    $path = $file->storeAs(
+        'uploads/surat_balasan',
+        $filename,
+        'public'
+    );
+
+    // Simpan path lama jika sebelumnya sudah ada
+    $oldPath = $pengajuan->surat_balasan;
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE DATABASE
+    |--------------------------------------------------------------------------
+    */
+
+    $pengajuan->update([
+        'surat_balasan' => $path,
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | KIRIM EMAIL
+    |--------------------------------------------------------------------------
+    */
+
+    try {
+
+        Mail::to($pengajuan->mahasiswa->email)
+            ->send(
+                new SuratBalasanMail(
+                    $pengajuan,
+                    $path
+                )
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | HAPUS FILE LAMA JIKA EMAIL BERHASIL
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $oldPath &&
+            Storage::disk('public')->exists($oldPath)
+        ) {
+            Storage::disk('public')->delete($oldPath);
+        }
 
         return redirect()
             ->route('admin.dokumen')
             ->with(
                 'success',
-                'Surat balasan berhasil diupload.'
+                'Surat balasan berhasil diupload dan dikirim ke email mahasiswa.'
+            );
+
+    } catch (Throwable $e) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | JIKA EMAIL GAGAL
+        |--------------------------------------------------------------------------
+        */
+
+        // Hapus file baru
+        if (
+            $path &&
+            Storage::disk('public')->exists($path)
+        ) {
+            Storage::disk('public')->delete($path);
+        }
+
+        // Kembalikan path database ke file lama
+        $pengajuan->update([
+            'surat_balasan' => $oldPath,
+        ]);
+
+        return redirect()
+            ->route('admin.dokumen')
+            ->with(
+                'error',
+                'File gagal dikirim ke email mahasiswa. Silakan coba lagi.'
             );
     }
+}
+
+    // // UPLOAD SURAT BALASAN
+    // public function uploadSuratBalasan(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'surat_balasan' => [
+    //             'required',
+    //             'file',
+    //             'mimes:pdf,doc,docx',
+    //             'max:4096',
+    //         ],
+    //     ]);
+
+    //     $pengajuan = PengajuanMagang::findOrFail($id);
+
+    //     $file = $request->file('surat_balasan');
+
+    //     $filename =
+    //         'surat_balasan_' .
+    //         $pengajuan->mahasiswa_id .
+    //         '_' .
+    //         time() .
+    //         '.' .
+    //         $file->getClientOriginalExtension();
+
+    //     $path = $file->storeAs(
+    //         'uploads/surat_balasan',
+    //         $filename,
+    //         'public'
+    //     );
+
+    //     $pengajuan->update([
+    //         'surat_balasan' => $path
+    //     ]);
+
+    //     return redirect()
+    //         ->route('admin.dokumen')
+    //         ->with(
+    //             'success',
+    //             'Surat balasan berhasil diupload.'
+    //         );
+    // }
     // LIHAT SURAT BALASAN
 public function lihatSuratBalasan($id)
 {
