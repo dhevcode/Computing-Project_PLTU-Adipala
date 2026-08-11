@@ -2600,11 +2600,27 @@
 
 @endif
 
+<a
+    href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $item->no_telepon)) }}?text={{ urlencode(
+        "Halo {$item->nama_lengkap},\n\n" .
+        "Kami informasikan bahwa sertifikat PKL Anda sudah diterbitkan dan telah dikirim melalui email perusahaan.\n\n" .
+        "Mohon segera membuka email Anda dan memeriksa pesan dari perusahaan terkait sertifikat PKL.\n\n" .
+        "Jika belum menerima email, silakan cek folder Spam/Junk.\n\n" .
+        "Terima kasih."
+    ) }}"
+    target="_blank"
+    class="btn-document btn-wa"
+>
+    <i class="fa-brands fa-whatsapp"></i>
+    Kirim WA
+</a>
+
                                 </div>
 
                             </td>
 
                         </tr>
+
 
 
                     @empty
@@ -3415,6 +3431,97 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     );
 
+/* =====================================================
+   KIRIM WHATSAPP
+===================================================== */
+
+const waButtons =
+    document.querySelectorAll('.btn-kirim-wa');
+
+waButtons.forEach(function (button) {
+
+    button.addEventListener('click', function () {
+
+        const nama =
+            this.dataset.nama || '';
+
+        const nomor =
+            this.dataset.telepon || '';
+
+
+        /* -----------------------------------------
+           CEK NOMOR
+        ----------------------------------------- */
+
+        if (!nomor) {
+
+            alert(
+                'Nomor WhatsApp mahasiswa belum tersedia.'
+            );
+
+            return;
+
+        }
+
+
+        /* -----------------------------------------
+           BERSIHKAN NOMOR
+        ----------------------------------------- */
+
+        let nomorWa =
+            nomor.replace(/\D/g, '');
+
+
+        /*
+         * 08xxxxxxxxxx
+         * menjadi
+         * 628xxxxxxxxxx
+         */
+
+        if (nomorWa.startsWith('0')) {
+
+            nomorWa =
+                '62' + nomorWa.substring(1);
+
+        }
+
+
+        /*
+         * Kalau nomor sudah menggunakan 62,
+         * tidak perlu diubah.
+         */
+
+        const pesan =
+            `Halo ${nama},
+
+Kami informasikan bahwa sertifikat PKL Anda sudah diterbitkan dan telah dikirim melalui email perusahaan.
+
+Mohon segera membuka email Anda dan memeriksa pesan dari perusahaan terkait sertifikat PKL.
+
+Jika belum menerima email, silakan cek folder Spam/Junk.
+
+Terima kasih.`;
+
+
+        const url =
+            'https://wa.me/' +
+            nomorWa +
+            '?text=' +
+            encodeURIComponent(pesan);
+
+
+        /*
+         * Buka WhatsApp
+         */
+
+        window.open(
+            url,
+            '_blank'
+        );
+
+    });
+
+});
 
     /* =====================================================
        ESCAPE
