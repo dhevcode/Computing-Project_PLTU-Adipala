@@ -1,15 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Sertifikat;
 use App\Models\Mahasiswa;
 use App\Models\PengajuanMagang;
 use App\Models\Universitas;
 use App\Models\Jurusan;
 use App\Models\Divisi;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+
+use App\Mail\SertifikatMail;
 
 class SertifikatController extends Controller
 {
@@ -522,6 +527,30 @@ public function upload(Request $request, $id)
 
     $sertifikat->save();
 
+
+/*
+|--------------------------------------------------------------------------
+| KIRIM EMAIL SERTIFIKAT
+|--------------------------------------------------------------------------
+*/
+
+if ($mahasiswa->email) {
+
+    $filePath = public_path(
+        $sertifikat->file_sertifikat
+    );
+
+    if (file_exists($filePath)) {
+
+        Mail::to($mahasiswa->email)
+            ->send(
+                new SertifikatMail(
+                    $mahasiswa,
+                    $filePath
+                )
+            );
+    }
+}
 
     /*
     |--------------------------------------------------------------------------
