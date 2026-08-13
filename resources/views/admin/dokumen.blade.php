@@ -184,8 +184,8 @@
 
     <div class="content">
 
-    @if(session('success'))
-    <div style="
+        @if(session('success'))
+        <div style="
         margin-bottom: 20px;
         padding: 14px 18px;
         background: #E8F8EF;
@@ -194,13 +194,13 @@
         border-radius: 10px;
         font-size: 12px;
     ">
-        <i class="fa-solid fa-circle-check"></i>
-        {{ session('success') }}
-    </div>
-@endif
+            <i class="fa-solid fa-circle-check"></i>
+            {{ session('success') }}
+        </div>
+        @endif
 
-@if(session('error'))
-    <div style="
+        @if(session('error'))
+        <div style="
         margin-bottom: 20px;
         padding: 14px 18px;
         background: #FDECEC;
@@ -209,10 +209,10 @@
         border-radius: 10px;
         font-size: 12px;
     ">
-        <i class="fa-solid fa-circle-exclamation"></i>
-        {{ session('error') }}
-    </div>
-@endif
+            <i class="fa-solid fa-circle-exclamation"></i>
+            {{ session('error') }}
+        </div>
+        @endif
 
 
         <!-- =================================================
@@ -258,7 +258,7 @@
                     Not verified
                 </div>
 
-               <div class="card-value">
+                <div class="card-value">
                     {{ $notVerified }}
                 </div>
 
@@ -341,10 +341,10 @@
                     </label>
 
                     <input
-    type="text"
-    name="search"
-    value="{{ request('search') }}"
-    placeholder="Nama, NIM, kampus...">
+                        type="text"
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Nama, NIM, kampus...">
 
                 </div>
 
@@ -359,9 +359,9 @@
                     </label>
 
                     <input
-    type="date"
-    name="tanggal_mulai"
-    value="{{ request('tanggal_mulai') }}">
+                        type="date"
+                        name="tanggal_mulai"
+                        value="{{ request('tanggal_mulai') }}">
 
                 </div>
 
@@ -376,9 +376,9 @@
                     </label>
 
                     <input
-    type="date"
-    name="tanggal_selesai"
-    value="{{ request('tanggal_selesai') }}">
+                        type="date"
+                        name="tanggal_selesai"
+                        value="{{ request('tanggal_selesai') }}">
 
                 </div>
 
@@ -394,23 +394,23 @@
 
                     <select name="jurusan_id">
 
-    <option value="">
-        Semua
-    </option>
+                        <option value="">
+                            Semua
+                        </option>
 
-    @foreach($jurusan as $j)
+                        @foreach($jurusan as $j)
 
-        <option
-            value="{{ $j->id_jurusan }}"
-            {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
+                        <option
+                            value="{{ $j->id_jurusan }}"
+                            {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
 
-            {{ $j->nama_jurusan }}
+                            {{ $j->nama_jurusan }}
 
-        </option>
+                        </option>
 
-    @endforeach
+                        @endforeach
 
-</select>
+                    </select>
 
                 </div>
 
@@ -426,23 +426,23 @@
 
                     <select name="universitas_id">
 
-    <option value="">
-        Semua
-    </option>
+                        <option value="">
+                            Semua
+                        </option>
 
-    @foreach($universitas as $u)
+                        @foreach($universitas as $u)
 
-        <option
-            value="{{ $u->id_universitas }}"
-            {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
+                        <option
+                            value="{{ $u->id_universitas }}"
+                            {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
 
-            {{ $u->nama_universitas }}
+                            {{ $u->nama_universitas }}
 
-        </option>
+                        </option>
 
-    @endforeach
+                        @endforeach
 
-</select>
+                    </select>
 
                 </div>
 
@@ -458,23 +458,23 @@
 
                     <select name="divisi_id">
 
-    <option value="">
-        Semua
-    </option>
+                        <option value="">
+                            Semua
+                        </option>
 
-    @foreach($divisi as $d)
+                        @foreach($divisi as $d)
 
-        <option
-            value="{{ $d->id_divisi }}"
-            {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
+                        <option
+                            value="{{ $d->id_divisi }}"
+                            {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
 
-            {{ $d->nama_divisi }}
+                            {{ $d->nama_divisi }}
 
-        </option>
+                        </option>
 
-    @endforeach
+                        @endforeach
 
-</select>
+                    </select>
 
                 </div>
 
@@ -497,23 +497,23 @@
 
                     <select name="status_verifikasi">
 
-    <option value="">
-        Semua
-    </option>
+                        <option value="">
+                            Semua
+                        </option>
 
-    <option
-        value="verified"
-        {{ request('status_verifikasi') == 'verified' ? 'selected' : '' }}>
-        Verified
-    </option>
+                        <option
+                            value="verified"
+                            {{ request('status_verifikasi') == 'verified' ? 'selected' : '' }}>
+                            Verified
+                        </option>
 
-    <option
-        value="not_verified"
-        {{ request('status_verifikasi') == 'not_verified' ? 'selected' : '' }}>
-        Not Verified
-    </option>
+                        <option
+                            value="not_verified"
+                            {{ request('status_verifikasi') == 'not_verified' ? 'selected' : '' }}>
+                            Not Verified
+                        </option>
 
-</select>
+                    </select>
 
                 </div>
 
@@ -529,23 +529,23 @@
 
                     <select name="jenis_kelamin">
 
-    <option value="">
-        Semua
-    </option>
+                        <option value="">
+                            Semua
+                        </option>
 
-    <option
-        value="Laki-laki"
-        {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-        Laki-laki
-    </option>
+                        <option
+                            value="Laki-laki"
+                            {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+                            Laki-laki
+                        </option>
 
-    <option
-        value="Perempuan"
-        {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-        Perempuan
-    </option>
+                        <option
+                            value="Perempuan"
+                            {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+                            Perempuan
+                        </option>
 
-</select>
+                    </select>
 
                 </div>
 
@@ -557,27 +557,27 @@
     gap:10px;
 ">
 
-    <a
-        href="{{ route('admin.dokumen') }}"
-        class="btn-document btn-view"
-        style="height:34px; padding:0 15px;">
+                <a
+                    href="{{ route('admin.dokumen') }}"
+                    class="btn-document btn-view"
+                    style="height:34px; padding:0 15px;">
 
-        Reset Filter
+                    Reset Filter
 
-    </a>
+                </a>
 
-    <button
-        type="submit"
-        class="btn-document btn-upload"
-        style="height:34px; padding:0 15px;">
+                <button
+                    type="submit"
+                    class="btn-document btn-upload"
+                    style="height:34px; padding:0 15px;">
 
-        <i class="fa-solid fa-filter"></i>
+                    <i class="fa-solid fa-filter"></i>
 
-        Terapkan Filter
+                    Terapkan Filter
 
-    </button>
+                </button>
 
-</div>
+            </div>
 
         </form>
 
@@ -634,139 +634,121 @@
 
                     <tbody>
 
-    @forelse($pengajuan as $p)
+                        @forelse($pengajuan as $p)
 
-        <tr>
+                        <tr>
 
-            <td>
-                <strong>
-                    {{ $p->mahasiswa->nama_lengkap }}
-                </strong>
+                            <td>
+                                <strong>
+                                    {{ $p->mahasiswa->nama_lengkap }}
+                                </strong>
 
-                <br>
+                                <br>
 
-                <small style="color:#999;">
-                    {{ $p->mahasiswa->nim }}
-                </small>
-            </td>
+                                <small style="color:#999;">
+                                    {{ $p->mahasiswa->nim }}
+                                </small>
+                            </td>
 
-            <td>
-                {{ $p->mahasiswa->universitas->nama_universitas ?? '-' }}
-            </td>
+                            <td>
+                                {{ $p->mahasiswa->universitas->nama_universitas ?? '-' }}
+                            </td>
 
-            <td>
-                {{ $p->mahasiswa->jurusan->nama_jurusan ?? '-' }}
-            </td>
+                            <td>
+                                {{ $p->mahasiswa->jurusan->nama_jurusan ?? '-' }}
+                            </td>
 
-            <td>
-                {{ $p->divisi->nama_divisi ?? '-' }}
-            </td>
+                            <td>
+                                {{ $p->divisi->nama_divisi ?? '-' }}
+                            </td>
 
-            <td>
-                {{ $p->mahasiswa->email }}
-            </td>
+                            <td>
+                                {{ $p->mahasiswa->email }}
+                            </td>
 
-            <td>
+                            <td>
 
-                @if($p->surat_balasan)
+                                @if($p->surat_balasan)
 
-                    <span class="status status-verified">
-                        Verified
-                    </span>
+                                <span class="status status-verified">
+                                    Verified
+                                </span>
 
-                @else
+                                @else
 
-                    <span class="status status-notverified">
-                        Not verified
-                    </span>
+                                <span class="status status-notverified">
+                                    Not verified
+                                </span>
 
-                @endif
+                                @endif
 
-            </td>
+                            </td>
 
-            <td>
+                            <td>
 
-                <div class="action">
+                                <div class="action">
 
-                    @if($p->surat_balasan)
+                                    @if($p->surat_balasan)
 
-                        <a
-                            href="{{ route('admin.dokumen.lihat', $p->id_pengajuan) }}"
-                            target="_blank"
-                            class="btn-document btn-view">
+                                    <a
+                                        href="{{ route('admin.dokumen.lihat', $p->id_pengajuan) }}"
+                                        target="_blank"
+                                        class="btn-document btn-view">
 
-                            <i class="fa-regular fa-eye"></i>
+                                        <i class="fa-regular fa-eye"></i>
 
-                            Lihat
+                                        Lihat
 
-                        </a>
+                                    </a>
 
-                        <button
-                            type="button"
-                            class="btn-document btn-change"
-                            onclick="document.getElementById('file-{{ $p->id_pengajuan }}').click()">
+                                    <button
+                                        type="button"
+                                        class="btn-document btn-change change-surat-btn"
+                                        data-action="{{ route('admin.dokumen.upload', $p->id_pengajuan) }}"
+                                        data-name="{{ $p->mahasiswa->nama_lengkap }}"
+                                        data-email="{{ $p->mahasiswa->email }}">
 
-                            <i class="fa-solid fa-upload"></i>
+                                        <i class="fa-solid fa-upload"></i>
+                                        Ganti
 
-                            Ganti
+                                    </button>
 
-                        </button>
+                                    @else
 
-                    @else
+                                    <button
+                                        type="button"
+                                        class="btn-document btn-upload upload-surat-btn"
+                                        data-action="{{ route('admin.dokumen.upload', $p->id_pengajuan) }}"
+                                        data-name="{{ $p->mahasiswa->nama_lengkap }}"
+                                        data-email="{{ $p->mahasiswa->email }}">
+                                        <i class="fa-solid fa-upload"></i>
+                                        Upload Surat
+                                    </button>
 
-                        <button
-    type="button"
-    class="btn-document btn-upload upload-surat-btn"
-    data-action="{{ route('admin.dokumen.upload', $p->id_pengajuan) }}"
-    data-name="{{ $p->mahasiswa->nama_lengkap }}"
-    data-email="{{ $p->mahasiswa->email }}">
-    <i class="fa-solid fa-upload"></i>
-    Upload Surat
-</button>
-
-                    @endif
+                                    @endif
 
 
-                    <!-- FORM UPLOAD -->
+                                </div>
 
-                    <!-- <form
-                        action="{{ route('admin.dokumen.upload', $p->id_pengajuan) }}"
-                        method="POST"
-                        enctype="multipart/form-data"
-                        style="display:none;">
+                            </td>
 
-                        @csrf
+                        </tr>
 
-                        <input
-                            type="file"
-                            id="file-{{ $p->id_pengajuan }}"
-                            name="surat_balasan"
-                            accept=".pdf,.doc,.docx"
-                            onchange="this.form.submit()">
+                        @empty
 
-                    </form> -->
+                        <tr>
 
-                </div>
+                            <td colspan="7" style="text-align:center; padding:30px;">
 
-            </td>
+                                Belum ada data mahasiswa.
 
-        </tr>
+                            </td>
 
-    @empty
+                        </tr>
 
-        <tr>
+                        @endforelse
 
-            <td colspan="7" style="text-align:center; padding:30px;">
-
-                Belum ada data mahasiswa.
-
-            </td>
-
-        </tr>
-
-    @endforelse
-
-</tbody>
+                    </tbody>
 
                 </table>
 
@@ -777,51 +759,70 @@
     </div>
 
     <!-- =====================================================
-     MODAL UPLOAD SURAT BALASAN
-===================================================== -->
+     MODAL UPLOAD / GANTI SURAT BALASAN
+====================================================== -->
 
-    <div class="modal-overlay" id="uploadModal">
+<div class="modal-overlay" id="uploadModal">
+
     <div class="upload-modal">
 
         <div class="modal-header">
-            <h3>Upload Surat Balasan</h3>
 
-            <button type="button"
-                    class="modal-close"
-                    onclick="closeUploadModal()">
+            <h3 id="uploadModalTitle">
+                Upload Surat Balasan
+            </h3>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeUploadModal()">
+
                 &times;
+
             </button>
+
         </div>
 
-        <form id="uploadForm"
-              method="POST"
-              enctype="multipart/form-data">
+
+        <form
+            id="uploadForm"
+            method="POST"
+            enctype="multipart/form-data">
 
             @csrf
 
             <div class="modal-body">
 
+                <!-- INFO MAHASISWA -->
+
                 <div class="student-info">
+
                     <div>
                         <strong id="modalStudentName"></strong>
                     </div>
 
                     <div id="modalStudentEmail"></div>
+
                 </div>
+
+
+                <!-- UPLOAD FILE -->
 
                 <div class="upload-area">
 
-                    <label for="suratBalasanInput">
-                        Pilih Surat Balasan
+                    <label for="suratBalasan">
+                        <span id="uploadLabel">
+                            Pilih Surat Balasan
+                        </span>
                     </label>
 
-                     <input
-            type="file"
-            id="suratBalasan"
-            name="surat_balasan"
-            class="modal-file"
-            accept=".pdf,application/pdf"
-            required>
+                    <input
+                        type="file"
+                        id="suratBalasan"
+                        name="surat_balasan"
+                        class="modal-file"
+                        accept=".pdf,application/pdf"
+                        required>
 
                     <small>
                         Format PDF, maksimal 4 MB.
@@ -831,18 +832,30 @@
 
             </div>
 
+
+            <!-- FOOTER -->
+
             <div class="modal-footer">
 
                 <button
                     type="button"
                     onclick="closeUploadModal()">
+
                     Batal
+
                 </button>
+
 
                 <button
                     type="submit"
                     id="submitUpload">
-                    Simpan & Kirim
+
+                    <i class="fa-regular fa-paper-plane"></i>
+
+                    <span id="submitUploadText">
+                        Simpan & Kirim
+                    </span>
+
                 </button>
 
             </div>
@@ -850,6 +863,7 @@
         </form>
 
     </div>
+
 </div>
 
 
@@ -858,97 +872,201 @@
     ====================================================== -->
 
     <script>
-
-    /* =====================================================
+        /* =====================================================
        SIDEBAR
     ===================================================== */
 
-    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
 
-        const menuBtn = document.getElementById('menuBtn');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
+            const menuBtn = document.getElementById('menuBtn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
 
-        if (menuBtn && sidebar && overlay) {
+            if (menuBtn && sidebar && overlay) {
 
-            /* BUKA / TUTUP SIDEBAR */
-            menuBtn.addEventListener('click', function () {
+                /* BUKA / TUTUP SIDEBAR */
+                menuBtn.addEventListener('click', function() {
 
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
+                    sidebar.classList.toggle('active');
+                    overlay.classList.toggle('active');
 
-            });
-
-
-            /* KLIK AREA LUAR SIDEBAR */
-            overlay.addEventListener('click', function () {
-
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-
-            });
-
-        }
-
-    });
+                });
 
 
+                /* KLIK AREA LUAR SIDEBAR */
+                overlay.addEventListener('click', function() {
 
-    /* =====================================================
-       MODAL UPLOAD SURAT BALASAN
-    ===================================================== */
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
 
-    /* =====================================================
-   MODAL UPLOAD SURAT BALASAN
-===================================================== */
+                });
 
-const uploadModal = document.getElementById('uploadModal');
-const uploadButtons = document.querySelectorAll('.upload-surat-btn');
+            }
 
-const modalStudentName = document.getElementById('modalStudentName');
-const modalStudentEmail = document.getElementById('modalStudentEmail');
+        });
 
-const suratBalasan = document.getElementById('suratBalasan');
-const uploadForm = document.getElementById('uploadForm');
-const submitUpload = document.getElementById('submitUpload');
 
 
 /* =====================================================
-   BUKA MODAL
+   MODAL UPLOAD / GANTI SURAT BALASAN
+===================================================== */
+
+const uploadModal =
+    document.getElementById('uploadModal');
+
+const uploadButtons =
+    document.querySelectorAll('.upload-surat-btn');
+
+const changeButtons =
+    document.querySelectorAll('.change-surat-btn');
+
+const modalStudentName =
+    document.getElementById('modalStudentName');
+
+const modalStudentEmail =
+    document.getElementById('modalStudentEmail');
+
+const suratBalasan =
+    document.getElementById('suratBalasan');
+
+const uploadForm =
+    document.getElementById('uploadForm');
+
+const submitUpload =
+    document.getElementById('submitUpload');
+
+const uploadModalTitle =
+    document.getElementById('uploadModalTitle');
+
+const uploadLabel =
+    document.getElementById('uploadLabel');
+
+const submitUploadText =
+    document.getElementById('submitUploadText');
+
+
+/* =====================================================
+   BUKA MODAL - UPLOAD BARU
 ===================================================== */
 
 uploadButtons.forEach(function (button) {
 
     button.addEventListener('click', function () {
 
-        const action = this.getAttribute('data-action');
-        const nama = this.getAttribute('data-name');
-        const email = this.getAttribute('data-email');
+        const action =
+            this.getAttribute('data-action');
 
-        // Set action form
+        const nama =
+            this.getAttribute('data-name');
+
+        const email =
+            this.getAttribute('data-email');
+
+
+        /* ACTION FORM */
+
         uploadForm.action = action;
 
-        // Set data mahasiswa
-        modalStudentName.textContent = nama || '';
-        modalStudentEmail.textContent = email || '';
 
-        // Reset file
+        /* MODE UPLOAD */
+
+        uploadModalTitle.textContent =
+            'Upload Surat Balasan';
+
+        uploadLabel.textContent =
+            'Pilih Surat Balasan';
+
+        submitUploadText.textContent =
+            'Simpan & Kirim';
+
+
+        /* DATA MAHASISWA */
+
+        modalStudentName.textContent =
+            nama || '';
+
+        modalStudentEmail.textContent =
+            email || '';
+
+
+        /* RESET FILE */
+
         suratBalasan.value = '';
 
-        // Reset tombol
         submitUpload.disabled = false;
-        submitUpload.innerHTML =
-            '<i class="fa-regular fa-paper-plane"></i> Simpan & Kirim';
 
-        // Buka modal
+
+        /* BUKA MODAL */
+
         uploadModal.classList.add('active');
+
     });
 
 });
 
 
 /* =====================================================
-   FUNGSI TUTUP MODAL
+   BUKA MODAL - GANTI SURAT
+===================================================== */
+
+changeButtons.forEach(function (button) {
+
+    button.addEventListener('click', function () {
+
+        const action =
+            this.getAttribute('data-action');
+
+        const nama =
+            this.getAttribute('data-name');
+
+        const email =
+            this.getAttribute('data-email');
+
+
+        /* ACTION FORM */
+
+        uploadForm.action = action;
+
+
+        /* MODE GANTI */
+
+        uploadModalTitle.textContent =
+            'Ganti Surat Balasan';
+
+        uploadLabel.textContent =
+            'Pilih Surat Balasan Baru';
+
+        submitUploadText.textContent =
+            'Ganti & Kirim';
+
+
+        /* DATA MAHASISWA */
+
+        modalStudentName.textContent =
+            nama || '';
+
+        modalStudentEmail.textContent =
+            email || '';
+
+
+        /* RESET FILE */
+
+        suratBalasan.value = '';
+
+        submitUpload.disabled = false;
+
+
+        /* BUKA MODAL */
+
+        uploadModal.classList.add('active');
+
+    });
+
+});
+
+
+/* =====================================================
+   TUTUP MODAL
 ===================================================== */
 
 function closeUploadModal() {
@@ -958,6 +1076,7 @@ function closeUploadModal() {
     if (suratBalasan) {
         suratBalasan.value = '';
     }
+
 }
 
 
@@ -968,7 +1087,9 @@ function closeUploadModal() {
 uploadModal.addEventListener('click', function (event) {
 
     if (event.target === uploadModal) {
+
         closeUploadModal();
+
     }
 
 });
@@ -984,19 +1105,23 @@ document.addEventListener('keydown', function (event) {
         event.key === 'Escape' &&
         uploadModal.classList.contains('active')
     ) {
+
         closeUploadModal();
+
     }
 
 });
 
 
 /* =====================================================
-   SUBMIT UPLOAD
+   SUBMIT UPLOAD / GANTI
 ===================================================== */
 
 uploadForm.addEventListener('submit', function (event) {
 
-    const file = suratBalasan.files[0];
+    const file =
+        suratBalasan.files[0];
+
 
     /* FILE BELUM DIPILIH */
 
@@ -1009,6 +1134,7 @@ uploadForm.addEventListener('submit', function (event) {
         );
 
         return;
+
     }
 
 
@@ -1028,12 +1154,15 @@ uploadForm.addEventListener('submit', function (event) {
         suratBalasan.value = '';
 
         return;
+
     }
 
 
     /* MAKSIMAL 4 MB */
 
-    const maxSize = 4 * 1024 * 1024;
+    const maxSize =
+        4 * 1024 * 1024;
+
 
     if (file.size > maxSize) {
 
@@ -1046,6 +1175,34 @@ uploadForm.addEventListener('submit', function (event) {
         suratBalasan.value = '';
 
         return;
+
+    }
+
+
+    /* =================================================
+       KONFIRMASI GANTI
+    ================================================= */
+
+    const isChange =
+        uploadModalTitle.textContent ===
+        'Ganti Surat Balasan';
+
+
+    if (isChange) {
+
+        const confirmChange = confirm(
+            'Yakin ingin mengganti surat balasan yang sudah ada dengan file baru?'
+        );
+
+
+        if (!confirmChange) {
+
+            event.preventDefault();
+
+            return;
+
+        }
+
     }
 
 
@@ -1053,55 +1210,125 @@ uploadForm.addEventListener('submit', function (event) {
 
     submitUpload.disabled = true;
 
-    submitUpload.innerHTML =
-        '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
+    submitUploadText.textContent =
+        isChange
+            ? 'Mengganti...'
+            : 'Mengirim...';
 
-    // JANGAN preventDefault()
-    // biarkan form dikirim ke Laravel
 });
 
 
-    /* =====================================================
-       TOMBOL LIHAT SURAT
-    ===================================================== */
+        /* =====================================================
+           SUBMIT UPLOAD
+        ===================================================== */
 
-    const lihatButtons =
-        document.querySelectorAll('.btn-lihat-surat');
+        uploadForm.addEventListener('submit', function(event) {
 
+            const file = suratBalasan.files[0];
 
-    lihatButtons.forEach(function (button) {
-
-        button.addEventListener('click', function () {
-
-            const file =
-                this.getAttribute('data-file');
-
-
-            /* FILE BELUM ADA */
+            /* FILE BELUM DIPILIH */
 
             if (!file) {
 
+                event.preventDefault();
+
                 alert(
-                    'Dokumen surat belum tersedia.'
+                    'Silakan pilih berkas surat balasan terlebih dahulu.'
                 );
 
                 return;
-
             }
 
 
-            /* BUKA FILE */
+            /* HARUS PDF */
 
-            window.open(
-                file,
-                '_blank'
-            );
+            if (
+                file.type !== 'application/pdf' &&
+                !file.name.toLowerCase().endsWith('.pdf')
+            ) {
 
+                event.preventDefault();
+
+                alert(
+                    'Berkas surat balasan harus berupa PDF.'
+                );
+
+                suratBalasan.value = '';
+
+                return;
+            }
+
+
+            /* MAKSIMAL 4 MB */
+
+            const maxSize = 4 * 1024 * 1024;
+
+            if (file.size > maxSize) {
+
+                event.preventDefault();
+
+                alert(
+                    'Ukuran berkas maksimal 4 MB.'
+                );
+
+                suratBalasan.value = '';
+
+                return;
+            }
+
+
+            /* FILE VALID */
+
+            submitUpload.disabled = true;
+
+            submitUpload.innerHTML =
+                '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
+
+            // JANGAN preventDefault()
+            // biarkan form dikirim ke Laravel
         });
 
-    });
 
-</script>
+        /* =====================================================
+           TOMBOL LIHAT SURAT
+        ===================================================== */
+
+        const lihatButtons =
+            document.querySelectorAll('.btn-lihat-surat');
+
+
+        lihatButtons.forEach(function(button) {
+
+            button.addEventListener('click', function() {
+
+                const file =
+                    this.getAttribute('data-file');
+
+
+                /* FILE BELUM ADA */
+
+                if (!file) {
+
+                    alert(
+                        'Dokumen surat belum tersedia.'
+                    );
+
+                    return;
+
+                }
+
+
+                /* BUKA FILE */
+
+                window.open(
+                    file,
+                    '_blank'
+                );
+
+            });
+
+        });
+    </script>
 
 
 </body>
