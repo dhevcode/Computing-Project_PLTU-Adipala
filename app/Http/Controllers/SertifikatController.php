@@ -9,6 +9,8 @@ use App\Models\Universitas;
 use App\Models\Jurusan;
 use App\Models\Divisi;
 
+use Carbon\Carbon;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -31,6 +33,23 @@ class SertifikatController extends Controller
             'universitas',
             'jurusan'
         ]);
+        /*
+|--------------------------------------------------------------------------
+| HANYA MAHASISWA YANG SUDAH SELESAI MAGANG
+|--------------------------------------------------------------------------
+|
+| Mahasiswa hanya ditampilkan jika tanggal selesai magangnya
+| sudah lewat atau sama dengan hari ini.
+|
+*/
+
+$query->whereHas('pengajuanMagang', function ($q) {
+    $q->whereDate(
+        'tanggal_selesai',
+        '<=',
+        Carbon::today()
+    );
+});
 
         /*
         |--------------------------------------------------------------------------

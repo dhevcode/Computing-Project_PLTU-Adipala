@@ -1,391 +1,337 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - Sistem Magang</title>
 
-    <!-- Font & FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/admin/dashboard.css') }}">
 </head>
-
 <body>
 
-    <header class="header">
-
-        <div class="header-left">
-
-            <div class="logo-box">
-                <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
-            </div>
-
-            <div class="header-title">
-                <h2>Monitoring Mahasiswa PKL</h2>
-                <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
-            </div>
-
+<header class="header">
+    <div class="header-left">
+        <div class="logo-box">
+            <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
         </div>
 
-        <!-- HEADER RIGHT -->
-        <div class="header-right">
+        <div class="header-title">
+            <h2>Monitoring Mahasiswa PKL</h2>
+            <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
+        </div>
+    </div>
 
-            <!-- Hamburger -->
-            <button type="button" class="menu-btn" id="menuBtn" title="Menu">
-                <i class="fa-solid fa-bars"></i>
+    <div class="header-right">
+        <button type="button" class="menu-btn" id="menuBtn">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="logout">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </button>
+        </form>
+    </div>
+</header>
 
-            <!-- Logout -->
-            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                @csrf
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-                <button type="submit" class="logout" title="Logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </button>
-            </form>
+<div class="sidebar" id="sidebar">
+    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu active">
+        <i class="fa-regular fa-chart-bar"></i>
+        <span>Dashboard</span>
+    </a>
 
+    <a href="{{ route('admin.data') }}" class="sidebar-menu">
+        <i class="fa-regular fa-user"></i>
+        <span>Data Mahasiswa</span>
+    </a>
+
+    <a href="{{ route('admin.dokumen') }}" class="sidebar-menu">
+        <i class="fa-regular fa-file-lines"></i>
+        <span>Dokumen Verification</span>
+    </a>
+
+    <a href="{{ route('admin.sertifikat') }}" class="sidebar-menu">
+        <i class="fa-regular fa-file"></i>
+        <span>Sertifikat</span>
+    </a>
+</div>
+
+<div class="content">
+
+    <!-- Header Dashboard -->
+    <div class="page-header-card">
+        <div class="page-header-content">
+            <div class="page-icon">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+
+            <div>
+                <h1>Dashboard Admin</h1>
+                <p>Ringkasan statistik mahasiswa PKL, status magang, divisi, dan sebaran universitas.</p>
+            </div>
+        </div>
+    </div>
+
+    @if(session('success'))
+    <div class="alert-success">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+    @endif
+
+    <!-- Statistik -->
+    <div class="cards">
+
+        <div class="card green">
+            <div class="icon-circle">
+                <i class="fa-regular fa-calendar"></i>
+            </div>
+
+            <div class="card-title">Magang Hari Ini</div>
+            <div class="card-value">{{ str_pad($magangHariIni,2,'0',STR_PAD_LEFT) }}</div>
+            <div class="card-desc">Mahasiswa aktif saat ini</div>
         </div>
 
-    </header>
+        <div class="card">
+            <div class="icon-circle">
+                <i class="fa-solid fa-users"></i>
+            </div>
 
-    <!-- ================= SIDEBAR ================= -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+            <div class="card-title">Total Mahasiswa</div>
+            <div class="card-value">{{ str_pad($totalMahasiswa,2,'0',STR_PAD_LEFT) }}</div>
+            <div class="card-desc">{{ $belumSelesai }} mahasiswa belum selesai</div>
+        </div>
 
-    <div class="sidebar" id="sidebar">
+        <div class="card">
+            <div class="icon-circle">
+                <i class="fa-regular fa-clock"></i>
+            </div>
 
-        <!-- Dashboard -->
-        <a href="{{ route('admin.dashboard') }}"
-            class="sidebar-menu {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            <div class="card-title">Akan Datang</div>
+            <div class="card-value">{{ str_pad($akanDatang,2,'0',STR_PAD_LEFT) }}</div>
+            <div class="card-desc">Belum memulai magang</div>
+        </div>
 
-            <i class="fa-regular fa-chart-bar"></i>
+        <div class="card">
+            <div class="icon-circle">
+                <i class="fa-solid fa-building-user"></i>
+            </div>
 
-            <span>Dashboard</span>
-
-        </a>
-
-
-        <!-- Data Mahasiswa -->
-        <a href="{{ route('admin.data') }}"
-            class="sidebar-menu">
-
-            <i class="fa-regular fa-user"></i>
-
-            <span>Data Mahasiswa</span>
-
-        </a>
-
-
-        <!-- Dokumen Verification -->
-        <a href="{{ route('admin.dokumen') }}"
-            class="sidebar-menu">
-
-            <i class="fa-regular fa-file-lines"></i>
-
-            <span>Dokumen Verification</span>
-
-        </a>
-
-
-        <!-- Sertifikat -->
-        <a href="{{ route('admin.sertifikat') }}"
-            class="sidebar-menu">
-
-            <i class="fa-regular fa-file"></i>
-
-            <span>Sertifikat</span>
-
-        </a>
-
+            <div class="card-title">Divisi Terlibat</div>
+            <div class="card-value">{{ str_pad($divisiTerlibat,2,'0',STR_PAD_LEFT) }}</div>
+            <div class="card-desc">Divisi penempatan aktif</div>
+        </div>
 
     </div>
 
-    <div class="content">
+    <!-- Charts -->
+    <div class="chart-grid">
 
-        @if(session('success'))
-        <div style="background: #e6f4f4; color: #0A5F63; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #bfe3e3; font-size: 13px; font-weight: 600;">
-            <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
-        </div>
-        @endif
-
-        <!-- CARDS STATISTIK -->
-        <div class="cards">
-            <div class="card green">
-                <div class="icon-circle"><i class="fa-regular fa-calendar"></i></div>
-                <div class="card-title">Magang Hari Ini</div>
-                <div class="card-value">{{ str_pad($magangHariIni, 2, '0', STR_PAD_LEFT) }}</div>
-                <div class="card-desc">Mahasiswa aktif saat ini</div>
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Jumlah Mahasiswa per Divisi</h3>
+                <p>Total mahasiswa magang aktif pada setiap divisi penempatan.</p>
             </div>
 
-            <div class="card">
-                <div class="icon-circle"><i class="fa-solid fa-users"></i></div>
-                <div class="card-title">Total Mahasiswa</div>
-                <div class="card-value">{{ str_pad($totalMahasiswa, 2, '0', STR_PAD_LEFT) }}</div>
-                <div class="card-desc">{{ $belumSelesai }} belum selesai</div>
-            </div>
-
-            <div class="card">
-                <div class="icon-circle"><i class="fa-regular fa-clock"></i></div>
-                <div class="card-title">Akan Datang</div>
-                <div class="card-value">{{ str_pad($akanDatang, 2, '0', STR_PAD_LEFT) }}</div>
-                <div class="card-desc">Belum mulai magang</div>
-            </div>
-
-            <div class="card">
-                <div class="icon-circle"><i class="fa-solid fa-briefcase"></i></div>
-                <div class="card-title">Divisi Terlibat</div>
-                <div class="card-value">{{ str_pad($divisiTerlibat, 2, '0', STR_PAD_LEFT) }}</div>
-                <div class="card-desc">Penempatan aktif</div>
+            <div class="chart-body">
+                <canvas
+                    id="bidangChart"
+                    data-labels='@json($bidangLabels)'
+                    data-values='@json($bidangData)'>
+                </canvas>
             </div>
         </div>
 
-        <!-- CHARTS SECTION -->
-        <div class="chart-grid">
-
-            <!-- Grafik Batang Divisi -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3>Jumlah Mahasiswa per Divisi</h3>
-                    <p>Total mahasiswa magang aktif per divisi penempatan</p>
-                </div>
-                <div class="chart-body">
-                    <canvas
-                        id="bidangChart"
-                        data-labels='@json($bidangLabels)'
-                        data-values='@json($bidangData)'>
-                    </canvas>
-                </div>
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Status Magang</h3>
+                <p>Proporsi mahasiswa berdasarkan status magang.</p>
             </div>
 
-            <!-- Grafik Donut Status Magang -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3>Status Magang</h3>
-                    <p>Proporsi status magang mahasiswa saat ini</p>
-                </div>
-                <div class="chart-body">
-                    <canvas
-                        id="statusChart"
-                        data-aktif="{{ $statusAktif }}"
-                        data-akan-datang="{{ $statusAkanDatang }}"
-                        data-selesai="{{ $statusSelesai }}"></canvas>
-                </div>
-                <div class="doughnut-legend">
-                    <div class="legend-item">
-                        <span class="legend-dot" style="background-color: #0A5F63;"></span> Aktif
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-dot" style="background-color: #11B5B3;"></span> Akan Datang
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-dot" style="background-color: #062E43;"></span> Selesai
-                    </div>
-                </div>
+            <div class="chart-body">
+                <canvas
+                    id="statusChart"
+                    data-aktif="{{ $statusAktif }}"
+                    data-akan-datang="{{ $statusAkanDatang }}"
+                    data-selesai="{{ $statusSelesai }}">
+                </canvas>
             </div>
 
-            <!-- Grafik Horizontal Sebaran Universitas -->
-            <div class="chart-card full-width">
-                <div class="chart-header">
-                    <h3>Sebaran Mahasiswa per Universitas</h3>
-                    <p>Data institusi pendidikan mahasiswa magang</p>
+            <div class="doughnut-legend">
+                <div class="legend-item">
+                    <span class="legend-dot active"></span>Aktif
                 </div>
-                <div class="chart-body" style="min-height: 300px;">
-                    <canvas
-                        id="universitasChart"
-                        data-labels='@json($univLabels)'
-                        data-values='@json($univData)'></canvas>
+
+                <div class="legend-item">
+                    <span class="legend-dot coming"></span>Akan Datang
+                </div>
+
+                <div class="legend-item">
+                    <span class="legend-dot done"></span>Selesai
                 </div>
             </div>
         </div>
 
-        <div class="section-space"></div>
+        <div class="chart-card full-width">
+            <div class="chart-header">
+                <h3>Sebaran Mahasiswa per Universitas</h3>
+                <p>Jumlah mahasiswa PKL berdasarkan institusi pendidikan.</p>
+            </div>
 
-        
+            <div class="chart-body large">
+                <canvas
+                    id="universitasChart"
+                    data-labels='@json($univLabels)'
+                    data-values='@json($univData)'>
+                </canvas>
+            </div>
+        </div>
+
     </div>
+        </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
 
-    <!-- Chart.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    /* ================= SIDEBAR ================= */
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
+    menuBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    });
 
-            // 1. CHART BIDANG / DIVISI
-            const ctxBidang = document.getElementById('bidangChart');
-            if (ctxBidang) {
-                const bidangLabels = ctxBidang.dataset.labels ?
-                    JSON.parse(ctxBidang.dataset.labels) : [];
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+    });
 
-                const bidangData = ctxBidang.dataset.values ?
-                    JSON.parse(ctxBidang.dataset.values) : [];
+    /* ================= CHART DIVISI ================= */
+    const bidangCanvas = document.getElementById('bidangChart');
 
-                new Chart(ctxBidang, {
-                    type: 'bar',
-                    data: {
-                        labels: bidangLabels,
-                        datasets: [{
-                            data: bidangData,
-                            backgroundColor: '#2B7C82',
-                            borderRadius: 6,
-                            maxBarThickness: 50
-                        }]
+    if (bidangCanvas) {
+        const labels = JSON.parse(bidangCanvas.dataset.labels || '[]');
+        const values = JSON.parse(bidangCanvas.dataset.values || '[]');
+
+        new Chart(bidangCanvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: '#2B7C82',
+                    borderRadius: 8,
+                    maxBarThickness: 48
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0, stepSize: 1 },
+                        grid: { color: '#E8ECEF' }
                     },
-                    options: {
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        maintainAspectRatio: false,
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    precision: 0,
-                                    stepSize: 1
-                                },
-                                grid: {
-                                    color: '#EAEAEA'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // 2. CHART STATUS MAGANG
-            const ctxStatus = document.getElementById('statusChart');
-            if (ctxStatus) {
-                const statusAktif = JSON.parse(ctxStatus.dataset.aktif || '0');
-                const statusAkanDatang = JSON.parse(ctxStatus.dataset.akanDatang || '0');
-                const statusSelesai = JSON.parse(ctxStatus.dataset.selesai || '0');
-
-                new Chart(ctxStatus, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Aktif', 'Akan Datang', 'Selesai'],
-                        datasets: [{
-                            data: [statusAktif, statusAkanDatang, statusSelesai],
-                            backgroundColor: ['#0A5F63', '#11B5B3', '#062E43'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '68%',
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
-                });
-            }
-
-            // 3. CHART SEBARAN UNIVERSITAS
-            const ctxUniv = document.getElementById('universitasChart');
-            if (ctxUniv) {
-                const univLabels = JSON.parse(ctxUniv.dataset.labels || '[]');
-                const univData = JSON.parse(ctxUniv.dataset.values || '[]');
-
-                new Chart(ctxUniv, {
-                    type: 'bar',
-                    data: {
-                        labels: univLabels,
-                        datasets: [{
-                            data: univData,
-                            backgroundColor: (context) => {
-                                const chart = context.chart;
-                                const {
-                                    ctx,
-                                    chartArea
-                                } = chart;
-                                if (!chartArea) return '#0E9C9A';
-
-                                const gradient = ctx.createLinearGradient(0, 0, chartArea.right, 0);
-                                gradient.addColorStop(0, '#139D99');
-                                gradient.addColorStop(1, '#0A5F63');
-                                return gradient;
-                            },
-                            borderRadius: 4,
-                            maxBarThickness: 30
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        maintainAspectRatio: false,
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            x: {
-                                beginAtZero: true,
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    precision: 0,
-                                    stepSize: 1,
-                                    color: '#666'
-                                }
-                            },
-                            y: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    color: '#555',
-                                    font: {
-                                        size: 12,
-                                        weight: '500'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
+                    x: { grid: { display: false } }
+                }
             }
         });
+    }
 
-        document.addEventListener('DOMContentLoaded', function() {
+    /* ================= CHART STATUS ================= */
+    const statusCanvas = document.getElementById('statusChart');
 
-            const menuBtn = document.getElementById('menuBtn');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-
-            // Buka / tutup sidebar
-            menuBtn.addEventListener('click', function() {
-
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-
-            });
-
-
-            // Tutup sidebar ketika klik area luar
-            overlay.addEventListener('click', function() {
-
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-
-            });
-
+    if (statusCanvas) {
+        new Chart(statusCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: ['Aktif','Akan Datang','Selesai'],
+                datasets: [{
+                    data: [
+                        Number(statusCanvas.dataset.aktif),
+                        Number(statusCanvas.dataset.akanDatang),
+                        Number(statusCanvas.dataset.selesai)
+                    ],
+                    backgroundColor: ['#0A5F63','#11B5B3','#062E43'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: { legend: { display: false } }
+            }
         });
-    </script>
+    }
+
+    /* ================= CHART UNIVERSITAS ================= */
+    const univCanvas = document.getElementById('universitasChart');
+
+    if (univCanvas) {
+        const labels = JSON.parse(univCanvas.dataset.labels || '[]');
+        const values = JSON.parse(univCanvas.dataset.values || '[]');
+
+        new Chart(univCanvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    borderRadius: 6,
+                    maxBarThickness: 26,
+                    backgroundColor: ctx => {
+                        const chart = ctx.chart;
+                        const { ctx: c, chartArea } = chart;
+
+                        if (!chartArea) return '#0A5F63';
+
+                        const gradient = c.createLinearGradient(0,0,chartArea.right,0);
+                        gradient.addColorStop(0,'#18A7A5');
+                        gradient.addColorStop(1,'#0A5F63');
+
+                        return gradient;
+                    }
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { precision: 0, stepSize: 1 },
+                        grid: { display: false }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: {
+                            color: '#555',
+                            font: { size: 12, weight: '500' }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+});
+</script>
+
 </body>
-
-
 </html>

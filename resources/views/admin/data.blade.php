@@ -9,14 +9,13 @@
 
     <!-- FONT -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- FONT AWESOME -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/admin/data.css') }}">
-    
 </head>
 
 <body>
@@ -24,9 +23,7 @@
     <!-- ================= HEADER ================= -->
 
     <header class="header">
-
         <div class="header-left">
-
             <div class="logo-box">
                 <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
             </div>
@@ -35,25 +32,21 @@
                 <h2>Monitoring Mahasiswa PKL</h2>
                 <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
             </div>
-
         </div>
 
         <div class="header-right">
-
             <button type="button" class="menu-btn" id="menuBtn" title="Menu">
                 <i class="fa-solid fa-bars"></i>
             </button>
 
-            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+            <form action="{{ route('logout') }}" method="POST">
                 @csrf
 
                 <button type="submit" class="logout" title="Logout">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 </button>
             </form>
-
         </div>
-
     </header>
 
 
@@ -61,68 +54,45 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <div class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar">
 
-        <!-- Dashboard -->
         <a href="{{ route('admin.dashboard') }}"
             class="sidebar-menu {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-
             <i class="fa-regular fa-chart-bar"></i>
-
             <span>Dashboard</span>
-
         </a>
 
-
-        <!-- Data Mahasiswa -->
         <a href="{{ route('admin.data') }}"
-            class="sidebar-menu">
-
+            class="sidebar-menu {{ request()->routeIs('admin.data') ? 'active' : '' }}">
             <i class="fa-regular fa-user"></i>
-
             <span>Data Mahasiswa</span>
-
         </a>
 
-
-        <!-- Dokumen Verification -->
         <a href="{{ route('admin.dokumen') }}"
-            class="sidebar-menu">
-
+            class="sidebar-menu {{ request()->routeIs('admin.dokumen') ? 'active' : '' }}">
             <i class="fa-regular fa-file-lines"></i>
-
             <span>Dokumen Verification</span>
-
         </a>
 
-
-        <!-- Sertifikat -->
         <a href="{{ route('admin.sertifikat') }}"
-            class="sidebar-menu">
-
+            class="sidebar-menu {{ request()->routeIs('admin.sertifikat') ? 'active' : '' }}">
             <i class="fa-regular fa-file"></i>
-
             <span>Sertifikat</span>
-
         </a>
-    </div>
+
+    </aside>
 
 
     <!-- ================= CONTENT ================= -->
 
-    <div class="content">
+    <main class="content">
 
         <!-- PAGE TITLE -->
 
-        <div class="page-title">
-
+        <section class="page-title">
             <h1>Data Mahasiswa</h1>
-
-            <p>
-                Kelola, cari, dan pantau seluruh data mahasiswa magang.
-            </p>
-
-        </div>
+            <p>Kelola, cari, dan pantau seluruh data mahasiswa magang.</p>
+        </section>
 
 
         <!-- ================= FILTER ================= -->
@@ -132,23 +102,14 @@
             class="filter-section">
 
             <div class="filter-header">
-
                 <div class="filter-icon">
                     <i class="fa-solid fa-filter"></i>
                 </div>
 
                 <div>
-
-                    <h3>
-                        Filter Data Mahasiswa
-                    </h3>
-
-                    <p>
-                        Gunakan filter untuk mencari data mahasiswa berdasarkan kriteria tertentu.
-                    </p>
-
+                    <h3>Filter Data Mahasiswa</h3>
+                    <p>Gunakan filter untuk mencari data mahasiswa berdasarkan kriteria tertentu.</p>
                 </div>
-
             </div>
 
 
@@ -157,263 +118,175 @@
                 <!-- PENCARIAN -->
 
                 <div class="input-group">
-
-                    <label>Pencarian</label>
-
+                    <label for="search">Pencarian</label>
                     <input
                         type="text"
+                        id="search"
                         name="search"
                         value="{{ request('search') }}"
                         placeholder="Nama / NIM...">
-
                 </div>
 
 
                 <!-- JURUSAN -->
 
                 <div class="input-group">
+                    <label for="jurusan_id">Jurusan</label>
 
-                    <label>Jurusan</label>
-
-                    <select name="jurusan_id">
-
-                        <option value="">
-                            Semua Jurusan
-                        </option>
+                    <select name="jurusan_id" id="jurusan_id">
+                        <option value="">Semua Jurusan</option>
 
                         @foreach($listJurusan as $j)
-
-                            <option
-                                value="{{ $j->id_jurusan }}"
+                            <option value="{{ $j->id_jurusan }}"
                                 {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
-
                                 {{ $j->nama_jurusan }}
-
                             </option>
-
                         @endforeach
-
                     </select>
-
                 </div>
 
 
                 <!-- UNIVERSITAS -->
 
                 <div class="input-group">
+                    <label for="universitas_id">Universitas</label>
 
-                    <label>Universitas</label>
-
-                    <select name="universitas_id">
-
-                        <option value="">
-                            Semua Universitas
-                        </option>
+                    <select name="universitas_id" id="universitas_id">
+                        <option value="">Semua Universitas</option>
 
                         @foreach($listUniversitas as $u)
-
-                            <option
-                                value="{{ $u->id_universitas }}"
+                            <option value="{{ $u->id_universitas }}"
                                 {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
-
                                 {{ $u->nama_universitas }}
-
                             </option>
-
                         @endforeach
-
                     </select>
-
                 </div>
 
 
                 <!-- DIVISI -->
 
                 <div class="input-group">
+                    <label for="divisi_id">Divisi</label>
 
-                    <label>Divisi</label>
-
-                    <select name="divisi_id">
-
-                        <option value="">
-                            Semua Divisi
-                        </option>
+                    <select name="divisi_id" id="divisi_id">
+                        <option value="">Semua Divisi</option>
 
                         @foreach($listDivisi as $d)
-
-                            <option
-                                value="{{ $d->id_divisi }}"
+                            <option value="{{ $d->id_divisi }}"
                                 {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
-
                                 {{ $d->nama_divisi }}
-
                             </option>
-
                         @endforeach
-
                     </select>
-
                 </div>
 
 
                 <!-- JENIS KELAMIN -->
 
                 <div class="input-group">
+                    <label for="jenis_kelamin">Jenis Kelamin</label>
 
-                    <label>Jenis Kelamin</label>
+                    <select name="jenis_kelamin" id="jenis_kelamin">
+                        <option value="">Semua Jenis Kelamin</option>
 
-                    <select name="jenis_kelamin">
-
-                        <option value="">
-                            Semua Jenis Kelamin
-                        </option>
-
-                        <option
-                            value="Laki-laki"
+                        <option value="Laki-laki"
                             {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-
                             Laki-laki
-
                         </option>
 
-                        <option
-                            value="Perempuan"
+                        <option value="Perempuan"
                             {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-
                             Perempuan
-
                         </option>
-
                     </select>
-
                 </div>
 
 
                 <!-- TANGGAL MULAI -->
 
                 <div class="input-group">
-
-                    <label>Tanggal Masuk</label>
+                    <label for="tanggal_mulai">Tanggal Masuk</label>
 
                     <input
                         type="date"
+                        id="tanggal_mulai"
                         name="tanggal_mulai"
                         value="{{ request('tanggal_mulai') }}">
-
                 </div>
 
 
                 <!-- TANGGAL SELESAI -->
 
                 <div class="input-group">
-
-                    <label>Tanggal Selesai</label>
+                    <label for="tanggal_selesai">Tanggal Selesai</label>
 
                     <input
                         type="date"
+                        id="tanggal_selesai"
                         name="tanggal_selesai"
                         value="{{ request('tanggal_selesai') }}">
-
                 </div>
 
 
                 <!-- TAHUN -->
 
                 <div class="input-group">
+                    <label for="tahun">Tahun</label>
 
-                    <label>Tahun</label>
-
-                    <select name="tahun">
-
-                        <option value="">
-                            Semua Tahun
-                        </option>
+                    <select name="tahun" id="tahun">
+                        <option value="">Semua Tahun</option>
 
                         @for($i = date('Y') + 2; $i >= 2020; $i--)
-
-                            <option
-                                value="{{ $i }}"
+                            <option value="{{ $i }}"
                                 {{ request('tahun') == $i ? 'selected' : '' }}>
-
                                 {{ $i }}
-
                             </option>
-
                         @endfor
-
                     </select>
-
                 </div>
 
 
                 <!-- STATUS -->
 
                 <div class="input-group">
+                    <label for="status">Status Magang</label>
 
-                    <label>Status Magang</label>
+                    <select name="status" id="status">
+                        <option value="">Semua Status</option>
 
-                    <select name="status">
-
-                        <option value="">
-                            Semua Status
-                        </option>
-
-                        <option
-                            value="Akan Magang"
+                        <option value="Akan Magang"
                             {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>
-
                             Akan Magang
-
                         </option>
 
-                        <option
-                            value="Sedang Magang"
+                        <option value="Sedang Magang"
                             {{ request('status') == 'Sedang Magang' ? 'selected' : '' }}>
-
                             Sedang Magang
-
                         </option>
 
-                        <option
-                            value="Selesai Magang"
+                        <option value="Selesai Magang"
                             {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>
-
                             Selesai Magang
-
                         </option>
-
                     </select>
-
                 </div>
 
             </div>
 
 
-            <!-- FILTER BUTTON -->
+            <!-- FILTER ACTIONS -->
 
             <div class="filter-actions">
-
-                <a
-                    href="{{ route('admin.data') }}"
-                    class="btn-reset">
-
+                <a href="{{ route('admin.data') }}" class="btn-reset">
                     <i class="fa-solid fa-rotate-left"></i>
-
                     Reset
-
                 </a>
 
-
-                <button
-                    type="submit"
-                    class="btn-filter">
-
+                <button type="submit" class="btn-filter">
                     <i class="fa-solid fa-filter"></i>
-
                     Terapkan Filter
-
                 </button>
-
             </div>
 
         </form>
@@ -421,48 +294,25 @@
 
         <!-- ================= TABLE ================= -->
 
-        <div class="table-card">
+        <section class="table-card">
 
             <div class="table-header">
 
                 <div class="table-title">
-
-                    <h3>
-                        Data Mahasiswa
-                    </h3>
-
-                    <p>
-                        Menampilkan data mahasiswa yang terdaftar dalam sistem.
-                    </p>
-
+                    <h3>Data Mahasiswa</h3>
+                    <p>Menampilkan data mahasiswa yang terdaftar dalam sistem.</p>
                 </div>
-
 
                 <div class="table-actions">
 
-                    <!-- TAMBAH MAHASISWA -->
-
-                    <a
-                        href="{{ route('admin.create') }}"
-                        class="btn-add">
-
+                    <a href="{{ route('admin.create') }}" class="btn-add">
                         <i class="fa-solid fa-user-plus"></i>
-
                         Tambah Mahasiswa
-
                     </a>
 
-
-                    <!-- EXPORT -->
-
-                    <a
-                        href="{{ route('admin.export', request()->query()) }}"
-                        class="btn-export">
-
+                    <a href="{{ route('admin.export', request()->query()) }}" class="btn-export">
                         <i class="fa-solid fa-file-export"></i>
-
                         Ekspor Data
-
                     </a>
 
                 </div>
@@ -473,37 +323,22 @@
             <!-- TABLE -->
 
             <div class="table-wrapper">
-
                 <table class="table-admin">
 
                     <thead>
-
                         <tr>
-
                             <th>No</th>
-
                             <th>NIM</th>
-
                             <th>Nama Lengkap</th>
-
                             <th>Jenis Kelamin</th>
-
                             <th>Universitas</th>
-
                             <th>Jurusan</th>
-
                             <th>Divisi</th>
-
                             <th>Periode Magang</th>
-
                             <th>Status</th>
-
                             <th>Aksi</th>
-
                         </tr>
-
                     </thead>
-
 
                     <tbody>
 
@@ -511,155 +346,88 @@
 
                             <tr>
 
-                                <!-- NO -->
-
                                 <td>
                                     {{ $pengajuans->firstItem() + $index }}
                                 </td>
-
-
-                                <!-- NIM -->
 
                                 <td>
                                     {{ $row->mahasiswa->nim ?? '-' }}
                                 </td>
 
-
-                                <!-- NAMA -->
-
                                 <td>
                                     {{ $row->mahasiswa->nama_lengkap ?? '-' }}
                                 </td>
-
-
-                                <!-- JENIS KELAMIN -->
 
                                 <td>
                                     {{ $row->mahasiswa->jenis_kelamin ?? '-' }}
                                 </td>
 
-
-                                <!-- UNIVERSITAS -->
-
                                 <td>
                                     {{ $row->mahasiswa->universitas->nama_universitas ?? '-' }}
                                 </td>
-
-
-                                <!-- JURUSAN -->
 
                                 <td>
                                     {{ $row->mahasiswa->jurusan->nama_jurusan ?? '-' }}
                                 </td>
 
-
-                                <!-- DIVISI -->
-
                                 <td>
                                     {{ $row->divisi->nama_divisi ?? '-' }}
                                 </td>
 
-
-                                <!-- PERIODE -->
-
                                 <td>
-
                                     {{ \Carbon\Carbon::parse($row->tanggal_mulai)->format('d M Y') }}
-
                                     s.d.
-
                                     {{ \Carbon\Carbon::parse($row->tanggal_selesai)->format('d M Y') }}
-
                                 </td>
 
-
-                                <!-- STATUS -->
-
                                 <td>
-
                                     @if($row->status === 'Akan Magang')
-
-                                        <span
-                                            class="status"
-                                            style="background:#FFEED9; color:#D9822B;">
-
+                                        <span class="status status-upcoming">
                                             Akan Magang
-
                                         </span>
-
                                     @elseif($row->status === 'Sedang Magang')
-
-                                        <span
-                                            class="status"
-                                            style="background:#E8F4F4; color:#2B7C82;">
-
+                                        <span class="status status-active">
                                             Sedang Magang
-
                                         </span>
-
                                     @elseif($row->status === 'Selesai Magang')
-
-                                        <span
-                                            class="status"
-                                            style="background:#EAEAEA; color:#666;">
-
+                                        <span class="status status-finished">
                                             Selesai Magang
-
                                         </span>
-
                                     @else
-
-                                        <span
-                                            class="status"
-                                            style="background:#F5F5F5; color:#888;">
-
+                                        <span class="status status-empty">
                                             -
-
                                         </span>
-
                                     @endif
-
                                 </td>
 
-
-                                <!-- AKSI -->
-
                                 <td>
-
                                     <div class="action">
 
-                                        <!-- DETAIL -->
-
-                                        <a href="{{ route('admin.detail', $row->id_pengajuan) }}" class="detail" title="Detail">
+                                        <a
+                                            href="{{ route('admin.detail', $row->id_pengajuan) }}"
+                                            class="detail"
+                                            title="Detail">
                                             <i class="fa-regular fa-eye"></i>
                                         </a>
-
-
-                                        <!-- HAPUS -->
 
                                         <form
                                             action="{{ route('admin.destroy', $row->id_pengajuan) }}"
                                             method="POST"
-                                            style="display:inline; margin:0;"
                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')">
 
                                             @csrf
-
                                             @method('DELETE')
 
                                             <button
                                                 type="submit"
                                                 class="delete"
                                                 title="Hapus">
-
                                                 <i class="fa-regular fa-trash-can"></i>
-
                                             </button>
 
                                         </form>
 
                                     </div>
-
                                 </td>
 
                             </tr>
@@ -667,21 +435,10 @@
                         @empty
 
                             <tr>
-
-                                <td
-                                    colspan="10"
-                                    style="text-align:center; color:#888; padding:30px;">
-
-                                    <i
-                                        class="fa-regular fa-folder-open"
-                                        style="font-size:25px; margin-bottom:8px; display:block;">
-
-                                    </i>
-
-                                    Belum ada data mahasiswa yang sesuai dengan filter.
-
+                                <td colspan="10" class="empty-data">
+                                    <i class="fa-regular fa-folder-open"></i>
+                                    <span>Belum ada data mahasiswa yang sesuai dengan filter.</span>
                                 </td>
-
                             </tr>
 
                         @endforelse
@@ -689,57 +446,40 @@
                     </tbody>
 
                 </table>
-
             </div>
 
 
             <!-- PAGINATION -->
 
-            <div class="pagination-wrapper">
+            @if($pengajuans->hasPages())
+                <div class="pagination-wrapper">
+                    {{ $pengajuans->appends(request()->query())->links() }}
+                </div>
+            @endif
 
-                {{ $pengajuans->appends(request()->query())->links() }}
+        </section>
 
-            </div>
-
-        </div>
-
-    </div>
+    </main>
 
 
     <!-- ================= SCRIPT ================= -->
 
     <script>
-
-        document.addEventListener('DOMContentLoaded', function() {
-
+        document.addEventListener('DOMContentLoaded', function () {
             const menuBtn = document.getElementById('menuBtn');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
 
-
-            // Buka / tutup sidebar
-
-            menuBtn.addEventListener('click', function() {
-
+            menuBtn.addEventListener('click', function () {
                 sidebar.classList.toggle('active');
-
                 overlay.classList.toggle('active');
-
             });
 
-
-            // Tutup sidebar ketika klik area luar
-
-            overlay.addEventListener('click', function() {
-
+            overlay.addEventListener('click', function () {
                 sidebar.classList.remove('active');
-
                 overlay.classList.remove('active');
-
             });
-
         });
-
     </script>
 
 </body>
