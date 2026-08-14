@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,316 +16,320 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/admin/detail.css') }}">
 </head>
+
 <body>
 
-<!-- ================= HEADER ================= -->
-<header class="header">
-    <div class="header-left">
-        <div class="logo-box">
-            <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
+    <!-- ================= HEADER ================= -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-box">
+                <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
+            </div>
+
+            <div class="header-title">
+                <h2>Monitoring Mahasiswa PKL</h2>
+                <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
+            </div>
         </div>
 
-        <div class="header-title">
-            <h2>Monitoring Mahasiswa PKL</h2>
-            <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
-        </div>
-    </div>
-
-    <div class="header-right">
-        <button type="button" class="menu-btn" id="menuBtn" title="Menu">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="logout" title="Logout">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <div class="header-right">
+            <button type="button" class="menu-btn" id="menuBtn" title="Menu">
+                <i class="fa-solid fa-bars"></i>
             </button>
-        </form>
-    </div>
-</header>
 
-<!-- ================= SIDEBAR ================= -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="logout" title="Logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            </form>
+        </div>
+    </header>
 
-<aside class="sidebar" id="sidebar">
+    <!-- ================= SIDEBAR ================= -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu">
-        <i class="fa-regular fa-chart-bar"></i>
-        <span>Dashboard</span>
-    </a>
+    <aside class="sidebar" id="sidebar">
 
-    <a href="{{ route('admin.data') }}" class="sidebar-menu active">
-        <i class="fa-regular fa-user"></i>
-        <span>Data Mahasiswa</span>
-    </a>
+        <a href="{{ route('admin.dashboard') }}" class="sidebar-menu">
+            <i class="fa-regular fa-chart-bar"></i>
+            <span>Dashboard</span>
+        </a>
 
-    <a href="{{ route('admin.dokumen') }}" class="sidebar-menu">
-        <i class="fa-regular fa-file-lines"></i>
-        <span>Dokumen Verification</span>
-    </a>
+        <a href="{{ route('admin.data') }}" class="sidebar-menu active">
+            <i class="fa-regular fa-user"></i>
+            <span>Data Mahasiswa</span>
+        </a>
 
-    <a href="{{ route('admin.sertifikat') }}" class="sidebar-menu">
-        <i class="fa-regular fa-file"></i>
-        <span>Sertifikat</span>
-    </a>
-</aside>
+        <a href="{{ route('admin.dokumen') }}" class="sidebar-menu">
+            <i class="fa-regular fa-file-lines"></i>
+            <span>Dokumen Verification</span>
+        </a>
 
-<!-- ================= CONTENT ================= -->
-<main class="content">
+        <a href="{{ route('admin.sertifikat') }}" class="sidebar-menu">
+            <i class="fa-regular fa-file"></i>
+            <span>Sertifikat</span>
+        </a>
+    </aside>
 
-    <section class="card">
+    <!-- ================= CONTENT ================= -->
+    <main class="content">
 
-        <!-- PAGE HEADER -->
-        <div class="page-header">
+        <section class="card">
 
-            <div>
-                <h1>Detail Mahasiswa Magang</h1>
-                <p class="subtitle">
-                    Informasi lengkap mahasiswa dan pelaksanaan Praktik Kerja Lapangan.
-                </p>
-            </div>
+            <!-- PAGE HEADER -->
+            <div class="page-header">
 
-            @if($pengajuan->status === 'Akan Magang')
+                <div>
+                    <h1>Detail Mahasiswa Magang</h1>
+                    <p class="subtitle">
+                        Informasi lengkap mahasiswa dan pelaksanaan Praktik Kerja Lapangan.
+                    </p>
+                </div>
+
+                @if($pengajuan->status === 'Akan Magang')
                 <span class="status status-akan">Akan Magang</span>
-            @elseif($pengajuan->status === 'Sedang Magang')
+                @elseif($pengajuan->status === 'Sedang Magang')
                 <span class="status status-sedang">Sedang Magang</span>
-            @else
+                @else
                 <span class="status status-selesai">Selesai Magang</span>
-            @endif
-
-        </div>
-
-        <!-- ================= INFORMASI MAHASISWA ================= -->
-        <div class="section">
-
-            <div class="section-title">
-                <i class="fa-regular fa-user"></i>
-                <span>Informasi Mahasiswa</span>
-            </div>
-
-            <div class="info-grid">
-
-                <div class="info-item">
-                    <span class="info-label">Nama Lengkap</span>
-                    <span class="info-value">
-                        {{ $pengajuan->mahasiswa->nama_lengkap ?? '-' }}
-                    </span>
-                </div>
-
-                <div class="info-item">
-                    <span class="info-label">NIM</span>
-                    <span class="info-value">
-                        {{ $pengajuan->mahasiswa->nim ?? '-' }}
-                    </span>
-                </div>
-
-                <div class="info-item">
-                    <span class="info-label">Jenis Kelamin</span>
-                    <span class="info-value">
-                        {{ $pengajuan->mahasiswa->jenis_kelamin ?? '-' }}
-                    </span>
-                </div>
-
-                <div class="info-item">
-                    <span class="info-label">Universitas</span>
-                    <span class="info-value">
-                        {{ $pengajuan->mahasiswa->universitas->nama_universitas ?? '-' }}
-                    </span>
-                </div>
-
-                <div class="info-item">
-                    <span class="info-label">Jurusan / Program Studi</span>
-                    <span class="info-value">
-                        {{ $pengajuan->mahasiswa->jurusan->nama_jurusan ?? '-' }}
-                    </span>
-                </div>
-
-                <div class="info-item">
-                    <span class="info-label">Email</span>
-                    <span class="info-value">
-                        {{ $pengajuan->mahasiswa->email ?? '-' }}
-                    </span>
-                </div>
-
-                <div class="info-item">
-                    <span class="info-label">Nomor Telepon</span>
-                    <span class="info-value">
-                        {{ $pengajuan->mahasiswa->no_telepon ?? '-' }}
-                    </span>
-                </div>
+                @endif
 
             </div>
 
-        </div>
+            <!-- ================= INFORMASI MAHASISWA ================= -->
+            <div class="section">
 
-        <!-- ================= INFORMASI MAGANG ================= -->
-        <div class="section">
+                <div class="section-title">
+                    <i class="fa-regular fa-user"></i>
+                    <span>Informasi Mahasiswa</span>
+                </div>
 
-            <div class="section-title">
-                <i class="fa-solid fa-briefcase"></i>
-                <span>Informasi Magang</span>
+                <div class="info-grid">
+
+                    <div class="info-item">
+                        <span class="info-label">Nama Lengkap</span>
+                        <span class="info-value">
+                            {{ $pengajuan->mahasiswa->nama_lengkap ?? '-' }}
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">NIM</span>
+                        <span class="info-value">
+                            {{ $pengajuan->mahasiswa->nim ?? '-' }}
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Jenis Kelamin</span>
+                        <span class="info-value">
+                            {{ $pengajuan->mahasiswa->jenis_kelamin ?? '-' }}
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Universitas</span>
+                        <span class="info-value">
+                            {{ $pengajuan->mahasiswa->universitas->nama_universitas ?? '-' }}
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Jurusan / Program Studi</span>
+                        <span class="info-value">
+                            {{ $pengajuan->mahasiswa->jurusan->nama_jurusan ?? '-' }}
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">
+                            {{ $pengajuan->mahasiswa->email ?? '-' }}
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Nomor Telepon</span>
+                        <span class="info-value">
+                            {{ $pengajuan->mahasiswa->no_telepon ?? '-' }}
+                        </span>
+                    </div>
+
+                </div>
+
             </div>
 
-            <div class="info-grid">
+            <!-- ================= INFORMASI MAGANG ================= -->
+            <div class="section">
 
-                <div class="info-item">
-                    <span class="info-label">Divisi Penempatan</span>
-                    <span class="info-value">
-                        {{ $pengajuan->divisi->nama_divisi ?? '-' }}
-                    </span>
+                <div class="section-title">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Informasi Magang</span>
                 </div>
 
-                <div class="info-item">
-                    <span class="info-label">Pembimbing Lapangan</span>
-                    <span class="info-value">
-                        {{ $pengajuan->nama_pembimbing ?? '-' }}
-                    </span>
-                </div>
+                <div class="info-grid">
 
-                <div class="info-item">
-                    <span class="info-label">Tanggal Mulai</span>
-                    <span class="info-value">
-                        @if($pengajuan->tanggal_mulai)
+                    <div class="info-item">
+                        <span class="info-label">Divisi Penempatan</span>
+                        <span class="info-value">
+                            {{ $pengajuan->divisi->nama_divisi ?? '-' }}
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Pembimbing Lapangan</span>
+                        <span class="info-value">
+                            {{ $pengajuan->nama_pembimbing ?? '-' }}
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Tanggal Mulai</span>
+                        <span class="info-value">
+                            @if($pengajuan->tanggal_mulai)
                             {{ \Carbon\Carbon::parse($pengajuan->tanggal_mulai)->translatedFormat('d F Y') }}
-                        @else
+                            @else
                             -
-                        @endif
-                    </span>
-                </div>
+                            @endif
+                        </span>
+                    </div>
 
-                <div class="info-item">
-                    <span class="info-label">Tanggal Selesai</span>
-                    <span class="info-value">
-                        @if($pengajuan->tanggal_selesai)
+                    <div class="info-item">
+                        <span class="info-label">Tanggal Selesai</span>
+                        <span class="info-value">
+                            @if($pengajuan->tanggal_selesai)
                             {{ \Carbon\Carbon::parse($pengajuan->tanggal_selesai)->translatedFormat('d F Y') }}
-                        @else
+                            @else
                             -
-                        @endif
-                    </span>
+                            @endif
+                        </span>
+                    </div>
+
                 </div>
 
             </div>
 
-        </div>
+            <!-- ================= DOKUMEN MAGANG ================= -->
+            <div class="section">
 
-                <!-- ================= DOKUMEN MAGANG ================= -->
-        <div class="section">
+                <div class="section-title">
+                    <i class="fa-regular fa-folder-open"></i>
+                    <span>Dokumen Magang</span>
+                </div>
 
-            <div class="section-title">
-                <i class="fa-regular fa-folder-open"></i>
-                <span>Dokumen Magang</span>
-            </div>
+                <div class="document-grid">
 
-            <div class="document-grid">
+                    <!-- Surat Pengantar -->
+                    <div class="document-card">
+                        <div class="document-icon">
+                            <i class="fa-solid fa-file-signature"></i>
+                        </div>
 
-                <!-- Surat Pengantar -->
-                <div class="document-card">
-                    <div class="document-icon">
-                        <i class="fa-solid fa-file-signature"></i>
-                    </div>
+                        <div class="document-info">
+                            <h4>Surat Pengantar Kampus</h4>
 
-                    <div class="document-info">
-                        <h4>Surat Pengantar Kampus</h4>
-
-                        @if($pengajuan->surat_permohonan)
+                            @if($pengajuan->surat_permohonan)
                             <a href="{{ asset('uploads/surat_permohonan/' . $pengajuan->surat_permohonan) }}"
-                               target="_blank"
-                               class="document-link">
+                                target="_blank"
+                                class="document-link">
                                 <i class="fa-solid fa-eye"></i>
                                 Lihat Dokumen
                             </a>
-                        @else
+                            @else
                             <p class="document-empty">Belum ada dokumen</p>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Proposal -->
-                <div class="document-card">
-                    <div class="document-icon">
-                        <i class="fa-solid fa-file-lines"></i>
+                            @endif
+                        </div>
                     </div>
 
-                    <div class="document-info">
-                        <h4>Proposal Magang</h4>
+                    <!-- Proposal -->
+                    <div class="document-card">
+                        <div class="document-icon">
+                            <i class="fa-solid fa-file-lines"></i>
+                        </div>
 
-                        @if($pengajuan->proposal)
+                        <div class="document-info">
+                            <h4>Proposal Magang</h4>
+
+                            @if($pengajuan->proposal)
                             <a href="{{ asset('uploads/proposal/' . $pengajuan->proposal) }}"
-                               target="_blank"
-                               class="document-link">
+                                target="_blank"
+                                class="document-link">
                                 <i class="fa-solid fa-eye"></i>
                                 Lihat Dokumen
                             </a>
-                        @else
+                            @else
                             <p class="document-empty">Belum ada dokumen</p>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- CV -->
-                <div class="document-card">
-                    <div class="document-icon">
-                        <i class="fa-solid fa-file-pdf"></i>
+                            @endif
+                        </div>
                     </div>
 
-                    <div class="document-info">
-                        <h4>CV / Curriculum Vitae</h4>
+                    <!-- CV -->
+                    <div class="document-card">
+                        <div class="document-icon">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
 
-                        @if($pengajuan->cv)
+                        <div class="document-info">
+                            <h4>CV / Curriculum Vitae</h4>
+
+                            @if($pengajuan->cv)
                             <a href="{{ asset('uploads/cv/' . $pengajuan->cv) }}"
-                            target="_blank"
-                            class="document-link">
+                                target="_blank"
+                                class="document-link">
                                 <i class="fa-solid fa-eye"></i>
                                 Lihat CV
                             </a>
-                        @else
+                            @else
                             <p class="document-empty">Belum ada dokumen</p>
-                        @endif
+                            @endif
+                        </div>
                     </div>
+
                 </div>
 
             </div>
 
-        </div>
+            <!-- ================= BUTTON ================= -->
+            <div class="button-area">
 
-        <!-- ================= BUTTON ================= -->
-        <div class="button-area">
+                <a href="{{ route('admin.data') }}" class="btn-back">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Kembali
+                </a>
 
-            <a href="{{ route('admin.data') }}" class="btn-back">
-                <i class="fa-solid fa-arrow-left"></i>
-                Kembali
-            </a>
+                <a href="{{ route('admin.edit', $pengajuan->id_pengajuan) }}" class="btn-edit">
+                    <i class="fa-solid fa-pen"></i>
+                    Edit Data
+                </a>
 
-            <a href="{{ route('admin.edit', $pengajuan->id_pengajuan) }}" class="btn-edit">
-                <i class="fa-solid fa-pen"></i>
-                Edit Data
-            </a>
+            </div>
 
-        </div>
+        </section>
 
-    </section>
+    </main>
 
-</main>
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('menuBtn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
 
-<!-- ================= JAVASCRIPT ================= -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const menuBtn = document.getElementById('menuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
+            menuBtn?.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
 
-    menuBtn?.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-    });
-
-    overlay?.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-    });
-});
-</script>
+            overlay?.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        });
+    </script>
 
 </body>
+
 </html>
+
+<!--  -->
