@@ -269,7 +269,7 @@
                     <div class="upload-item">
                         <label>Surat Pengantar Kampus</label>
                         <div class="upload-box" data-input="surat_pengantar">
-                            <input type="file" id="surat_pengantar" name="surat_permohonan" accept=".pdf,.doc,.docx">
+                            <input type="file" id="surat_pengantar" name="surat_permohonan" accept=".pdf,.doc,.docx,.txt">
                             <div class="upload-content">
                                 <div class="upload-icon">
                                     <i class="fa-solid fa-file-signature"></i>
@@ -287,7 +287,7 @@
                     <div class="upload-item">
                         <label>Proposal Magang</label>
                         <div class="upload-box" data-input="proposal">
-                            <input type="file" id="proposal" name="proposal" accept=".pdf,.doc,.docx">
+                            <input type="file" id="proposal" name="proposal" accept=".pdf,.doc,.docx,.txt">
                             <div class="upload-content">
                                 <div class="upload-icon">
                                     <i class="fa-solid fa-file-lines"></i>
@@ -305,7 +305,7 @@
                     <div class="upload-item">
                         <label>CV / Curriculum Vitae</label>
                         <div class="upload-box" data-input="cv">
-                            <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx">
+                            <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx,.txt">
                             <div class="upload-content">
                                 <div class="upload-icon">
                                     <i class="fa-solid fa-file-user"></i>
