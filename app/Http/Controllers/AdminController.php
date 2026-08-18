@@ -131,16 +131,14 @@ class AdminController extends Controller
         */
 
         $chartDivisi = (clone $pengajuanQuery)
-            ->join('divisi', 'pengajuan_magang.divisi_id', '=', 'divisi.id_divisi')
-            ->whereDate('tanggal_mulai', '<=', $today)
-            ->whereDate('tanggal_selesai', '>=', $today)
-            ->select(
-                'divisi.nama_divisi',
-                DB::raw('COUNT(DISTINCT pengajuan_magang.mahasiswa_id) as total')
-            )
-            ->groupBy('divisi.id_divisi', 'divisi.nama_divisi')
-            ->orderBy('divisi.nama_divisi')
-            ->get();
+    ->join('divisi', 'pengajuan_magang.divisi_id', '=', 'divisi.id_divisi')
+    ->select(
+        'divisi.nama_divisi',
+        DB::raw('COUNT(DISTINCT pengajuan_magang.mahasiswa_id) as total')
+    )
+    ->groupBy('divisi.id_divisi', 'divisi.nama_divisi')
+    ->orderBy('divisi.nama_divisi')
+    ->get();
 
         $bidangLabels = $chartDivisi->pluck('nama_divisi');
 
@@ -220,171 +218,345 @@ class AdminController extends Controller
     }
 
     public function data(Request $request)
-    {
-        // Query utama data mahasiswa magang
-        $query = PengajuanMagang::with([
-            'mahasiswa.universitas',
-            'mahasiswa.jurusan',
-            'divisi'
-        ]);
+{
+    // =====================================================
+    // QUERY UTAMA DATA MAHASISWA
+    // =====================================================
 
-        // =========================
-        // PENCARIAN NAMA / NIM
-        // =========================
-
-        if ($request->filled('search')) {
-
-            $search = $request->search;
-
-            $query->whereHas('mahasiswa', function ($q) use ($search) {
-
-                $q->where('nama_lengkap', 'like', "%{$search}%")
-                    ->orWhere('nim', 'like', "%{$search}%");
-            });
-        }
+    $query = PengajuanMagang::with([
+        'mahasiswa.universitas',
+        'mahasiswa.jurusan',
+        'divisi'
+    ]);
 
 
-        // =========================
-        // FILTER JURUSAN
-        // =========================
+    // =====================================================
+    // FILTER PENCARIAN
+    // =====================================================
 
-        if ($request->filled('jurusan_id')) {
+    if ($request->filled('search')) {
 
-            $query->whereHas('mahasiswa', function ($q) use ($request) {
+        $search = $request->search;
 
-                $q->where('jurusan_id', $request->jurusan_id);
-            });
-        }
+        $query->whereHas('mahasiswa', function ($q) use ($search) {
 
+            $q->where('nama_lengkap', 'like', "%{$search}%")
+                ->orWhere('nim', 'like', "%{$search}%");
 
-        // =========================
-        // FILTER UNIVERSITAS
-        // =========================
-
-        if ($request->filled('universitas_id')) {
-
-            $query->whereHas('mahasiswa', function ($q) use ($request) {
-
-                $q->where('universitas_id', $request->universitas_id);
-            });
-        }
-
-
-        // =========================
-        // FILTER DIVISI
-        // =========================
-
-        if ($request->filled('divisi_id')) {
-
-            $query->where(
-                'divisi_id',
-                $request->divisi_id
-            );
-        }
-
-
-        // =========================
-        // FILTER JENIS KELAMIN
-        // =========================
-
-        if ($request->filled('jenis_kelamin')) {
-
-            $query->whereHas('mahasiswa', function ($q) use ($request) {
-
-                $q->where(
-                    'jenis_kelamin',
-                    $request->jenis_kelamin
-                );
-            });
-        }
-
-
-        // =========================
-        // FILTER STATUS
-        // =========================
-
-        if ($request->filled('status')) {
-
-            $query->where(
-                'status',
-                $request->status
-            );
-        }
-
-
-        // =========================
-        // FILTER TANGGAL MULAI
-        // =========================
-
-        if ($request->filled('tanggal_mulai')) {
-
-            $query->whereDate(
-                'tanggal_mulai',
-                $request->tanggal_mulai
-            );
-        }
-
-
-        // =========================
-        // FILTER TANGGAL SELESAI
-        // =========================
-
-        if ($request->filled('tanggal_selesai')) {
-
-            $query->whereDate(
-                'tanggal_selesai',
-                $request->tanggal_selesai
-            );
-        }
-
-
-        // =========================
-        // FILTER TAHUN
-        // =========================
-
-        if ($request->filled('tahun')) {
-
-            $query->whereYear(
-                'tanggal_mulai',
-                $request->tahun
-            );
-        }
-
-
-        // =========================
-        // DATA MAHASISWA
-        // =========================
-
-        $pengajuans = $query
-            ->latest('id_pengajuan')
-            ->paginate(10)
-            ->withQueryString();
-
-
-        // =========================
-        // DATA DROPDOWN FILTER
-        // =========================
-
-        $listJurusan = Jurusan::orderBy(
-            'nama_jurusan'
-        )->get();
-
-        $listUniversitas = Universitas::orderBy(
-            'nama_universitas'
-        )->get();
-
-        $listDivisi = Divisi::orderBy(
-            'nama_divisi'
-        )->get();
-
-
-        return view('admin.data', compact(
-            'pengajuans',
-            'listJurusan',
-            'listUniversitas',
-            'listDivisi'
-        ));
+        });
     }
+
+
+    // =====================================================
+    // FILTER JURUSAN
+    // =====================================================
+
+    if ($request->filled('jurusan_id')) {
+
+        $query->whereHas('mahasiswa', function ($q) use ($request) {
+
+            $q->where(
+                'jurusan_id',
+                $request->jurusan_id
+            );
+
+        });
+    }
+
+
+    // =====================================================
+    // FILTER UNIVERSITAS
+    // =====================================================
+
+    if ($request->filled('universitas_id')) {
+
+        $query->whereHas('mahasiswa', function ($q) use ($request) {
+
+            $q->where(
+                'universitas_id',
+                $request->universitas_id
+            );
+
+        });
+    }
+
+
+    // =====================================================
+    // FILTER DIVISI
+    // =====================================================
+
+    if ($request->filled('divisi_id')) {
+
+        $query->where(
+            'divisi_id',
+            $request->divisi_id
+        );
+    }
+
+
+    // =====================================================
+    // FILTER JENIS KELAMIN
+    // =====================================================
+
+    if ($request->filled('jenis_kelamin')) {
+
+        $query->whereHas('mahasiswa', function ($q) use ($request) {
+
+            $q->where(
+                'jenis_kelamin',
+                $request->jenis_kelamin
+            );
+
+        });
+    }
+
+
+    // =====================================================
+    // FILTER STATUS
+    // =====================================================
+
+    if ($request->filled('status')) {
+
+        $query->where(
+            'status',
+            $request->status
+        );
+    }
+
+
+    // =====================================================
+    // FILTER TANGGAL MULAI
+    // =====================================================
+
+    if ($request->filled('tanggal_mulai')) {
+
+        $query->whereDate(
+            'tanggal_mulai',
+            $request->tanggal_mulai
+        );
+    }
+
+
+    // =====================================================
+    // FILTER TANGGAL SELESAI
+    // =====================================================
+
+    if ($request->filled('tanggal_selesai')) {
+
+        $query->whereDate(
+            'tanggal_selesai',
+            $request->tanggal_selesai
+        );
+    }
+
+
+    // =====================================================
+    // FILTER TAHUN
+    // =====================================================
+
+    if ($request->filled('tahun')) {
+
+        $query->whereYear(
+            'tanggal_mulai',
+            $request->tahun
+        );
+    }
+
+
+    // =====================================================
+    // SORTING / URUTKAN DATA
+    // =====================================================
+
+    $sort = $request->get('sort', 'terbaru');
+
+    switch ($sort) {
+
+        // -------------------------------------------------
+        // TERBARU DITAMBAHKAN
+        // -------------------------------------------------
+
+        case 'terbaru':
+
+            $query->orderBy(
+                'id_pengajuan',
+                'desc'
+            );
+
+            break;
+
+
+        // -------------------------------------------------
+        // TERLAMA DITAMBAHKAN
+        // -------------------------------------------------
+
+        case 'terlama':
+
+            $query->orderBy(
+                'id_pengajuan',
+                'asc'
+            );
+
+            break;
+
+
+        // -------------------------------------------------
+        // NAMA A-Z
+        // -------------------------------------------------
+
+        case 'nama_asc':
+
+            $query->join(
+                'mahasiswa',
+                'pengajuan_magang.mahasiswa_id',
+                '=',
+                'mahasiswa.id_mhs'
+            );
+
+            $query->orderBy(
+                'mahasiswa.nama_lengkap',
+                'asc'
+            );
+
+            $query->select(
+                'pengajuan_magang.*'
+            );
+
+            break;
+
+
+        // -------------------------------------------------
+        // NAMA Z-A
+        // -------------------------------------------------
+
+        case 'nama_desc':
+
+            $query->join(
+                'mahasiswa',
+                'pengajuan_magang.mahasiswa_id',
+                '=',
+                'mahasiswa.id_mhs'
+            );
+
+            $query->orderBy(
+                'mahasiswa.nama_lengkap',
+                'desc'
+            );
+
+            $query->select(
+                'pengajuan_magang.*'
+            );
+
+            break;
+
+
+        // -------------------------------------------------
+        // TANGGAL MULAI TERDEKAT
+        // -------------------------------------------------
+
+        case 'mulai_asc':
+
+            $query->orderBy(
+                'tanggal_mulai',
+                'asc'
+            );
+
+            break;
+
+
+        // -------------------------------------------------
+        // TANGGAL MULAI TERJAUH
+        // -------------------------------------------------
+
+        case 'mulai_desc':
+
+            $query->orderBy(
+                'tanggal_mulai',
+                'desc'
+            );
+
+            break;
+
+
+        // -------------------------------------------------
+        // TANGGAL SELESAI TERDEKAT
+        // -------------------------------------------------
+
+        case 'selesai_asc':
+
+            $query->orderBy(
+                'tanggal_selesai',
+                'asc'
+            );
+
+            break;
+
+
+        // -------------------------------------------------
+        // TANGGAL SELESAI TERJAUH
+        // -------------------------------------------------
+
+        case 'selesai_desc':
+
+            $query->orderBy(
+                'tanggal_selesai',
+                'desc'
+            );
+
+            break;
+
+
+        // -------------------------------------------------
+        // DEFAULT
+        // -------------------------------------------------
+
+        default:
+
+            $query->orderBy(
+                'id_pengajuan',
+                'desc'
+            );
+
+            break;
+    }
+
+
+    // =====================================================
+    // DATA MAHASISWA
+    // =====================================================
+
+    $pengajuans = $query
+        ->paginate(10)
+        ->withQueryString();
+
+
+    // =====================================================
+    // DATA DROPDOWN FILTER
+    // =====================================================
+
+    $listJurusan = Jurusan::orderBy(
+        'nama_jurusan'
+    )->get();
+
+    $listUniversitas = Universitas::orderBy(
+        'nama_universitas'
+    )->get();
+
+    $listDivisi = Divisi::orderBy(
+        'nama_divisi'
+    )->get();
+
+
+    // =====================================================
+    // RETURN VIEW
+    // =====================================================
+
+    return view('admin.data', compact(
+        'pengajuans',
+        'listJurusan',
+        'listUniversitas',
+        'listDivisi'
+    ));
+}
 
     public function create()
     {

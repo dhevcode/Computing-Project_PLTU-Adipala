@@ -272,6 +272,58 @@
                     </select>
                 </div>
 
+                <!-- URUTKAN -->
+
+<div class="input-group sort-group">
+
+    <label for="sort">Urutkan Berdasarkan</label>
+
+    <select name="sort" id="sort">
+
+        <option value="terbaru"
+            {{ request('sort', 'terbaru') == 'terbaru' ? 'selected' : '' }}>
+            Terbaru Ditambahkan
+        </option>
+
+        <option value="terlama"
+            {{ request('sort') == 'terlama' ? 'selected' : '' }}>
+            Terlama Ditambahkan
+        </option>
+
+        <option value="nama_asc"
+            {{ request('sort') == 'nama_asc' ? 'selected' : '' }}>
+            Nama A–Z
+        </option>
+
+        <option value="nama_desc"
+            {{ request('sort') == 'nama_desc' ? 'selected' : '' }}>
+            Nama Z–A
+        </option>
+
+        <option value="mulai_asc"
+            {{ request('sort') == 'mulai_asc' ? 'selected' : '' }}>
+            Tanggal Mulai Terdekat
+        </option>
+
+        <option value="mulai_desc"
+            {{ request('sort') == 'mulai_desc' ? 'selected' : '' }}>
+            Tanggal Mulai Terjauh
+        </option>
+
+        <option value="selesai_asc"
+            {{ request('sort') == 'selesai_asc' ? 'selected' : '' }}>
+            Tanggal Selesai Terdekat
+        </option>
+
+        <option value="selesai_desc"
+            {{ request('sort') == 'selesai_desc' ? 'selected' : '' }}>
+            Tanggal Selesai Terjauh
+        </option>
+
+    </select>
+
+</div>
+
             </div>
 
 
@@ -452,11 +504,50 @@
             <!-- PAGINATION -->
 
             @if($pengajuans->hasPages())
-                <div class="pagination-wrapper">
-                    {{ $pengajuans->appends(request()->query())->links() }}
-                </div>
+    <div class="pagination-wrapper">
+
+        {{-- Previous --}}
+        @if ($pengajuans->onFirstPage())
+            <span class="pagination-btn disabled">
+                <i class="fa-solid fa-chevron-left"></i>
+            </span>
+        @else
+            <a href="{{ $pengajuans->appends(request()->query())->previousPageUrl() }}"
+               class="pagination-btn">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+        @endif
+
+        {{-- Nomor Halaman --}}
+        @foreach ($pengajuans->getUrlRange(1, $pengajuans->lastPage()) as $page => $url)
+
+            @if ($page == $pengajuans->currentPage())
+                <span class="pagination-btn active">
+                    {{ $page }}
+                </span>
+            @else
+                <a href="{{ $pengajuans->appends(request()->query())->url($page) }}"
+                   class="pagination-btn">
+                    {{ $page }}
+                </a>
             @endif
 
+        @endforeach
+
+        {{-- Next --}}
+        @if ($pengajuans->hasMorePages())
+            <a href="{{ $pengajuans->appends(request()->query())->nextPageUrl() }}"
+               class="pagination-btn">
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        @else
+            <span class="pagination-btn disabled">
+                <i class="fa-solid fa-chevron-right"></i>
+            </span>
+        @endif
+
+    </div>
+@endif
         </section>
 
     </main>

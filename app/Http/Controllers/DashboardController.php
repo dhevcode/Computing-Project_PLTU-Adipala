@@ -106,6 +106,7 @@ class DashboardController extends Controller
         $bidangLabels = $divisiStats->pluck('nama_divisi')->toArray();
         $bidangData = $divisiStats->pluck('total')->toArray();
 
+
         // 6. Data Chart: Sebaran Mahasiswa per Universitas
         $univStats = (clone $query)
             ->join('mahasiswa', 'pengajuan_magang.mahasiswa_id', '=', 'mahasiswa.id_mhs')
