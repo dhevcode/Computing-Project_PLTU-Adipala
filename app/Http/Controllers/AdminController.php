@@ -124,27 +124,58 @@ class AdminController extends Controller
             ->distinct('divisi_id')
             ->count('divisi_id');
 
-        /*
-        |--------------------------------------------------------------------------
-        | CHART DIVISI
-        |--------------------------------------------------------------------------
-        */
+       /*
+|--------------------------------------------------------------------------
+| CHART DIVISI
+|--------------------------------------------------------------------------
+*/
 
-        $chartDivisi = (clone $pengajuanQuery)
-    ->join('divisi', 'pengajuan_magang.divisi_id', '=', 'divisi.id_divisi')
+$chartDivisi = Divisi::query()
+    ->leftJoin(
+        'pengajuan_magang',
+        'divisi.id_divisi',
+        '=',
+        'pengajuan_magang.divisi_id'
+    )
+    ->where('divisi.nama_divisi', '!=', '0')
     ->select(
+        'divisi.id_divisi',
         'divisi.nama_divisi',
         DB::raw('COUNT(DISTINCT pengajuan_magang.mahasiswa_id) as total')
     )
-    ->groupBy('divisi.id_divisi', 'divisi.nama_divisi')
-    ->orderBy('divisi.nama_divisi')
+    ->groupBy(
+        'divisi.id_divisi',
+        'divisi.nama_divisi'
+    )
+    ->orderBy('divisi.id_divisi')
     ->get();
 
-        $bidangLabels = $chartDivisi->pluck('nama_divisi');
+$singkatanDivisi = [
+    'Pengadaan Barang & Jasa' => 'PBJ',
+    'Perencanaan dan Pengendalian Operasi & Niaga' => 'PPO & Niaga',
+    'Operasi' => 'Operasi',
+    'Kimia dan BOP' => 'Kimia & BOP',
+    'K3 dan Lingkungan' => 'K3L',
+    'Perencanaan dan Pengendalian Pemeliharaan & Inventory' => 'PP Pemeliharaan',
+    'Pemeliharaan Mesin' => 'HAR Mesin',
+    'Pemeliharaan Kontrol dan Instrumen' => 'HAR Instrumen',
+    'Pemeliharaan Listrik' => 'HAR Listrik',
+    'Life Cycle Management, Investasi & Manajemen Risiko' => 'LCM, Investasi & MR',
+    'Efisiensi, Kinerja dan Sistem Informasi' => 'EK & SI',
+    'Reliability & Condition Based Maintenance' => 'RCBM',
+    'Penyaluran Energi Primer & Abu' => 'Penyaluran EP & Abu',
+    'Pemeliharaan Instalasi Energi Primer & Abu' => 'Pemeliharaan EP & Abu',
+    'Inventory Energi Primer & Abu' => 'Inventory EP & Abu',
+    'Sumber Daya Manusia' => 'SDM',
+    'Umum' => 'Umum',
+    'Keuangan' => 'Keuangan',
+];
 
-        $bidangData = $chartDivisi->pluck('total');
+$bidangLabels = $chartDivisi->map(function ($divisi) use ($singkatanDivisi) {
+    return $singkatanDivisi[$divisi->nama_divisi] ?? $divisi->nama_divisi;
+});
 
-
+$bidangData = $chartDivisi->pluck('total');
         /*
         |--------------------------------------------------------------------------
         | CHART STATUS

@@ -337,9 +337,10 @@ body{
 }
 
 .chart-body.large{
-    height:320px;
+    position:relative;
+    height:auto;
+    min-height:320px;
 }
-
 /* ================= LEGEND ================= */
 
 .doughnut-legend{

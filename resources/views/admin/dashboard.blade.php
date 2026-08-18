@@ -279,56 +279,96 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ================= CHART UNIVERSITAS ================= */
-    const univCanvas = document.getElementById('universitasChart');
+const univCanvas = document.getElementById('universitasChart');
 
-    if (univCanvas) {
-        const labels = JSON.parse(univCanvas.dataset.labels || '[]');
-        const values = JSON.parse(univCanvas.dataset.values || '[]');
+if (univCanvas) {
+    const labels = JSON.parse(univCanvas.dataset.labels || '[]');
+    const values = JSON.parse(univCanvas.dataset.values || '[]');
 
-        new Chart(univCanvas, {
-            type: 'bar',
-            data: {
-                labels,
-                datasets: [{
-                    data: values,
-                    borderRadius: 6,
-                    maxBarThickness: 26,
-                    backgroundColor: ctx => {
-                        const chart = ctx.chart;
-                        const { ctx: c, chartArea } = chart;
+    // Tinggi chart menyesuaikan jumlah universitas
+const tinggiPerData = 32;
+const tinggiMinimum = 320;
 
-                        if (!chartArea) return '#0A5F63';
+const chartHeight = Math.max(
+    tinggiMinimum,
+    labels.length * tinggiPerData
+);
 
-                        const gradient = c.createLinearGradient(0,0,chartArea.right,0);
-                        gradient.addColorStop(0,'#18A7A5');
-                        gradient.addColorStop(1,'#0A5F63');
+univCanvas.parentElement.style.height = `${chartHeight}px`;
 
-                        return gradient;
-                    }
-                }]
+    new Chart(univCanvas, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                data: values,
+                borderRadius: 6,
+                barThickness: 20,
+                backgroundColor: ctx => {
+                    const chart = ctx.chart;
+                    const { ctx: c, chartArea } = chart;
+
+                    if (!chartArea) return '#0A5F63';
+
+                    const gradient = c.createLinearGradient(
+                        0, 0,
+                        chartArea.right, 0
+                    );
+
+                    gradient.addColorStop(0, '#18A7A5');
+                    gradient.addColorStop(1, '#0A5F63');
+
+                    return gradient;
+                }
+            }]
+        },
+
+        options: {
+            indexAxis: 'y',
+
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    display: false
+                }
             },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: { precision: 0, stepSize: 1 },
-                        grid: { display: false }
+
+            scales: {
+                x: {
+                    beginAtZero: true,
+
+                    ticks: {
+                        precision: 0,
+                        stepSize: 1
                     },
-                    y: {
-                        grid: { display: false },
-                        ticks: {
-                            color: '#555',
-                            font: { size: 12, weight: '500' }
-                        }
+
+                    grid: {
+                        display: false
+                    }
+                },
+
+                y: {
+                    grid: {
+                        display: false
+                    },
+
+                    ticks: {
+                        color: '#555',
+
+                        font: {
+                            size: 11,
+                            weight: '500'
+                        },
+
+                        autoSkip: false
                     }
                 }
             }
-        });
-    }
+        }
+    });
+}
 
 });
 </script>
