@@ -770,21 +770,32 @@ body{
 /* ================= RESPONSIVE ================= */
 
 @media(max-width:1100px){
+
     .filter-grid{
-        grid-template-columns:repeat(2,1fr);
+        grid-template-columns:repeat(2, minmax(0, 1fr));
     }
 
     .search{
         grid-column:span 2;
     }
+
 }
+
+
+/* ================= TABLET & MOBILE ================= */
 
 @media(max-width:768px){
 
-    .stats-grid{
-        grid-template-columns:1fr;
+    /* CONTENT */
+    .content{
+        width:100%;
+        max-width:100%;
+        padding:88px 12px 25px;
+        overflow-x:hidden;
     }
 
+
+    /* HEADER */
     .header-title{
         display:none;
     }
@@ -797,25 +808,162 @@ body{
         width:120px;
     }
 
-    .filter-grid{
+
+    /* STATISTIC */
+    .stats-grid{
         grid-template-columns:1fr;
+        width:100%;
+    }
+
+    .stat-card{
+        width:100%;
+    }
+
+
+    /* ================= FILTER ================= */
+
+    .filter-card{
+        width:100%;
+        max-width:100%;
+        padding:16px;
+        overflow:hidden;
+    }
+
+    .filter-header{
+        width:100%;
+    }
+
+    .filter-title-wrap{
+        width:100%;
+        min-width:0;
+    }
+
+    .filter-title-wrap > div:last-child{
+        min-width:0;
+    }
+
+    .filter-header h3{
+        font-size:16px;
+    }
+
+    .filter-header p{
+        font-size:11px;
+        line-height:1.5;
+    }
+
+
+    /* FILTER INPUT */
+    .filter-grid{
+        width:100%;
+        max-width:100%;
+        display:grid;
+        grid-template-columns:minmax(0, 1fr);
+        gap:13px;
     }
 
     .search{
         grid-column:span 1;
     }
 
+    .input-group{
+        width:100%;
+        min-width:0;
+    }
+
+    .input-group input,
+    .input-group select{
+        width:100%;
+        max-width:100%;
+        min-width:0;
+        box-sizing:border-box;
+    }
+
+
+    /* BUTTON FILTER */
     .filter-actions{
+        width:100%;
+        display:flex;
         flex-direction:column;
+        gap:8px;
     }
 
     .btn-filter,
     .btn-reset{
-        justify-content:center;
         width:100%;
+        max-width:100%;
+        justify-content:center;
+        box-sizing:border-box;
     }
 
-    .upload-modal{
-        width:92%;
+
+    /* ================= TABLE ================= */
+
+    .table-card{
+        width:100%;
+        max-width:100%;
+        padding:16px;
+        overflow:hidden;
     }
+
+    .table-wrapper{
+        width:100%;
+        max-width:100%;
+        overflow-x:auto;
+        -webkit-overflow-scrolling:touch;
+    }
+
+
+    /* ================= MODAL ================= */
+
+    .upload-modal{
+        width:calc(100% - 24px);
+        max-width:430px;
+    }
+
+}
+
+
+/* ================= SMALL MOBILE ================= */
+
+@media(max-width:480px){
+
+    .content{
+        padding-left:10px;
+        padding-right:10px;
+    }
+
+    .filter-card{
+        padding:14px;
+        border-radius:14px;
+    }
+
+    .filter-title-wrap{
+        align-items:flex-start;
+    }
+
+    .filter-icon{
+        width:36px;
+        height:36px;
+        min-width:36px;
+    }
+
+    .filter-header h3{
+        font-size:14px;
+    }
+
+    .filter-header p{
+        font-size:10px;
+    }
+
+    .input-group input,
+    .input-group select{
+        height:42px;
+        font-size:12px;
+    }
+
+    .btn-filter,
+    .btn-reset{
+        height:40px;
+    }
+
 }
