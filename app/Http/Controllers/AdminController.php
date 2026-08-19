@@ -954,7 +954,7 @@ $bidangData = $chartDivisi->pluck('total');
             $mahasiswa->delete();
         }
 
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('admin.data')
             ->with('success', 'Data Mahasiswa Magang berhasil dihapus!');
     }
 
