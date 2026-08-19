@@ -795,9 +795,9 @@ $bidangData = $chartDivisi->pluck('total');
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
 
             'nama_pembimbing' => 'nullable|string|max:150',
-            'surat_permohonan' => 'required|file|mimes:pdf,doc,docx,txt|max:4096',
-            'proposal' => 'required|file|mimes:pdf,doc,docx,txt|max:4096',
-            'cv' => 'required|file|mimes:pdf,doc,docx,txt|max:4096',
+            'surat_permohonan' => 'nullable|file|mimes:pdf,doc,docx,txt|max:4096',
+            'proposal' => 'nullable|file|mimes:pdf,doc,docx,txt|max:4096',
+            'cv' => 'nullable|file|mimes:pdf,doc,docx,txt|max:4096',
         ]);
 
         $universitasId = $request->universitas_id;
@@ -935,7 +935,7 @@ $bidangData = $chartDivisi->pluck('total');
             'cv' => $cvPath,
         ]);
 
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('admin.data')
             ->with('success', 'Data Mahasiswa Magang berhasil diperbarui!');
     }
 
