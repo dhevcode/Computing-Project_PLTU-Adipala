@@ -90,10 +90,140 @@ class DocumentController extends Controller
             $query->whereNull('surat_balasan');
         }
 
+        // =====================================================
+        // URUTKAN BERDASARKAN
+        // =====================================================
+
+        $sort = $request->get('sort', 'terbaru');
+
+        switch ($sort) {
+
+            // TERBARU DITAMBAHKAN
+            case 'terbaru':
+
+                $query->orderBy(
+                    'id_pengajuan',
+                    'desc'
+                );
+
+                break;
+
+
+            // TERLAMA DITAMBAHKAN
+            case 'terlama':
+
+                $query->orderBy(
+                    'id_pengajuan',
+                    'asc'
+                );
+
+                break;
+
+
+            // NAMA A-Z
+            case 'nama_asc':
+
+                $query->join(
+                    'mahasiswa',
+                    'pengajuan_magang.mahasiswa_id',
+                    '=',
+                    'mahasiswa.id_mhs'
+                );
+
+                $query->orderBy(
+                    'mahasiswa.nama_lengkap',
+                    'asc'
+                );
+
+                $query->select(
+                    'pengajuan_magang.*'
+                );
+
+                break;
+
+
+            // NAMA Z-A
+            case 'nama_desc':
+
+                $query->join(
+                    'mahasiswa',
+                    'pengajuan_magang.mahasiswa_id',
+                    '=',
+                    'mahasiswa.id_mhs'
+                );
+
+                $query->orderBy(
+                    'mahasiswa.nama_lengkap',
+                    'desc'
+                );
+
+                $query->select(
+                    'pengajuan_magang.*'
+                );
+
+                break;
+
+
+            // TANGGAL MULAI TERDEKAT
+            case 'mulai_asc':
+
+                $query->orderBy(
+                    'tanggal_mulai',
+                    'asc'
+                );
+
+                break;
+
+
+            // TANGGAL MULAI TERJAUH
+            case 'mulai_desc':
+
+                $query->orderBy(
+                    'tanggal_mulai',
+                    'desc'
+                );
+
+                break;
+
+
+            // TANGGAL SELESAI TERDEKAT
+            case 'selesai_asc':
+
+                $query->orderBy(
+                    'tanggal_selesai',
+                    'asc'
+                );
+
+                break;
+
+
+            // TANGGAL SELESAI TERJAUH
+            case 'selesai_desc':
+
+                $query->orderBy(
+                    'tanggal_selesai',
+                    'desc'
+                );
+
+                break;
+
+
+            // DEFAULT
+            default:
+
+                $query->orderBy(
+                    'id_pengajuan',
+                    'desc'
+                );
+
+                break;
+        }
+
         // DATA MAHASISWA
         $pengajuan = $query
             ->latest('id_pengajuan')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         // STATISTIK
         $verified = PengajuanMagang::whereNotNull(
@@ -104,7 +234,7 @@ class DocumentController extends Controller
             'surat_balasan'
         )->count();
 
-        $total = $pengajuan->count();
+        $total = $pengajuan->total();
 
         // DATA FILTER
         $universitas = Universitas::orderBy(
@@ -129,6 +259,8 @@ class DocumentController extends Controller
             'divisi'
         ));
     }
+
+    
 
 
     // UPLOAD SURAT BALASAN + KIRIM EMAIL

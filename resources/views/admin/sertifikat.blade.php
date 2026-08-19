@@ -93,8 +93,7 @@
     </div>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <section class="data-card">
+    <div class="content">
 
             <!-- Flash Message -->
             @if(session('success'))
@@ -121,190 +120,258 @@
             @endif
 
             <!-- Card Header -->
-            <div class="card-header">
+            <div class="page-header-card">
                 <div>
-                    <h1>Filter data</h1>
-                    <p>Menampilkan {{ $mahasiswa->count() }} mahasiswa</p>
+                    <h1>Sertifikat Mahasiswa</h1>
+                    <p>Kelola laporan, verifikasi ID Card, dan sertifikat mahasiswa PKL.</p>
                 </div>
             </div>
 
             <!-- Filter Form -->
-            <form
-                class="filter-form"
-                method="GET"
-                action="{{ route('admin.sertifikat') }}"
-            >
+            <form action="{{ route('admin.sertifikat') }}" method="GET" class="filter-card">
+
+                <div class="filter-header">
+
+                    <div class="filter-title-wrap">
+
+                        <div class="filter-icon">
+                            <i class="fa-solid fa-filter"></i>
+                        </div>
+
+                        <div>
+                            <h3>Filter Sertifikat</h3>
+                            <p>
+                                Gunakan filter untuk mencari data mahasiswa berdasarkan kriteria.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
                 <div class="filter-grid">
 
-                    <!-- Cari -->
-                    <div class="filter-item">
-                        <label for="search">Cari</label>
-
+                    <div class="input-group search">
+                        <label>Pencarian</label>
                         <input
                             type="text"
-                            id="search"
                             name="search"
-                            placeholder="Nama, NIM, Email..."
                             value="{{ request('search') }}"
+                            placeholder="Nama, NIM, Kampus..."
                         >
                     </div>
 
-                    <!-- Tanggal Mulai -->
-                    <div class="filter-item">
-                        <label for="tanggal_mulai">Tanggal mulai</label>
-
+                    <div class="input-group">
+                        <label>Tanggal Mulai</label>
                         <input
                             type="date"
-                            id="tanggal_mulai"
                             name="tanggal_mulai"
                             value="{{ request('tanggal_mulai') }}"
                         >
                     </div>
 
-                    <!-- Tanggal Selesai -->
-                    <div class="filter-item">
-                        <label for="tanggal_selesai">Tanggal selesai</label>
-
+                    <div class="input-group">
+                        <label>Tanggal Selesai</label>
                         <input
                             type="date"
-                            id="tanggal_selesai"
                             name="tanggal_selesai"
                             value="{{ request('tanggal_selesai') }}"
                         >
                     </div>
 
-                    <!-- Jurusan -->
-                    <div class="filter-item">
-                        <label for="jurusan">Jurusan</label>
-
-                        <select id="jurusan" name="jurusan">
+                    <div class="input-group">
+                        <label>Jurusan</label>
+                        <select name="jurusan">
                             <option value="">Semua</option>
 
-                            @foreach($jurusan as $itemJurusan)
+                            @foreach($jurusan as $j)
                                 <option
-                                    value="{{ $itemJurusan->id_jurusan }}"
-                                    @selected(request('jurusan') == $itemJurusan->id_jurusan)
+                                    value="{{ $j->id_jurusan }}"
+                                    {{ request('jurusan') == $j->id_jurusan ? 'selected' : '' }}
                                 >
-                                    {{ $itemJurusan->nama_jurusan }}
+                                    {{ $j->nama_jurusan }}
                                 </option>
                             @endforeach
+
                         </select>
                     </div>
 
-                    <!-- Universitas -->
-                    <div class="filter-item">
-                        <label for="universitas">Universitas</label>
-
-                        <select id="universitas" name="universitas">
+                    <div class="input-group">
+                        <label>Universitas</label>
+                        <select name="universitas">
                             <option value="">Semua</option>
 
-                            @foreach($universitas as $itemUniversitas)
+                            @foreach($universitas as $u)
                                 <option
-                                    value="{{ $itemUniversitas->id_universitas }}"
-                                    @selected(request('universitas') == $itemUniversitas->id_universitas)
+                                    value="{{ $u->id_universitas }}"
+                                    {{ request('universitas') == $u->id_universitas ? 'selected' : '' }}
                                 >
-                                    {{ $itemUniversitas->nama_universitas }}
+                                    {{ $u->nama_universitas }}
                                 </option>
                             @endforeach
+
                         </select>
                     </div>
 
-                    <!-- Divisi -->
-                    <div class="filter-item">
-                        <label for="divisi">Divisi</label>
-
-                        <select id="divisi" name="divisi">
+                    <div class="input-group">
+                        <label>Divisi</label>
+                        <select name="divisi">
                             <option value="">Semua</option>
 
-                            @foreach($divisi as $itemDivisi)
+                            @foreach($divisi as $d)
                                 <option
-                                    value="{{ $itemDivisi->id_divisi }}"
-                                    @selected(request('divisi') == $itemDivisi->id_divisi)
+                                    value="{{ $d->id_divisi }}"
+                                    {{ request('divisi') == $d->id_divisi ? 'selected' : '' }}
                                 >
-                                    {{ $itemDivisi->nama_divisi }}
+                                    {{ $d->nama_divisi }}
                                 </option>
                             @endforeach
+
                         </select>
                     </div>
-                </div>
 
-                <!-- Filter Row 2 -->
-                <div class="filter-row-two">
+                    <div class="input-group">
+                        <label>Status Magang</label>
 
-                    <!-- Status -->
-                    <div class="filter-item">
-                        <label for="status">Status</label>
+                        <select name="status">
 
-                        <select id="status" name="status">
                             <option value="">Semua</option>
-
-                            <option
-                                value="Akan Datang"
-                                @selected(request('status') == 'Akan Datang')
-                            >
-                                Akan Datang
-                            </option>
 
                             <option
                                 value="Aktif"
-                                @selected(request('status') == 'Aktif')
+                                {{ request('status') == 'Aktif' ? 'selected' : '' }}
                             >
                                 Aktif
                             </option>
 
                             <option
                                 value="Selesai"
-                                @selected(request('status') == 'Selesai')
+                                {{ request('status') == 'Selesai' ? 'selected' : '' }}
                             >
                                 Selesai
                             </option>
+
+                            <option
+                                value="Akan Datang"
+                                {{ request('status') == 'Akan Datang' ? 'selected' : '' }}
+                            >
+                                Akan Datang
+                            </option>
+
                         </select>
                     </div>
 
-                    <!-- Jenis Kelamin -->
-                    <div class="filter-item">
-                        <label for="jenis_kelamin">Jenis Kelamin</label>
+                    <div class="input-group">
+                        <label>Jenis Kelamin</label>
 
-                        <select id="jenis_kelamin" name="jenis_kelamin">
+                        <select name="jenis_kelamin">
+
                             <option value="">Semua</option>
 
                             <option
                                 value="L"
-                                @selected(request('jenis_kelamin') == 'L')
+                                {{ request('jenis_kelamin') == 'L' ? 'selected' : '' }}
                             >
                                 Laki-laki
                             </option>
 
                             <option
                                 value="P"
-                                @selected(request('jenis_kelamin') == 'P')
+                                {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}
                             >
                                 Perempuan
                             </option>
+
                         </select>
                     </div>
+
+                    <div class="input-group sort-group">
+
+                        <label for="sort">Urutkan Berdasarkan</label>
+
+                        <select name="sort" id="sort">
+
+                            <option value="terbaru"
+                                {{ request('sort', 'terbaru') == 'terbaru' ? 'selected' : '' }}>
+                                Terbaru Ditambahkan
+                            </option>
+
+                            <option value="terlama"
+                                {{ request('sort') == 'terlama' ? 'selected' : '' }}>
+                                Terlama Ditambahkan
+                            </option>
+
+                            <option value="nama_asc"
+                                {{ request('sort') == 'nama_asc' ? 'selected' : '' }}>
+                                Nama A–Z
+                            </option>
+
+                            <option value="nama_desc"
+                                {{ request('sort') == 'nama_desc' ? 'selected' : '' }}>
+                                Nama Z–A
+                            </option>
+
+                            <option value="mulai_asc"
+                                {{ request('sort') == 'mulai_asc' ? 'selected' : '' }}>
+                                Tanggal Mulai Terdekat
+                            </option>
+
+                            <option value="mulai_desc"
+                                {{ request('sort') == 'mulai_desc' ? 'selected' : '' }}>
+                                Tanggal Mulai Terjauh
+                            </option>
+
+                            <option value="selesai_asc"
+                                {{ request('sort') == 'selesai_asc' ? 'selected' : '' }}>
+                                Tanggal Selesai Terdekat
+                            </option>
+
+                            <option value="selesai_desc"
+                                {{ request('sort') == 'selesai_desc' ? 'selected' : '' }}>
+                                Tanggal Selesai Terjauh
+                            </option>
+
+                        </select>
+
+                    </div>
+
                 </div>
 
-                <!-- Filter Actions -->
                 <div class="filter-actions">
-                    <button type="submit" class="btn-filter">
+
+                    <a
+                        href="{{ route('admin.sertifikat') }}"
+                        class="btn-reset"
+                    >
+                        <i class="fa-solid fa-rotate-left"></i>
+                        Reset
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn-filter"
+                    >
                         <i class="fa-solid fa-filter"></i>
                         Terapkan Filter
                     </button>
 
-                    <a
-                        href="{{ route('admin.sertifikat') }}"
-                        class="btn-reset-filter"
-                    >
-                        <i class="fa-solid fa-rotate-left"></i>
-                        Reset Filter
-                    </a>
                 </div>
+
             </form>
 
             <!-- Table -->
-            <div class="table-wrapper">
-                <table class="student-table">
+            <div class="table-card">
+                <div class="table-header">
+                    <div>
+                        <h3>Data Sertifikat Mahasiswa</h3>
+                        <p>
+                            Kelola laporan PKL, verifikasi ID Card, dan penerbitan sertifikat.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="table-admin">
                     <thead>
                         <tr>
                             <th>Mahasiswa</th>
@@ -318,7 +385,7 @@
                     </thead>
 
                     <tbody>
-                        @forelse($mahasiswa as $item)
+                        @forelse($mahasiswa as $index => $item)
                             @php
                                 /*
                                 |--------------------------------------------------------------------------
@@ -540,8 +607,63 @@
                     </tbody>
                 </table>
             </div>
+            {{-- ================= PAGINATION ================= --}}
+            @if($mahasiswa->hasPages())
+                <div class="pagination-wrapper">
 
-        </section>
+                    {{-- Previous --}}
+                    @if ($mahasiswa->onFirstPage())
+                        <span class="pagination-btn disabled">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </span>
+                    @else
+                        <a href="{{ $mahasiswa->previousPageUrl() }}"
+                        class="pagination-btn">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </a>
+                    @endif
+
+
+                    {{-- Nomor halaman --}}
+                    @foreach ($mahasiswa->getUrlRange(1, $mahasiswa->lastPage()) as $page => $url)
+
+                        @if ($page == $mahasiswa->currentPage())
+
+                            <span class="pagination-btn active">
+                                {{ $page }}
+                            </span>
+
+                        @else
+
+                            <a href="{{ $url }}"
+                            class="pagination-btn">
+                                {{ $page }}
+                            </a>
+
+                        @endif
+
+                    @endforeach
+
+
+                    {{-- Next --}}
+                    @if ($mahasiswa->hasMorePages())
+
+                        <a href="{{ $mahasiswa->nextPageUrl() }}"
+                        class="pagination-btn">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+
+                    @else
+
+                        <span class="pagination-btn disabled">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </span>
+
+                    @endif
+
+                </div>
+            @endif
+        </div>
     </main>
 
     <!-- Modal Upload Laporan -->

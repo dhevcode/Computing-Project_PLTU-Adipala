@@ -211,15 +211,159 @@ $query->whereHas('pengajuanMagang', function ($q) {
             );
         }
 
+        // =====================================================
+        // URUTKAN BERDASARKAN
+        // =====================================================
+
+        $sort = $request->get('sort', 'terbaru');
+
+        switch ($sort) {
+
+            // TERBARU DITAMBAHKAN
+            case 'terbaru':
+
+                $query->orderByDesc(
+                    PengajuanMagang::select('id_pengajuan')
+                        ->whereColumn(
+                            'pengajuan_magang.mahasiswa_id',
+                            'mahasiswa.id_mhs'
+                        )
+                        ->latest('id_pengajuan')
+                        ->limit(1)
+                );
+
+                break;
+
+
+            // TERLAMA DITAMBAHKAN
+            case 'terlama':
+
+                $query->orderBy(
+                    PengajuanMagang::select('id_pengajuan')
+                        ->whereColumn(
+                            'pengajuan_magang.mahasiswa_id',
+                            'mahasiswa.id_mhs'
+                        )
+                        ->oldest('id_pengajuan')
+                        ->limit(1),
+                    'asc'
+                );
+
+                break;
+
+
+            // NAMA A-Z
+            case 'nama_asc':
+
+                $query->orderBy(
+                    'nama_lengkap',
+                    'asc'
+                );
+
+                break;
+
+
+            // NAMA Z-A
+            case 'nama_desc':
+
+                $query->orderBy(
+                    'nama_lengkap',
+                    'desc'
+                );
+
+                break;
+
+
+            // TANGGAL MULAI TERDEKAT
+            case 'mulai_asc':
+
+                $query->orderBy(
+                    PengajuanMagang::select('tanggal_mulai')
+                        ->whereColumn(
+                            'pengajuan_magang.mahasiswa_id',
+                            'mahasiswa.id_mhs'
+                        )
+                        ->latest('id_pengajuan')
+                        ->limit(1),
+                    'asc'
+                );
+
+                break;
+
+
+            // TANGGAL MULAI TERJAUH
+            case 'mulai_desc':
+
+                $query->orderBy(
+                    PengajuanMagang::select('tanggal_mulai')
+                        ->whereColumn(
+                            'pengajuan_magang.mahasiswa_id',
+                            'mahasiswa.id_mhs'
+                        )
+                        ->latest('id_pengajuan')
+                        ->limit(1),
+                    'desc'
+                );
+
+                break;
+
+
+            // TANGGAL SELESAI TERDEKAT
+            case 'selesai_asc':
+
+                $query->orderBy(
+                    PengajuanMagang::select('tanggal_selesai')
+                        ->whereColumn(
+                            'pengajuan_magang.mahasiswa_id',
+                            'mahasiswa.id_mhs'
+                        )
+                        ->latest('id_pengajuan')
+                        ->limit(1),
+                    'asc'
+                );
+
+                break;
+
+
+            // TANGGAL SELESAI TERJAUH
+            case 'selesai_desc':
+
+                $query->orderBy(
+                    PengajuanMagang::select('tanggal_selesai')
+                        ->whereColumn(
+                            'pengajuan_magang.mahasiswa_id',
+                            'mahasiswa.id_mhs'
+                        )
+                        ->latest('id_pengajuan')
+                        ->limit(1),
+                    'desc'
+                );
+
+                break;
+
+
+            default:
+
+                $query->orderByDesc(
+                    PengajuanMagang::select('id_pengajuan')
+                        ->whereColumn(
+                            'pengajuan_magang.mahasiswa_id',
+                            'mahasiswa.id_mhs'
+                        )
+                        ->latest('id_pengajuan')
+                        ->limit(1)
+                );
+
+                break;
+        }
         /*
         |--------------------------------------------------------------------------
         | AMBIL DATA
         |--------------------------------------------------------------------------
         */
-
         $mahasiswa = $query
-            ->orderBy('nama_lengkap')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         /*
         |--------------------------------------------------------------------------
@@ -244,7 +388,7 @@ $query->whereHas('pengajuanMagang', function ($q) {
         | VIEW
         |--------------------------------------------------------------------------
         */
-
+        
         return view(
             'admin.sertifikat',
             compact(
