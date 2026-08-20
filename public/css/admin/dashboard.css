@@ -200,6 +200,136 @@ body{
     line-height:1.5;
 }
 
+/* ================= FILTER ================= */
+
+.filter-section,
+.table-card {
+    background: #fff;
+    border: 1px solid #E5E8EC;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
+}
+
+.filter-section {
+    margin-bottom: 16px;
+    padding: 17px 20px;
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.filter-icon {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #E8F5F5;
+    color: #0A5F63;
+    font-size: 14px;
+}
+
+.filter-header h3 {
+    color: #0A6B70;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.filter-header p {
+    margin-top: 2px;
+    color: #888;
+    font-size: 10px;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.input-group label {
+    color: #4E4E4E;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    height: 36px;
+    padding: 0 11px;
+    outline: none;
+    border: 1px solid #E4E4E4;
+    border-radius: 8px;
+    background: #fff;
+    color: #444;
+    font-size: 11px;
+    transition: .2s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #0A6D71;
+    box-shadow: 0 0 0 3px rgba(10, 109, 113, .10);
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.btn-filter,
+.btn-reset {
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 15px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.btn-filter {
+    border: 0;
+    background: #0A5F63;
+    color: #fff;
+}
+
+.btn-filter:hover {
+    background: #084C4F;
+}
+
+.btn-reset {
+    border: 1px solid #D8D8D8;
+    background: #fff;
+    color: #666;
+}
+
+.btn-reset:hover {
+    background: #F5F5F5;
+}
+
 /* ================= ALERT ================= */
 
 .alert-success{

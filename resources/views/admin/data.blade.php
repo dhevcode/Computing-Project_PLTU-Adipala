@@ -137,10 +137,10 @@
                         <option value="">Semua Jurusan</option>
 
                         @foreach($listJurusan as $j)
-                            <option value="{{ $j->id_jurusan }}"
-                                {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
-                                {{ $j->nama_jurusan }}
-                            </option>
+                        <option value="{{ $j->id_jurusan }}"
+                            {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
+                            {{ $j->nama_jurusan }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -155,10 +155,10 @@
                         <option value="">Semua Universitas</option>
 
                         @foreach($listUniversitas as $u)
-                            <option value="{{ $u->id_universitas }}"
-                                {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
-                                {{ $u->nama_universitas }}
-                            </option>
+                        <option value="{{ $u->id_universitas }}"
+                            {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
+                            {{ $u->nama_universitas }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -173,10 +173,10 @@
                         <option value="">Semua Divisi</option>
 
                         @foreach($listDivisi as $d)
-                            <option value="{{ $d->id_divisi }}"
-                                {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
-                                {{ $d->nama_divisi }}
-                            </option>
+                        <option value="{{ $d->id_divisi }}"
+                            {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
+                            {{ $d->nama_divisi }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -238,10 +238,10 @@
                         <option value="">Semua Tahun</option>
 
                         @for($i = date('Y') + 2; $i >= 2020; $i--)
-                            <option value="{{ $i }}"
-                                {{ request('tahun') == $i ? 'selected' : '' }}>
-                                {{ $i }}
-                            </option>
+                        <option value="{{ $i }}"
+                            {{ request('tahun') == $i ? 'selected' : '' }}>
+                            {{ $i }}
+                        </option>
                         @endfor
                     </select>
                 </div>
@@ -274,55 +274,55 @@
 
                 <!-- URUTKAN -->
 
-<div class="input-group sort-group">
+                <div class="input-group sort-group">
 
-    <label for="sort">Urutkan Berdasarkan</label>
+                    <label for="sort">Urutkan Berdasarkan</label>
 
-    <select name="sort" id="sort">
+                    <select name="sort" id="sort">
 
-        <option value="terbaru"
-            {{ request('sort', 'terbaru') == 'terbaru' ? 'selected' : '' }}>
-            Terbaru Ditambahkan
-        </option>
+                        <option value="terbaru"
+                            {{ request('sort', 'terbaru') == 'terbaru' ? 'selected' : '' }}>
+                            Terbaru Ditambahkan
+                        </option>
 
-        <option value="terlama"
-            {{ request('sort') == 'terlama' ? 'selected' : '' }}>
-            Terlama Ditambahkan
-        </option>
+                        <option value="terlama"
+                            {{ request('sort') == 'terlama' ? 'selected' : '' }}>
+                            Terlama Ditambahkan
+                        </option>
 
-        <option value="nama_asc"
-            {{ request('sort') == 'nama_asc' ? 'selected' : '' }}>
-            Nama A–Z
-        </option>
+                        <option value="nama_asc"
+                            {{ request('sort') == 'nama_asc' ? 'selected' : '' }}>
+                            Nama A–Z
+                        </option>
 
-        <option value="nama_desc"
-            {{ request('sort') == 'nama_desc' ? 'selected' : '' }}>
-            Nama Z–A
-        </option>
+                        <option value="nama_desc"
+                            {{ request('sort') == 'nama_desc' ? 'selected' : '' }}>
+                            Nama Z–A
+                        </option>
 
-        <option value="mulai_asc"
-            {{ request('sort') == 'mulai_asc' ? 'selected' : '' }}>
-            Tanggal Mulai Terdekat
-        </option>
+                        <option value="mulai_asc"
+                            {{ request('sort') == 'mulai_asc' ? 'selected' : '' }}>
+                            Tanggal Mulai Terdekat
+                        </option>
 
-        <option value="mulai_desc"
-            {{ request('sort') == 'mulai_desc' ? 'selected' : '' }}>
-            Tanggal Mulai Terjauh
-        </option>
+                        <option value="mulai_desc"
+                            {{ request('sort') == 'mulai_desc' ? 'selected' : '' }}>
+                            Tanggal Mulai Terjauh
+                        </option>
 
-        <option value="selesai_asc"
-            {{ request('sort') == 'selesai_asc' ? 'selected' : '' }}>
-            Tanggal Selesai Terdekat
-        </option>
+                        <option value="selesai_asc"
+                            {{ request('sort') == 'selesai_asc' ? 'selected' : '' }}>
+                            Tanggal Selesai Terdekat
+                        </option>
 
-        <option value="selesai_desc"
-            {{ request('sort') == 'selesai_desc' ? 'selected' : '' }}>
-            Tanggal Selesai Terjauh
-        </option>
+                        <option value="selesai_desc"
+                            {{ request('sort') == 'selesai_desc' ? 'selected' : '' }}>
+                            Tanggal Selesai Terjauh
+                        </option>
 
-    </select>
+                    </select>
 
-</div>
+                </div>
 
             </div>
 
@@ -396,102 +396,102 @@
 
                         @forelse($pengajuans as $index => $row)
 
-                            <tr>
+                        <tr>
 
-                                <td>
-                                    {{ $pengajuans->firstItem() + $index }}
-                                </td>
+                            <td>
+                                {{ $pengajuans->firstItem() + $index }}
+                            </td>
 
-                                <td>
-                                    {{ $row->mahasiswa->nim ?? '-' }}
-                                </td>
+                            <td>
+                                {{ $row->mahasiswa->nim ?? '-' }}
+                            </td>
 
-                                <td>
-                                    {{ $row->mahasiswa->nama_lengkap ?? '-' }}
-                                </td>
+                            <td>
+                                {{ $row->mahasiswa->nama_lengkap ?? '-' }}
+                            </td>
 
-                                <td>
-                                    {{ $row->mahasiswa->jenis_kelamin ?? '-' }}
-                                </td>
+                            <td>
+                                {{ $row->mahasiswa->jenis_kelamin ?? '-' }}
+                            </td>
 
-                                <td>
-                                    {{ $row->mahasiswa->universitas->nama_universitas ?? '-' }}
-                                </td>
+                            <td>
+                                {{ $row->mahasiswa->universitas->nama_universitas ?? '-' }}
+                            </td>
 
-                                <td>
-                                    {{ $row->mahasiswa->jurusan->nama_jurusan ?? '-' }}
-                                </td>
+                            <td>
+                                {{ $row->mahasiswa->jurusan->nama_jurusan ?? '-' }}
+                            </td>
 
-                                <td>
-                                    {{ $row->divisi->nama_divisi ?? '-' }}
-                                </td>
+                            <td>
+                                {{ $row->divisi->nama_divisi ?? '-' }}
+                            </td>
 
-                                <td>
-                                    {{ \Carbon\Carbon::parse($row->tanggal_mulai)->format('d M Y') }}
-                                    s.d.
-                                    {{ \Carbon\Carbon::parse($row->tanggal_selesai)->format('d M Y') }}
-                                </td>
+                            <td>
+                                {{ \Carbon\Carbon::parse($row->tanggal_mulai)->format('d M Y') }}
+                                s.d.
+                                {{ \Carbon\Carbon::parse($row->tanggal_selesai)->format('d M Y') }}
+                            </td>
 
-                                <td>
-                                    @if($row->status === 'Akan Magang')
-                                        <span class="status status-upcoming">
-                                            Akan Magang
-                                        </span>
-                                    @elseif($row->status === 'Sedang Magang')
-                                        <span class="status status-active">
-                                            Sedang Magang
-                                        </span>
-                                    @elseif($row->status === 'Selesai Magang')
-                                        <span class="status status-finished">
-                                            Selesai Magang
-                                        </span>
-                                    @else
-                                        <span class="status status-empty">
-                                            -
-                                        </span>
-                                    @endif
-                                </td>
+                            <td>
+                                @if($row->status === 'Akan Magang')
+                                <span class="status status-upcoming">
+                                    Akan Magang
+                                </span>
+                                @elseif($row->status === 'Sedang Magang')
+                                <span class="status status-active">
+                                    Sedang Magang
+                                </span>
+                                @elseif($row->status === 'Selesai Magang')
+                                <span class="status status-finished">
+                                    Selesai Magang
+                                </span>
+                                @else
+                                <span class="status status-empty">
+                                    -
+                                </span>
+                                @endif
+                            </td>
 
-                                <td>
-                                    <div class="action">
+                            <td>
+                                <div class="action">
 
-                                        <a
-                                            href="{{ route('admin.detail', $row->id_pengajuan) }}"
-                                            class="detail"
-                                            title="Detail">
-                                            <i class="fa-regular fa-eye"></i>
-                                        </a>
+                                    <a
+                                        href="{{ route('admin.detail', $row->id_pengajuan) }}"
+                                        class="detail"
+                                        title="Detail">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </a>
 
-                                        <form
-                                            action="{{ route('admin.destroy', $row->id_pengajuan) }}"
-                                            method="POST"
-                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')">
+                                    <form
+                                        action="{{ route('admin.destroy', $row->id_pengajuan) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')">
 
-                                            @csrf
-                                            @method('DELETE')
+                                        @csrf
+                                        @method('DELETE')
 
-                                            <button
-                                                type="submit"
-                                                class="delete"
-                                                title="Hapus">
-                                                <i class="fa-regular fa-trash-can"></i>
-                                            </button>
+                                        <button
+                                            type="submit"
+                                            class="delete"
+                                            title="Hapus">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
 
-                                        </form>
+                                    </form>
 
-                                    </div>
-                                </td>
+                                </div>
+                            </td>
 
-                            </tr>
+                        </tr>
 
                         @empty
 
-                            <tr>
-                                <td colspan="10" class="empty-data">
-                                    <i class="fa-regular fa-folder-open"></i>
-                                    <span>Belum ada data mahasiswa yang sesuai dengan filter.</span>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="10" class="empty-data">
+                                <i class="fa-regular fa-folder-open"></i>
+                                <span>Belum ada data mahasiswa yang sesuai dengan filter.</span>
+                            </td>
+                        </tr>
 
                         @endforelse
 
@@ -504,50 +504,50 @@
             <!-- PAGINATION -->
 
             @if($pengajuans->hasPages())
-    <div class="pagination-wrapper">
+            <div class="pagination-wrapper">
 
-        {{-- Previous --}}
-        @if ($pengajuans->onFirstPage())
-            <span class="pagination-btn disabled">
-                <i class="fa-solid fa-chevron-left"></i>
-            </span>
-        @else
-            <a href="{{ $pengajuans->appends(request()->query())->previousPageUrl() }}"
-               class="pagination-btn">
-                <i class="fa-solid fa-chevron-left"></i>
-            </a>
-        @endif
+                {{-- Previous --}}
+                @if ($pengajuans->onFirstPage())
+                <span class="pagination-btn disabled">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </span>
+                @else
+                <a href="{{ $pengajuans->appends(request()->query())->previousPageUrl() }}"
+                    class="pagination-btn">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </a>
+                @endif
 
-        {{-- Nomor Halaman --}}
-        @foreach ($pengajuans->getUrlRange(1, $pengajuans->lastPage()) as $page => $url)
+                {{-- Nomor Halaman --}}
+                @foreach ($pengajuans->getUrlRange(1, $pengajuans->lastPage()) as $page => $url)
 
-            @if ($page == $pengajuans->currentPage())
+                @if ($page == $pengajuans->currentPage())
                 <span class="pagination-btn active">
                     {{ $page }}
                 </span>
-            @else
+                @else
                 <a href="{{ $pengajuans->appends(request()->query())->url($page) }}"
-                   class="pagination-btn">
+                    class="pagination-btn">
                     {{ $page }}
                 </a>
+                @endif
+
+                @endforeach
+
+                {{-- Next --}}
+                @if ($pengajuans->hasMorePages())
+                <a href="{{ $pengajuans->appends(request()->query())->nextPageUrl() }}"
+                    class="pagination-btn">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                @else
+                <span class="pagination-btn disabled">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </span>
+                @endif
+
+            </div>
             @endif
-
-        @endforeach
-
-        {{-- Next --}}
-        @if ($pengajuans->hasMorePages())
-            <a href="{{ $pengajuans->appends(request()->query())->nextPageUrl() }}"
-               class="pagination-btn">
-                <i class="fa-solid fa-chevron-right"></i>
-            </a>
-        @else
-            <span class="pagination-btn disabled">
-                <i class="fa-solid fa-chevron-right"></i>
-            </span>
-        @endif
-
-    </div>
-@endif
         </section>
 
     </main>
@@ -556,17 +556,17 @@
     <!-- ================= SCRIPT ================= -->
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const menuBtn = document.getElementById('menuBtn');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
 
-            menuBtn.addEventListener('click', function () {
+            menuBtn.addEventListener('click', function() {
                 sidebar.classList.toggle('active');
                 overlay.classList.toggle('active');
             });
 
-            overlay.addEventListener('click', function () {
+            overlay.addEventListener('click', function() {
                 sidebar.classList.remove('active');
                 overlay.classList.remove('active');
             });

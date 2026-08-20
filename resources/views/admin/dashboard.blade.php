@@ -85,6 +85,204 @@
     </div>
     @endif
 
+    <!-- ================= FILTER ================= -->
+
+        <form method="GET"
+            action="{{ route('admin.dashboard') }}"
+            class="filter-section">
+
+            <div class="filter-header">
+                <div class="filter-icon">
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+
+                <div>
+                    <h3>Filter Data Mahasiswa</h3>
+                    <p>Gunakan filter untuk mencari data mahasiswa berdasarkan kriteria tertentu.</p>
+                </div>
+            </div>
+
+
+            <div class="filter-grid">
+
+                <!-- PENCARIAN -->
+
+                <div class="input-group">
+                    <label for="search">Pencarian</label>
+                    <input
+                        type="text"
+                        id="search"
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Nama / NIM...">
+                </div>
+
+
+                <!-- JURUSAN -->
+
+                <div class="input-group">
+                    <label for="jurusan_id">Jurusan</label>
+
+                    <select name="jurusan_id" id="jurusan_id">
+                        <option value="">Semua Jurusan</option>
+
+                        @foreach($listJurusan as $j)
+                        <option value="{{ $j->id_jurusan }}"
+                            {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
+                            {{ $j->nama_jurusan }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+
+                <!-- UNIVERSITAS -->
+
+                <div class="input-group">
+                    <label for="universitas_id">Universitas</label>
+
+                    <select name="universitas_id" id="universitas_id">
+                        <option value="">Semua Universitas</option>
+
+                        @foreach($listUniversitas as $u)
+                        <option value="{{ $u->id_universitas }}"
+                            {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
+                            {{ $u->nama_universitas }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+
+                <!-- DIVISI -->
+
+                <div class="input-group">
+                    <label for="divisi_id">Divisi</label>
+
+                    <select name="divisi_id" id="divisi_id">
+                        <option value="">Semua Divisi</option>
+
+                        @foreach($listDivisi as $d)
+                        <option value="{{ $d->id_divisi }}"
+                            {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
+                            {{ $d->nama_divisi }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+
+                <!-- JENIS KELAMIN -->
+
+                <div class="input-group">
+                    <label for="jenis_kelamin">Jenis Kelamin</label>
+
+                    <select name="jenis_kelamin" id="jenis_kelamin">
+                        <option value="">Semua Jenis Kelamin</option>
+
+                        <option value="Laki-laki"
+                            {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+                            Laki-laki
+                        </option>
+
+                        <option value="Perempuan"
+                            {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+                            Perempuan
+                        </option>
+                    </select>
+                </div>
+
+
+                <!-- TANGGAL MULAI -->
+
+                <div class="input-group">
+                    <label for="tanggal_mulai">Tanggal Masuk</label>
+
+                    <input
+                        type="date"
+                        id="tanggal_mulai"
+                        name="tanggal_mulai"
+                        value="{{ request('tanggal_mulai') }}">
+                </div>
+
+
+                <!-- TANGGAL SELESAI -->
+
+                <div class="input-group">
+                    <label for="tanggal_selesai">Tanggal Selesai</label>
+
+                    <input
+                        type="date"
+                        id="tanggal_selesai"
+                        name="tanggal_selesai"
+                        value="{{ request('tanggal_selesai') }}">
+                </div>
+
+
+                <!-- TAHUN -->
+
+                <div class="input-group">
+                    <label for="tahun">Tahun</label>
+
+                    <select name="tahun" id="tahun">
+                        <option value="">Semua Tahun</option>
+
+                        @for($i = date('Y') + 2; $i >= 2020; $i--)
+                        <option value="{{ $i }}"
+                            {{ request('tahun') == $i ? 'selected' : '' }}>
+                            {{ $i }}
+                        </option>
+                        @endfor
+                    </select>
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="input-group">
+                    <label for="status">Status Magang</label>
+
+                    <select name="status" id="status">
+                        <option value="">Semua Status</option>
+
+                        <option value="Akan Magang"
+                            {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>
+                            Akan Magang
+                        </option>
+
+                        <option value="Sedang Magang"
+                            {{ request('status') == 'Sedang Magang' ? 'selected' : '' }}>
+                            Sedang Magang
+                        </option>
+
+                        <option value="Selesai Magang"
+                            {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>
+                            Selesai Magang
+                        </option>
+                    </select>
+                </div>
+
+                
+
+            </div>
+
+
+            <!-- FILTER ACTIONS -->
+
+            <div class="filter-actions">
+                <a href="{{ route('admin.dashboard') }}" class="btn-reset">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Reset
+                </a>
+
+                <button type="submit" class="btn-filter">
+                    <i class="fa-solid fa-filter"></i>
+                    Terapkan Filter
+                </button>
+            </div>
+
+        </form>
+
     <!-- Statistik -->
     <div class="cards">
 
