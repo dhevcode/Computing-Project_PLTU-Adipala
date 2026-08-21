@@ -799,7 +799,7 @@
                 </div>
 
                 <div class="card-value">
-                    01
+                    {{ $magangHariIni }}
                 </div>
 
                 <div class="card-desc">
@@ -821,11 +821,11 @@
                 </div>
 
                 <div class="card-value">
-                    01
+                    {{ $totalMahasiswa }}
                 </div>
 
                 <div class="card-desc">
-                    0 belum selesai
+                    {{ $belumSelesai }} belum selesai
                 </div>
 
             </div>
@@ -843,7 +843,7 @@
                 </div>
 
                 <div class="card-value">
-                    01
+                    {{ $akanDatang }}
                 </div>
 
                 <div class="card-desc">
@@ -865,7 +865,7 @@
                 </div>
 
                 <div class="card-value">
-                    01
+                    {{ $divisiTerlibat }}
                 </div>
 
                 <div class="card-desc">
@@ -961,17 +961,17 @@
 
                 <div class="filter-button">
 
-                    <button class="btn-reset">
+                    <a href="{{ request()->url() }}" class="btn-reset" style="text-decoration: none; display: inline-flex; align-items: center;">
 
                         Reset Filter
 
-                    </button>
+                    </a>
 
-                    <button class="btn-export">
+                    <button class="btn-export" form="filterForm" type="submit">
 
                         <i class="fa-solid fa-download"></i>
 
-                        Export CSV
+                        Terapkan Filter
 
                     </button>
 
@@ -979,13 +979,13 @@
 
             </div>
 
-            <div class="filter-grid">
+            <form id="filterForm" method="GET" action="{{ request()->url() }}" class="filter-grid">
 
                 <div class="input-group">
 
                     <label>Cari</label>
 
-                    <input type="text" placeholder="Nama, NIM, Kampus...">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama, NIM, Kampus...">
 
                 </div>
 
@@ -993,15 +993,15 @@
 
                     <label>Status</label>
 
-                    <select>
+                    <select name="status">
 
-                        <option>Semua</option>
+                        <option value="">Semua</option>
 
-                        <option>Aktif</option>
+                        <option value="Sedang Magang" {{ request('status') == 'Sedang Magang' ? 'selected' : '' }}>Aktif</option>
 
-                        <option>Selesai</option>
+                        <option value="Selesai Magang" {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>Selesai</option>
 
-                        <option>Akan Datang</option>
+                        <option value="Akan Magang" {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>Akan Datang</option>
 
                     </select>
 
@@ -1011,13 +1011,13 @@
 
                     <label>Jenis Kelamin</label>
 
-                    <select>
+                    <select name="jenis_kelamin">
 
-                        <option>Semua</option>
+                        <option value="">Semua</option>
 
-                        <option>Laki-laki</option>
+                        <option value="Laki-laki" {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
 
-                        <option>Perempuan</option>
+                        <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
 
                     </select>
 
@@ -1027,7 +1027,7 @@
 
                     <label>Tanggal Mulai</label>
 
-                    <input type="date">
+                    <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}">
 
                 </div>
 
@@ -1035,7 +1035,7 @@
 
                     <label>Tanggal Selesai</label>
 
-                    <input type="date">
+                    <input type="date" name="tanggal_selesai" value="{{ request('tanggal_selesai') }}">
 
                 </div>
 
@@ -1043,11 +1043,15 @@
 
                     <label>Jurusan</label>
 
-                    <select>
+                    <select name="jurusan_id">
 
-                        <option>Semua</option>
+                        <option value="">Semua</option>
 
-                        <option>Informatika</option>
+                        @foreach ($listJurusan as $jurusan)
+                            <option value="{{ $jurusan->id_jurusan }}" {{ request('jurusan_id') == $jurusan->id_jurusan ? 'selected' : '' }}>
+                                {{ $jurusan->nama_jurusan }}
+                            </option>
+                        @endforeach
 
                     </select>
 
@@ -1057,11 +1061,15 @@
 
                     <label>Universitas</label>
 
-                    <select>
+                    <select name="universitas_id">
 
-                        <option>Semua</option>
+                        <option value="">Semua</option>
 
-                        <option>PNC</option>
+                        @foreach ($listUniversitas as $universitas)
+                            <option value="{{ $universitas->id_universitas }}" {{ request('universitas_id') == $universitas->id_universitas ? 'selected' : '' }}>
+                                {{ $universitas->nama_universitas }}
+                            </option>
+                        @endforeach
 
                     </select>
 
@@ -1071,17 +1079,21 @@
 
                     <label>Divisi</label>
 
-                    <select>
+                    <select name="divisi_id">
 
-                        <option>Semua</option>
+                        <option value="">Semua</option>
 
-                        <option>Umum</option>
+                        @foreach ($listDivisi as $divisi)
+                            <option value="{{ $divisi->id_divisi }}" {{ request('divisi_id') == $divisi->id_divisi ? 'selected' : '' }}>
+                                {{ $divisi->nama_divisi }}
+                            </option>
+                        @endforeach
 
                     </select>
 
                 </div>
 
-            </div>
+            </form>
 
         </div>
 
@@ -1095,11 +1107,11 @@
 
             data: {
 
-                labels: ['Umum', 'Sisfor'],
+                labels: @json($bidangLabels),
 
                 datasets: [{
 
-                    data: [2, 1],
+                    data: @json($bidangData),
 
                     backgroundColor: '#2B7C82',
 
@@ -1173,7 +1185,7 @@
 
                 datasets: [{
 
-                    data: [1, 1, 1],
+                    data: @json([$statusAktif, $statusAkanDatang, $statusSelesai]),
 
                     backgroundColor: [
 
@@ -1219,11 +1231,11 @@
 
             data: {
 
-                labels: ['PNC', 'POLINES', 'UNSOED'],
+                labels: @json($univLabels),
 
                 datasets: [{
 
-                    data: [7, 6, 8],
+                    data: @json($univData),
 
                     backgroundColor: (context) => {
 
@@ -1279,7 +1291,7 @@
 
                         beginAtZero: true,
 
-                        max: 10,
+                        suggestedMax: 10,
 
                         grid: {
 

@@ -168,7 +168,6 @@ class DashboardController extends Controller
             );
         }
 
-
         // =====================================================
         // CARD STATISTIK
         // =====================================================
@@ -229,39 +228,18 @@ class DashboardController extends Controller
 
 
         // =====================================================
-// CHART JUMLAH MAHASISWA PER DIVISI
-// Semua divisi tetap ditampilkan, termasuk yang 0
-// =====================================================
+        // CHART JUMLAH MAHASISWA PER DIVISI
+        // =====================================================
 
-$divisiStats = Divisi::query()
-    ->leftJoinSub(
-        (clone $query)
-            ->select(
-                'divisi_id',
-                DB::raw('COUNT(DISTINCT mahasiswa_id) as total')
-            )
-            ->groupBy('divisi_id'),
-        'filtered_pengajuan',
-        'divisi.id_divisi',
-        '=',
-        'filtered_pengajuan.divisi_id'
-    )
-    ->select(
-        'divisi.id_divisi',
-        'divisi.nama_divisi',
-        DB::raw('COALESCE(filtered_pengajuan.total, 0) as total')
-    )
-    ->orderBy('divisi.id_divisi')
-    ->get();
+        $divisiStats = (clone $query)
+            ->join('divisi', 'pengajuan_magang.divisi_id', '=', 'divisi.id_divisi')
+            ->select('divisi.nama_divisi', DB::raw('COUNT(DISTINCT pengajuan_magang.mahasiswa_id) as total'))
+            ->groupBy('divisi.id_divisi', 'divisi.nama_divisi')
+            ->orderBy('divisi.nama_divisi')
+            ->get();
 
-$bidangLabels = $divisiStats
-    ->pluck('nama_divisi')
-    ->toArray();
-
-$bidangData = $divisiStats
-    ->pluck('total')
-    ->map(fn ($total) => (int) $total)
-    ->toArray();
+        $bidangLabels = $divisiStats->pluck('nama_divisi')->toArray();
+        $bidangData = $divisiStats->pluck('total')->map(fn($v) => (int) $v)->toArray();
 
 
         // =====================================================
@@ -269,40 +247,15 @@ $bidangData = $divisiStats
         // =====================================================
 
         $univStats = (clone $query)
-            ->join(
-                'mahasiswa',
-                'pengajuan_magang.mahasiswa_id',
-                '=',
-                'mahasiswa.id_mhs'
-            )
-            ->join(
-                'universitas',
-                'mahasiswa.universitas_id',
-                '=',
-                'universitas.id_universitas'
-            )
-            ->select(
-                'universitas.nama_universitas',
-                DB::raw(
-                    'COUNT(DISTINCT mahasiswa.id_mhs) as total'
-                )
-            )
-            ->groupBy(
-                'universitas.id_universitas',
-                'universitas.nama_universitas'
-            )
+            ->join('mahasiswa', 'pengajuan_magang.mahasiswa_id', '=', 'mahasiswa.id_mhs')
+            ->join('universitas', 'mahasiswa.universitas_id', '=', 'universitas.id_universitas')
+            ->select('universitas.nama_universitas', DB::raw('COUNT(DISTINCT pengajuan_magang.mahasiswa_id) as total'))
+            ->groupBy('universitas.id_universitas', 'universitas.nama_universitas')
             ->orderByDesc('total')
             ->get();
 
-
-        $univLabels = $univStats
-            ->pluck('nama_universitas')
-            ->toArray();
-
-
-        $univData = $univStats
-            ->pluck('total')
-            ->toArray();
+        $univLabels = $univStats->pluck('nama_universitas')->toArray();
+        $univData = $univStats->pluck('total')->map(fn($v) => (int) $v)->toArray();
 
 
         // =====================================================

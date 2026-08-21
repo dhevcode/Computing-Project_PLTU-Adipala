@@ -130,14 +130,8 @@ class AdminController extends Controller
 |--------------------------------------------------------------------------
 */
 
-$chartDivisi = Divisi::query()
-    ->leftJoin(
-        'pengajuan_magang',
-        'divisi.id_divisi',
-        '=',
-        'pengajuan_magang.divisi_id'
-    )
-    ->where('divisi.nama_divisi', '!=', '0')
+$chartDivisi = (clone $pengajuanQuery)
+    ->join('divisi', 'pengajuan_magang.divisi_id', '=', 'divisi.id_divisi')
     ->select(
         'divisi.id_divisi',
         'divisi.nama_divisi',
@@ -147,7 +141,7 @@ $chartDivisi = Divisi::query()
         'divisi.id_divisi',
         'divisi.nama_divisi'
     )
-    ->orderBy('divisi.id_divisi')
+    ->orderBy('divisi.nama_divisi')
     ->get();
 
 $singkatanDivisi = [
@@ -204,13 +198,20 @@ $bidangData = $chartDivisi->pluck('total');
         |--------------------------------------------------------------------------
         */
 
-        $chartUniv = Universitas::withCount('mahasiswa')
-            ->having('mahasiswa_count', '>', 0)
-            ->orderByDesc('mahasiswa_count')
+        $chartUniv = (clone $pengajuanQuery)
+            ->join('mahasiswa', 'pengajuan_magang.mahasiswa_id', '=', 'mahasiswa.id_mhs')
+            ->join('universitas', 'mahasiswa.universitas_id', '=', 'universitas.id_universitas')
+            ->select(
+                'universitas.id_universitas',
+                'universitas.nama_universitas',
+                DB::raw('COUNT(DISTINCT pengajuan_magang.mahasiswa_id) as total')
+            )
+            ->groupBy('universitas.id_universitas', 'universitas.nama_universitas')
+            ->orderByDesc('total')
             ->get();
 
         $univLabels = $chartUniv->pluck('nama_universitas');
-        $univData = $chartUniv->pluck('mahasiswa_count');
+        $univData = $chartUniv->pluck('total');
 
         /*
         |--------------------------------------------------------------------------
