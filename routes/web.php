@@ -5,6 +5,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\SertifikatController;
+use App\Http\Controllers\ProfileSuperAdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -76,6 +77,12 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
 
     Route::delete('/superadmin/delete/{id}', [SuperAdminController::class, 'destroy'])
         ->name('superadmin.destroy');
+
+    Route::get('/profile', [ProfileSuperAdminController::class, 'edit'])
+        ->name('superadmin.profile');
+
+    Route::put('/profile', [ProfileSuperAdminController::class, 'update'])
+        ->name('superadmin.profile.update');
 });
 
 

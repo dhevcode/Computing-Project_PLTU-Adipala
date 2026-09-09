@@ -26,9 +26,15 @@
             </div>
         </div>
         <div class="header-right">
+
             <a href="{{ route('superadmin.create') }}" class="btn-header-action">
                 <i class="fa-solid fa-user-plus"></i>
                 <span>Tambah Admin</span>
+            </a>
+
+            <a href="{{ route('superadmin.profile') }}" class="btn-header-action">
+                <i class="fa-solid fa-user"></i>
+                <span>Profile</span>
             </a>
 
             <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
@@ -37,6 +43,7 @@
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 </button>
             </form>
+
         </div>
     </header>
 
