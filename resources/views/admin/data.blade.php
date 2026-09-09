@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Data Mahasiswa - Sistem Magang</title>
+    <link rel="icon" type="image/png" href="{{ asset('assets/image/logo-sie.png') }}">
 
     <!-- FONT -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
