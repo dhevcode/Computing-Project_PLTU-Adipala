@@ -52,36 +52,7 @@
 
 
     <!-- ================= SIDEBAR ================= -->
-
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <aside class="sidebar" id="sidebar">
-
-        <a href="{{ route('admin.dashboard') }}"
-            class="sidebar-menu {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <i class="fa-regular fa-chart-bar"></i>
-            <span>Dashboard</span>
-        </a>
-
-        <a href="{{ route('admin.data') }}"
-            class="sidebar-menu {{ request()->routeIs('admin.data') ? 'active' : '' }}">
-            <i class="fa-regular fa-user"></i>
-            <span>Data Mahasiswa</span>
-        </a>
-
-        <a href="{{ route('admin.dokumen') }}"
-            class="sidebar-menu {{ request()->routeIs('admin.dokumen') ? 'active' : '' }}">
-            <i class="fa-regular fa-file-lines"></i>
-            <span>Dokumen Verification</span>
-        </a>
-
-        <a href="{{ route('admin.sertifikat') }}"
-            class="sidebar-menu {{ request()->routeIs('admin.sertifikat') ? 'active' : '' }}">
-            <i class="fa-regular fa-file"></i>
-            <span>Sertifikat</span>
-        </a>
-
-    </aside>
+    @include('admin.sidebar')
 
 
     <!-- ================= CONTENT ================= -->

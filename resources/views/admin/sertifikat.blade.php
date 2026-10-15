@@ -67,31 +67,8 @@
         </div>
     </header>
 
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <a href="{{ route('admin.dashboard') }}" class="sidebar-menu">
-            <i class="fa-regular fa-chart-bar"></i>
-            <span>Dashboard</span>
-        </a>
-
-        <a href="{{ route('admin.data') }}" class="sidebar-menu">
-            <i class="fa-regular fa-user"></i>
-            <span>Data Mahasiswa</span>
-        </a>
-
-        <a href="{{ route('admin.dokumen') }}" class="sidebar-menu">
-            <i class="fa-regular fa-file-lines"></i>
-            <span>Dokumen Verification</span>
-        </a>
-
-        <a href="{{ route('admin.sertifikat') }}" class="sidebar-menu active">
-            <i class="fa-regular fa-file"></i>
-            <span>Sertifikat</span>
-        </a>
-    </div>
+    @include('admin.sidebar')
 
     <!-- Main Content -->
     <div class="content">

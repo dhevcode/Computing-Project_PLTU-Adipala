@@ -97,15 +97,26 @@ body{
 .sidebar{
     position:fixed;
     top:82px;
-    right:-270px;
-    width:250px;
-    background:rgba(210,210,210,.96);
-    backdrop-filter:blur(8px);
-    border-radius:24px;
-    padding:24px 18px;
-    box-shadow:-5px 5px 20px rgba(0,0,0,.12);
+    right:-290px;
+    width:270px;
+    max-height:calc(100vh - 100px);
+    overflow-y:auto;
+    background:rgba(220,220,220,.98);
+    backdrop-filter:blur(10px);
+    border-radius:20px;
+    padding:20px 14px;
+    box-shadow:-5px 5px 25px rgba(0,0,0,.15);
     transition:.3s;
     z-index:9998;
+}
+
+.sidebar-title{
+    font-size:10px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:#0A5F63;
+    padding:8px 10px 4px;
+    letter-spacing:.5px;
 }
 
 .sidebar.active{

@@ -41,8 +41,8 @@
                 <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
             </div>
 
-            <h2>Masuk Sebagai Admin</h2>
-            <p class="subtitle">Gunakan kredensial admin untuk mengakses dashboard</p>
+            <h2>Masuk ke Sistem</h2>
+            <p class="subtitle">Gunakan email atau NIM untuk mengakses portal</p>
 
             <form action="{{ route('login.process') }}" method="POST">
                 @csrf
@@ -55,15 +55,15 @@
                 @endif
 
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="email">Email atau NIM</label>
                     <input 
-                        type="email" 
+                        type="text" 
                         id="email" 
                         name="email" 
                         value="{{ old('email') }}" 
                         required 
-                        placeholder="Masukkan alamat email..."
-                        autocomplete="email"
+                        placeholder="Contoh: mhs1@gmail.com / 2311102324"
+                        autocomplete="username"
                     >
                     @error('email')
                         <span class="error-message">{{ $message }}</span>
@@ -77,7 +77,7 @@
                         id="password" 
                         name="password" 
                         required 
-                        placeholder="Masukkan password..."
+                        placeholder="Masukkan password Anda..."
                     >
                     @error('password')
                         <span class="error-message">{{ $message }}</span>
@@ -89,10 +89,12 @@
                 </button>
             </form>
 
-            <div class="warning">
-                <div class="warning-icon">!</div>
+            <div class="warning" style="font-size: 11.5px; line-height: 1.4;">
+                <div class="warning-icon">ℹ️</div>
                 <div>
-                    <strong>Perhatian:</strong> Halaman ini hanya dapat diakses oleh administrator yang memiliki hak akses resmi.
+                    <strong>Akun Demo Tersedia:</strong><br>
+                    &bull; <strong>Peserta:</strong> <code>mhs1@gmail.com</code> / NIM: <code>2311102324</code> (Pass: <code>mhs123</code>)<br>
+                    &bull; <strong>Admin:</strong> <code>admin@pltu.com</code> (Pass: <code>admin123</code>)
                 </div>
             </div>
 
