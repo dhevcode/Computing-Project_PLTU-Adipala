@@ -123,7 +123,7 @@ Database seeder telah menyiapkan beberapa akun dengan role berbeda untuk penguji
 | **Admin Divisi / Pembimbing** | `admin` | `admin@pltu.com` | `admin123` | Approval logbook, review absensi & koreksi, kelola cuti, aduan, nilai harian, info perusahaan, verifikasi ID card & sertifikat |
 | **Peserta Magang 1** | `2311102001` (NIM) | `rian.pratama@pltu.com` | `mhs123` | Divisi Sistem Informasi, presensi GPS, pengisian logbook, ajukan izin/cuti/aduan |
 | **Peserta Magang 2** | `2311102002` (NIM) | `siti.nurhaliza@pltu.com` | `mhs123` | Divisi SDM & Umum, presensi GPS, pengisian logbook, ajukan izin/cuti/aduan |
-| **Peserta Magang Telkom** | `2311102324` (NIM) | *(Sesuai data mahasiswa)* | `mhs123` | Data mahasiswa Telkom University terintegrasi |
+| **Peserta Magang Telkom** | `2311102324` (NIM) | `mhs1@gmail.com` | `mhs123` | Data mahasiswa Telkom University terintegrasi |
 
 ---
 
