@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::table('pengajuan_magang', function (Blueprint $table) {
             if (!Schema::hasColumn('pengajuan_magang', 'proposal')) {
-                $table->string('proposal')->nullable()->after('surat_permohonan');
+                $table->string('proposal')->nullable();
             }
             if (!Schema::hasColumn('pengajuan_magang', 'cv')) {
-                $table->string('cv')->nullable()->after('proposal');
+                $table->string('cv')->nullable();
             }
             if (!Schema::hasColumn('pengajuan_magang', 'surat_balasan')) {
-                $table->string('surat_balasan')->nullable()->after('cv');
+                $table->string('surat_balasan')->nullable();
             }
         });
     }
