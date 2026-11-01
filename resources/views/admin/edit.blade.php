@@ -194,7 +194,14 @@
 
                     <div class="form-group">
                         <label>Nama Pembimbing Lapangan</label>
-                        <input type="text" name="nama_pembimbing" value="{{ old('nama_pembimbing',$pengajuan->nama_pembimbing) }}">
+                        <input type="text" name="nama_pembimbing" list="pembimbing_list_edit" value="{{ old('nama_pembimbing', $pengajuan->nama_pembimbing) }}" placeholder="Pilih atau ketik nama pembimbing...">
+                        <datalist id="pembimbing_list_edit">
+                            @if(isset($pembimbings))
+                                @foreach($pembimbings as $p)
+                                    <option value="{{ $p->nama_lengkap }}">{{ $p->nama_lengkap }} ({{ $p->divisi->nama_divisi ?? 'Pembimbing' }})</option>
+                                @endforeach
+                            @endif
+                        </datalist>
                     </div>
 
                     <div class="form-group">

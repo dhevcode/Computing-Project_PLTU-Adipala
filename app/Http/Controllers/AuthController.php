@@ -48,10 +48,11 @@ class AuthController extends Controller
 
             // 4. Redirection Berdasarkan Role
             return match (strtolower(trim($user->role))) {
-                'super admin'          => redirect()->route('superadmin.dashboard'),
-                'admin'                => redirect()->route('admin.dashboard'),
-                'peserta', 'mahasiswa' => redirect()->route('peserta.dashboard'),
-                default                => redirect()->route('login')->with('error', 'Role akun tidak dikenali.'),
+                'super admin'                       => redirect()->route('superadmin.dashboard'),
+                'admin'                             => redirect()->route('admin.dashboard'),
+                'pembimbing', 'pembimbing lapangan' => redirect()->route('pembimbing.dashboard'),
+                'peserta', 'mahasiswa'              => redirect()->route('peserta.dashboard'),
+                default                             => redirect()->route('login')->with('error', 'Role akun tidak dikenali.'),
             };
         }
 

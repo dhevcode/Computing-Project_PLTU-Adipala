@@ -27,12 +27,28 @@
         </div>
         <div class="header-right">
 
-            <a href="{{ route('superadmin.create') }}" class="btn-header-action">
-                <i class="fa-solid fa-user-plus"></i>
-                <span>Tambah Admin</span>
+            <!-- Navigasi Menu Super Admin -->
+            <a href="{{ route('superadmin.dashboard') }}" class="btn-header-nav active">
+                <i class="fa-solid fa-users-gear"></i>
+                <span>Kelola Akun</span>
             </a>
 
-            <a href="{{ route('superadmin.profile') }}" class="btn-header-action">
+            <a href="{{ route('superadmin.pembimbing') }}" class="btn-header-nav">
+                <i class="fa-solid fa-user-tie"></i>
+                <span>Pembimbing Lapangan</span>
+            </a>
+
+            <a href="{{ route('superadmin.peserta') }}" class="btn-header-nav">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Peserta Magang</span>
+            </a>
+
+            <a href="{{ route('superadmin.create') }}" class="btn-header-action">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Tambah Akun</span>
+            </a>
+
+            <a href="{{ route('superadmin.profile') }}" class="btn-header-nav">
                 <i class="fa-solid fa-user"></i>
                 <span>Profile</span>
             </a>
@@ -54,31 +70,43 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-info">
-                    <h4>Total Administrator</h4>
-                    <div class="stat-value">{{ $admins->count() ?? 0 }}</div>
+                    <h4>Admin Sistem</h4>
+                    <div class="stat-value">{{ $totalAdmin ?? $admins->whereIn('role', ['Admin', 'Super Admin'])->count() }}</div>
                 </div>
                 <div class="stat-icon primary">
-                    <i class="fa-solid fa-users-gear"></i>
+                    <i class="fa-solid fa-shield-halved"></i>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-info">
-                    <h4>Akun Aktif</h4>
-                    <div class="stat-value">{{ $admins->where('is_active', 1)->count() ?? 0 }}</div>
-                </div>
-                <div class="stat-icon success">
-                    <i class="fa-solid fa-user-check"></i>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h4>Divisi Terdaftar</h4>
-                    <div class="stat-value">{{ $admins->pluck('id_divisi')->unique()->count() ?? 0 }}</div>
+                    <h4>Pembimbing Lapangan</h4>
+                    <div class="stat-value">{{ $totalPembimbing ?? $admins->whereIn('role', ['Pembimbing', 'Pembimbing Lapangan'])->count() }}</div>
                 </div>
                 <div class="stat-icon warning">
-                    <i class="fa-solid fa-sitemap"></i>
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h4>Total Peserta Magang</h4>
+                    <div class="stat-value">{{ $totalMahasiswa ?? 0 }}</div>
+                </div>
+                <div class="stat-icon success">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h4>Peserta Belum Ada Akun</h4>
+                    <div class="stat-value" style="color: {{ ($mahasiswaTanpaAkun ?? 0) > 0 ? '#DC2626' : '#059669' }};">
+                        {{ $mahasiswaTanpaAkun ?? 0 }}
+                    </div>
+                </div>
+                <div class="stat-icon primary" style="background: #FEE2E2; color: #DC2626;">
+                    <i class="fa-solid fa-user-clock"></i>
                 </div>
             </div>
         </div>

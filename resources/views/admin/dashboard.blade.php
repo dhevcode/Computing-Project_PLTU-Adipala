@@ -64,6 +64,27 @@
     </div>
     @endif
 
+    @if(isset($menungguVerifikasi) && $menungguVerifikasi > 0)
+    <div style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1.5px solid #F59E0B; border-radius: 14px; padding: 16px 22px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.12);">
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: #F59E0B; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                <i class="fa-solid fa-user-clock"></i>
+            </div>
+            <div>
+                <strong style="color: #92400E; font-size: 15px; display: block; margin-bottom: 2px;">
+                    Ada {{ $menungguVerifikasi }} Pendaftaran Calon Peserta Magang Menunggu Keputusan!
+                </strong>
+                <span style="color: #B45309; font-size: 12px;">
+                    Segera verifikasi berkas dan tentukan ploting Pembimbing Lapangan agar mahasiswa dapat segera magang.
+                </span>
+            </div>
+        </div>
+        <a href="{{ route('admin.data', ['status' => 'Menunggu Verifikasi']) }}" style="background: #0A5F63; color: #fff; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; transition: 0.2s; box-shadow: 0 2px 6px rgba(10, 95, 99, 0.25);">
+            <i class="fa-solid fa-list-check"></i> Tinjau Pendaftaran
+        </a>
+    </div>
+    @endif
+
     <!-- ================= FILTER ================= -->
 
         <form method="GET"
@@ -224,6 +245,11 @@
                     <select name="status" id="status">
                         <option value="">Semua Status</option>
 
+                        <option value="Menunggu Verifikasi"
+                            {{ request('status') == 'Menunggu Verifikasi' ? 'selected' : '' }}>
+                            Menunggu Verifikasi
+                        </option>
+
                         <option value="Akan Magang"
                             {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>
                             Akan Magang
@@ -237,6 +263,11 @@
                         <option value="Selesai Magang"
                             {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>
                             Selesai Magang
+                        </option>
+
+                        <option value="Ditolak"
+                            {{ request('status') == 'Ditolak' ? 'selected' : '' }}>
+                            Ditolak
                         </option>
                     </select>
                 </div>

@@ -13,6 +13,10 @@ use App\Http\Controllers\AdminCutiController;
 use App\Http\Controllers\AdminAduanController;
 use App\Http\Controllers\AdminNilaiController;
 use App\Http\Controllers\AdminPengumumanController;
+use App\Http\Controllers\PembimbingController;
+use App\Http\Controllers\PengajuanMagangPublicController;
+use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\AdminChatbotController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,10 +31,11 @@ Route::get('/', function () {
         $role = strtolower(trim(Auth::user()->role));
 
         return match ($role) {
-            'super admin'          => redirect()->route('superadmin.dashboard'),
-            'admin'                => redirect()->route('admin.dashboard'),
-            'peserta', 'mahasiswa' => redirect()->route('peserta.dashboard'),
-            default                => redirect()->route('login'),
+            'super admin'                       => redirect()->route('superadmin.dashboard'),
+            'admin'                             => redirect()->route('admin.dashboard'),
+            'pembimbing', 'pembimbing lapangan' => redirect()->route('pembimbing.dashboard'),
+            'peserta', 'mahasiswa'              => redirect()->route('peserta.dashboard'),
+            default                             => redirect()->route('login'),
         };
     }
 
@@ -39,7 +44,7 @@ Route::get('/', function () {
 
 
 // =====================================================
-// GUEST ROUTES
+// GUEST ROUTES (LOGIN & PENGAJUAN MAGANG MANDIRI)
 // =====================================================
 Route::middleware(['guest'])->group(function () {
 
@@ -48,6 +53,15 @@ Route::middleware(['guest'])->group(function () {
 
     Route::post('/login', [AuthController::class, 'login'])
         ->name('login.process');
+
+    // Formulir Pendaftaran / Pengajuan Magang Baru
+    Route::get('/pengajuan-magang', [PengajuanMagangPublicController::class, 'create'])
+        ->name('magang.daftar');
+
+    Route::post('/pengajuan-magang', [PengajuanMagangPublicController::class, 'store'])
+        ->name('magang.store');
+
+    Route::get('/daftar-magang', fn() => redirect()->route('magang.daftar'));
 });
 
 
@@ -86,6 +100,39 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::delete('/superadmin/delete/{id}', [SuperAdminController::class, 'destroy'])
         ->name('superadmin.destroy');
 
+    // ================= DATA & MONITORING PEMBIMBING LAPANGAN =================
+    Route::get('/superadmin/pembimbing', [SuperAdminController::class, 'pembimbing'])
+        ->name('superadmin.pembimbing');
+
+    // ================= KELOLA PESERTA MAGANG (CRUD) =================
+    Route::get('/superadmin/peserta', [SuperAdminController::class, 'peserta'])
+        ->name('superadmin.peserta');
+
+    Route::get('/superadmin/peserta/create', [SuperAdminController::class, 'createPeserta'])
+        ->name('superadmin.peserta.create');
+
+    Route::post('/superadmin/peserta', [SuperAdminController::class, 'storePeserta'])
+        ->name('superadmin.peserta.store');
+
+    Route::get('/superadmin/peserta/{id}', [SuperAdminController::class, 'showPeserta'])
+        ->name('superadmin.peserta.show');
+
+    Route::get('/superadmin/peserta/{id}/edit', [SuperAdminController::class, 'editPeserta'])
+        ->name('superadmin.peserta.edit');
+
+    Route::put('/superadmin/peserta/{id}', [SuperAdminController::class, 'updatePeserta'])
+        ->name('superadmin.peserta.update');
+
+    Route::delete('/superadmin/peserta/{id}', [SuperAdminController::class, 'destroyPeserta'])
+        ->name('superadmin.peserta.destroy');
+
+    // ================= AKSI PEMBUATAN & RESET AKUN PESERTA =================
+    Route::post('/superadmin/peserta/{id}/buat-akun', [SuperAdminController::class, 'buatAkunPeserta'])
+        ->name('superadmin.peserta.buat_akun');
+
+    Route::post('/superadmin/peserta/{id}/reset-password', [SuperAdminController::class, 'resetPasswordPeserta'])
+        ->name('superadmin.peserta.reset_password');
+
     Route::get('/profile', [ProfileSuperAdminController::class, 'edit'])
         ->name('superadmin.profile');
 
@@ -121,6 +168,12 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin/mahasiswa/{id}/detail', [AdminController::class, 'detail'])
         ->name('admin.detail');
 
+    // ================= TERIMA & TOLAK PENDAFTARAN (DENGAN PLOTING PEMBIMBING) =================
+    Route::post('/admin/pengajuan/{id}/terima', [AdminController::class, 'terimaPengajuan'])
+        ->name('admin.pengajuan.terima');
+
+    Route::post('/admin/pengajuan/{id}/tolak', [AdminController::class, 'tolakPengajuan'])
+        ->name('admin.pengajuan.tolak');
 
     // ================= HAPUS MAHASISWA =================
     Route::delete('/admin/mahasiswa/{id}', [AdminController::class, 'destroy'])
@@ -202,7 +255,30 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
         ->name('admin.pengumuman.company');
     Route::delete('/admin/pengumuman/{id}', [AdminPengumumanController::class, 'destroy'])
         ->name('admin.pengumuman.destroy');
+
+    // 7. Pengelolaan Chatbot FAQ & Log Riwayat
+    Route::get('/admin/chatbot', [AdminChatbotController::class, 'index'])
+        ->name('admin.chatbot.index');
+    Route::post('/admin/chatbot', [AdminChatbotController::class, 'store'])
+        ->name('admin.chatbot.store');
+    Route::put('/admin/chatbot/{id}', [AdminChatbotController::class, 'update'])
+        ->name('admin.chatbot.update');
+    Route::delete('/admin/chatbot/{id}', [AdminChatbotController::class, 'destroy'])
+        ->name('admin.chatbot.destroy');
+    Route::post('/admin/chatbot/{id}/toggle', [AdminChatbotController::class, 'toggleActive'])
+        ->name('admin.chatbot.toggle');
+    Route::post('/admin/chatbot/clear-logs', [AdminChatbotController::class, 'clearLogs'])
+        ->name('admin.chatbot.clear-logs');
 });
+
+// =====================================================
+// CHATBOT ASISTEN VIRTUAL (MENU-BASED FAQ)
+// =====================================================
+Route::get('/chatbot/questions', [ChatbotController::class, 'getQuestions'])
+    ->name('chatbot.questions');
+
+Route::post('/chatbot/answer', [ChatbotController::class, 'getAnswer'])
+    ->name('chatbot.answer');
 
 
 // =====================================================
@@ -269,4 +345,57 @@ Route::middleware(['auth', 'role:Peserta,Mahasiswa'])->group(function () {
         ->name('peserta.profil');
     Route::post('/peserta/profil/update', [PesertaController::class, 'updateProfil'])
         ->name('peserta.profil.update');
+});
+
+
+// =====================================================
+// PEMBIMBING LAPANGAN
+// =====================================================
+Route::middleware(['auth', 'role:Pembimbing,Pembimbing Lapangan'])->group(function () {
+
+    // 1. Dashboard Pembimbing
+    Route::get('/pembimbing/dashboard', [PembimbingController::class, 'dashboard'])
+        ->name('pembimbing.dashboard');
+
+    // 2. Monitoring Mahasiswa Bimbingan
+    Route::get('/pembimbing/mahasiswa', [PembimbingController::class, 'mahasiswa'])
+        ->name('pembimbing.mahasiswa');
+    Route::get('/pembimbing/mahasiswa/{id}/detail', [PembimbingController::class, 'detailMahasiswa'])
+        ->name('pembimbing.mahasiswa.detail');
+
+    // 3. Monitoring Presensi & Koreksi
+    Route::get('/pembimbing/absensi', [PembimbingController::class, 'absensi'])
+        ->name('pembimbing.absensi');
+    Route::post('/pembimbing/absensi/koreksi/{id}/review', [PembimbingController::class, 'reviewKoreksi'])
+        ->name('pembimbing.absensi.koreksi.review');
+
+    // 4. Monitoring Logbook PKL
+    Route::get('/pembimbing/logbook', [PembimbingController::class, 'logbook'])
+        ->name('pembimbing.logbook');
+    Route::post('/pembimbing/logbook/{id}/review', [PembimbingController::class, 'reviewLogbook'])
+        ->name('pembimbing.logbook.review');
+
+    // 5. Monitoring Cuti & Izin
+    Route::get('/pembimbing/cuti', [PembimbingController::class, 'cuti'])
+        ->name('pembimbing.cuti');
+    Route::post('/pembimbing/cuti/{id}/review', [PembimbingController::class, 'reviewCuti'])
+        ->name('pembimbing.cuti.review');
+
+    // 6. Monitoring Aduan Masalah
+    Route::get('/pembimbing/aduan', [PembimbingController::class, 'aduan'])
+        ->name('pembimbing.aduan');
+    Route::post('/pembimbing/aduan/{id}/reply', [PembimbingController::class, 'replyAduan'])
+        ->name('pembimbing.aduan.reply');
+
+    // 7. Evaluasi & Penilaian
+    Route::get('/pembimbing/nilai', [PembimbingController::class, 'nilai'])
+        ->name('pembimbing.nilai');
+    Route::post('/pembimbing/nilai/store', [PembimbingController::class, 'storeNilai'])
+        ->name('pembimbing.nilai.store');
+
+    // 8. Profil Pembimbing
+    Route::get('/pembimbing/profil', [PembimbingController::class, 'profil'])
+        ->name('pembimbing.profil');
+    Route::post('/pembimbing/profil/update', [PembimbingController::class, 'updateProfil'])
+        ->name('pembimbing.profil.update');
 });

@@ -116,6 +116,7 @@
                         <select name="role" required>
                             <option value="" disabled>Pilih Role</option>
                             <option value="Admin" {{ old('role', $admin->role) == 'Admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="Pembimbing" {{ old('role', $admin->role) == 'Pembimbing' ? 'selected' : '' }}>Pembimbing Lapangan</option>
                             <option value="Super Admin" {{ old('role', $admin->role) == 'Super Admin' ? 'selected' : '' }}>Super Admin</option>
                         </select>
                         @error('role') <p class="error-text">{{ $message }}</p> @enderror

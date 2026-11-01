@@ -112,9 +112,11 @@
                 <div class="grid">
                     <div class="form-group">
                         <label>Hak Akses (Role)</label>
-                        <select name="role" required>
+                        <select name="role" id="select_role" required>
                             <option value="" disabled selected>Pilih Hak Akses</option>
                             <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="Pembimbing" {{ old('role') == 'Pembimbing' ? 'selected' : '' }}>Pembimbing Lapangan</option>
+                            <option value="Peserta" {{ old('role') == 'Peserta' ? 'selected' : '' }}>Peserta Magang</option>
                             <option value="Super Admin" {{ old('role') == 'Super Admin' ? 'selected' : '' }}>Super Admin</option>
                         </select>
                         @error('role') <p class="error-text">{{ $message }}</p> @enderror
@@ -130,11 +132,38 @@
                     </div>
                 </div>
 
+                <!-- PILIH MAHASISWA (MUNCUL JIKA ROLE PESERTA DIPILIH) -->
+                <div id="field_pilih_mahasiswa" class="box-divisi-baru d-none" style="background: #F0FDF4; border: 1.5px dashed #10B981; margin-bottom: 20px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="color: #047857;">
+                            <i class="fa-solid fa-graduation-cap" style="margin-right: 6px;"></i>
+                            Tautkan ke Data Mahasiswa Magang (Otomatis Isi Data)
+                        </label>
+                        <select name="id_mhs" id="select_mahasiswa" style="width: 100%; height: 46px; border: 1.5px solid #A7F3D0; border-radius: 10px; padding: 0 14px; font-size: 13.5px; background: #fff;">
+                            <option value="">-- Pilih Mahasiswa yang Belum Punya Akun --</option>
+                            @if(isset($mahasiswaTanpaAkun))
+                                @foreach($mahasiswaTanpaAkun as $m)
+                                    <option value="{{ $m->id_mhs }}" 
+                                        data-nama="{{ $m->nama_lengkap }}" 
+                                        data-nim="{{ $m->nim }}" 
+                                        data-email="{{ $m->email }}"
+                                        data-divisi="{{ $m->latestPengajuan?->divisi_id }}">
+                                        {{ $m->nama_lengkap }} (NIM: {{ $m->nim }}) - {{ $m->universitas->nama_universitas ?? '' }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <small style="color: #065F46; display: block; margin-top: 6px;">
+                            * Memilih mahasiswa akan otomatis mengisi Nama Lengkap, Username (NIM), Email, dan Divisi.
+                        </small>
+                    </div>
+                </div>
+
                 <div class="button-group">
                     <a href="{{ route('superadmin.dashboard') }}" class="btn-cancel">Batal</a>
                     <button type="submit" class="btn-save">
                         <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Simpan Admin</span>
+                        <span>Simpan Akun</span>
                     </button>
                 </div>
             </form>
@@ -148,18 +177,55 @@
         const inputNamaDivisi = document.getElementById('nama_divisi_baru');
 
         function checkDivisiSelection() {
-            if (selectDivisi.value === 'new') {
+            if (selectDivisi && selectDivisi.value === 'new') {
                 newDivisiBox.classList.remove('d-none');
                 inputNamaDivisi.required = true;
-            } else {
+            } else if (newDivisiBox && inputNamaDivisi) {
                 newDivisiBox.classList.add('d-none');
                 inputNamaDivisi.required = false;
                 inputNamaDivisi.value = '';
             }
         }
 
-        selectDivisi.addEventListener('change', checkDivisiSelection);
-        checkDivisiSelection();
+        if (selectDivisi) {
+            selectDivisi.addEventListener('change', checkDivisiSelection);
+            checkDivisiSelection();
+        }
+
+        // Toggle Pilih Mahasiswa saat Role Peserta dipilih
+        const selectRole = document.getElementById('select_role');
+        const mhsBox = document.getElementById('field_pilih_mahasiswa');
+        const selectMhs = document.getElementById('select_mahasiswa');
+        const inputNama = document.querySelector('input[name="nama_lengkap"]');
+        const inputUsername = document.querySelector('input[name="username"]');
+        const inputEmail = document.querySelector('input[name="email"]');
+
+        function checkRole() {
+            if (selectRole.value === 'Peserta') {
+                mhsBox.classList.remove('d-none');
+            } else {
+                mhsBox.classList.add('d-none');
+            }
+        }
+
+        if (selectRole) {
+            selectRole.addEventListener('change', checkRole);
+            checkRole();
+        }
+
+        if (selectMhs) {
+            selectMhs.addEventListener('change', function() {
+                const selectedOpt = this.options[this.selectedIndex];
+                if (selectedOpt && selectedOpt.value) {
+                    if (selectedOpt.dataset.nama && inputNama) inputNama.value = selectedOpt.dataset.nama;
+                    if (selectedOpt.dataset.nim && inputUsername) inputUsername.value = selectedOpt.dataset.nim;
+                    if (selectedOpt.dataset.email && inputEmail) inputEmail.value = selectedOpt.dataset.email;
+                    if (selectedOpt.dataset.divisi && selectDivisi) {
+                        selectDivisi.value = selectedOpt.dataset.divisi;
+                    }
+                }
+            });
+        }
     });
     </script>
 

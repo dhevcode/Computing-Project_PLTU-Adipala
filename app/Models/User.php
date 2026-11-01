@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     protected $table = 'users';
     protected $primaryKey = 'id_users'; // Custom primary key
@@ -65,5 +66,46 @@ class User extends Authenticatable
             'uploaded_by',
             'id_users'
         );
+    }
+
+    public function isPembimbing(): bool
+    {
+        $role = strtolower(trim($this->role ?? ''));
+        return in_array($role, ['pembimbing', 'pembimbing lapangan']);
+    }
+
+    public function bimbinganPengajuan()
+    {
+        return $this->hasMany(PengajuanMagang::class, 'pembimbing_id', 'id_users');
+    }
+
+    public function getBimbinganMahasiswaIds(): array
+    {
+        $userName = trim(strtolower($this->nama_lengkap ?? ''));
+
+        return PengajuanMagang::where(function ($q) use ($userName) {
+                $q->where('pembimbing_id', $this->id_users);
+                if (!empty($userName)) {
+                    $q->orWhereRaw('LOWER(TRIM(nama_pembimbing)) = ?', [$userName]);
+                }
+            })
+            ->pluck('mahasiswa_id')
+            ->unique()
+            ->toArray();
+    }
+
+    public function getBimbinganPengajuan()
+    {
+        $userName = trim(strtolower($this->nama_lengkap ?? ''));
+
+        return PengajuanMagang::with(['mahasiswa.universitas', 'mahasiswa.jurusan', 'divisi'])
+            ->where(function ($q) use ($userName) {
+                $q->where('pembimbing_id', $this->id_users);
+                if (!empty($userName)) {
+                    $q->orWhereRaw('LOWER(TRIM(nama_pembimbing)) = ?', [$userName]);
+                }
+            })
+            ->latest('id_pengajuan')
+            ->get();
     }
 }

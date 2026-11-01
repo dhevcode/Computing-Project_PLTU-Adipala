@@ -8,6 +8,8 @@ use App\Models\Divisi;
 use App\Models\Jurusan;
 use App\Models\Universitas;
 use App\Models\PengajuanMagang;
+use App\Models\User;
+use App\Models\AppNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -229,11 +231,14 @@ $bidangData = $chartDivisi->pluck('total');
             ->paginate(10)
             ->withQueryString();
 
+        $menungguVerifikasi = PengajuanMagang::where('status', 'Menunggu Verifikasi')->count();
+
         return view('admin.dashboard', compact(
             'magangHariIni',
             'totalMahasiswa',
             'belumSelesai',
             'akanDatang',
+            'menungguVerifikasi',
             'divisiTerlibat',
             'bidangLabels',
             'bidangData',
@@ -258,7 +263,8 @@ $bidangData = $chartDivisi->pluck('total');
     $query = PengajuanMagang::with([
         'mahasiswa.universitas',
         'mahasiswa.jurusan',
-        'divisi'
+        'divisi',
+        'pembimbing'
     ]);
 
 
@@ -595,11 +601,13 @@ $bidangData = $chartDivisi->pluck('total');
         $divisi = Divisi::all();
         $jurusan = Jurusan::all();
         $universitas = Universitas::all();
+        $pembimbings = User::whereIn('role', ['Pembimbing', 'Pembimbing Lapangan'])->get();
 
         return view('admin.create', compact(
             'divisi',
             'jurusan',
-            'universitas'
+            'universitas',
+            'pembimbings'
         ));
     }
 
@@ -731,10 +739,20 @@ $bidangData = $chartDivisi->pluck('total');
             $cvPath = $fileName;
         }
 
+        $pembimbingUser = User::whereIn('role', ['Pembimbing', 'Pembimbing Lapangan'])
+            ->where(function($q) use ($request) {
+                if ($request->filled('pembimbing_id')) {
+                    $q->where('id_users', $request->pembimbing_id);
+                } else {
+                    $q->whereRaw('LOWER(TRIM(nama_lengkap)) = ?', [strtolower(trim($request->nama_pembimbing))]);
+                }
+            })->first();
+
         PengajuanMagang::create([
             'mahasiswa_id' => $mahasiswa->id_mhs,
             'divisi_id' => $divisiId,
-            'nama_pembimbing' => $request->nama_pembimbing,
+            'nama_pembimbing' => $pembimbingUser ? $pembimbingUser->nama_lengkap : $request->nama_pembimbing,
+            'pembimbing_id' => $pembimbingUser ? $pembimbingUser->id_users : null,
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'status' => $this->generateStatus(
@@ -756,10 +774,118 @@ $bidangData = $chartDivisi->pluck('total');
         $pengajuan = PengajuanMagang::with([
             'mahasiswa.universitas',
             'mahasiswa.jurusan',
-            'divisi'
+            'divisi',
+            'pembimbing',
+            'verifiedBy'
         ])->findOrFail($id);
 
-        return view('admin.detail', compact('pengajuan'));
+        $pembimbings = User::whereIn('role', ['Pembimbing', 'Pembimbing Lapangan'])
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
+
+        $divisis = Divisi::orderBy('nama_divisi', 'asc')->get();
+
+        return view('admin.detail', compact('pengajuan', 'pembimbings', 'divisis'));
+    }
+
+    /**
+     * Terima pendaftaran calon peserta magang dan ploting pembimbing lapangan.
+     */
+    public function terimaPengajuan(Request $request, $id)
+    {
+        $request->validate([
+            'pembimbing_id'   => 'required|exists:users,id_users',
+            'divisi_id'       => 'required|exists:divisi,id_divisi',
+            'tanggal_mulai'   => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+            'catatan_admin'   => 'nullable|string|max:1000',
+        ], [
+            'pembimbing_id.required'         => 'Pilih Pembimbing Lapangan untuk peserta magang ini.',
+            'pembimbing_id.exists'           => 'Pembimbing Lapangan yang dipilih tidak valid.',
+            'divisi_id.required'             => 'Pilih divisi penempatan.',
+            'divisi_id.exists'               => 'Divisi penempatan tidak valid.',
+            'tanggal_mulai.required'         => 'Tanggal mulai magang wajib diisi.',
+            'tanggal_selesai.required'       => 'Tanggal selesai magang wajib diisi.',
+            'tanggal_selesai.after_or_equal' => 'Tanggal selesai magang harus sama atau setelah tanggal mulai.',
+        ]);
+
+        $pengajuan = PengajuanMagang::with(['mahasiswa', 'divisi'])->findOrFail($id);
+
+        $pembimbing = User::whereIn('role', ['Pembimbing', 'Pembimbing Lapangan'])
+            ->where('id_users', $request->pembimbing_id)
+            ->firstOrFail();
+
+        $today = Carbon::today();
+        $mulai = Carbon::parse($request->tanggal_mulai);
+        $selesai = Carbon::parse($request->tanggal_selesai);
+
+        if ($today->lt($mulai)) {
+            $status = 'Akan Magang';
+        } elseif ($today->between($mulai, $selesai)) {
+            $status = 'Sedang Magang';
+        } else {
+            $status = 'Selesai Magang';
+        }
+
+        $pengajuan->update([
+            'pembimbing_id'    => $pembimbing->id_users,
+            'nama_pembimbing'  => $pembimbing->nama_lengkap,
+            'divisi_id'        => $request->divisi_id,
+            'tanggal_mulai'    => $request->tanggal_mulai,
+            'tanggal_selesai'  => $request->tanggal_selesai,
+            'status'           => $status,
+            'catatan_admin'    => $request->catatan_admin,
+            'alasan_penolakan' => null,
+            'verified_at'      => now(),
+            'verified_by'      => Auth::id(),
+        ]);
+
+        // Kirim Notifikasi Sistem ke Pembimbing Lapangan
+        try {
+            $divisiName = $pengajuan->fresh()->divisi->nama_divisi ?? 'Divisi Terkait';
+            $namaMhs = $pengajuan->mahasiswa->nama_lengkap ?? 'Peserta Magang';
+            $nimMhs = $pengajuan->mahasiswa->nim ?? '-';
+
+            AppNotification::send(
+                $pembimbing->id_users,
+                'Ploting Bimbingan Magang Baru',
+                "Anda telah ditugaskan sebagai Pembimbing Lapangan untuk peserta {$namaMhs} ({$nimMhs}) pada divisi {$divisiName}.",
+                'success',
+                route('pembimbing.dashboard')
+            );
+        } catch (\Exception $e) {
+            // Abaikan kegagalan notifikasi agar transaksi tetap sukses
+        }
+
+        $namaPeserta = $pengajuan->mahasiswa->nama_lengkap ?? 'Peserta';
+        return redirect()->route('admin.detail', $pengajuan->id_pengajuan)
+            ->with('success', "Pendaftaran atas nama {$namaPeserta} BERHASIL DITERIMA! Pembimbing Lapangan telah diplot ke {$pembimbing->nama_lengkap}.");
+    }
+
+    /**
+     * Tolak pendaftaran calon peserta magang beserta alasan penolakan.
+     */
+    public function tolakPengajuan(Request $request, $id)
+    {
+        $request->validate([
+            'alasan_penolakan' => 'required|string|max:1000',
+        ], [
+            'alasan_penolakan.required' => 'Mohon sertakan alasan penolakan pendaftaran.',
+            'alasan_penolakan.max'      => 'Alasan penolakan maksimal 1000 karakter.',
+        ]);
+
+        $pengajuan = PengajuanMagang::with('mahasiswa')->findOrFail($id);
+
+        $pengajuan->update([
+            'status'           => 'Ditolak',
+            'alasan_penolakan' => $request->alasan_penolakan,
+            'verified_at'      => now(),
+            'verified_by'      => Auth::id(),
+        ]);
+
+        $namaPeserta = $pengajuan->mahasiswa->nama_lengkap ?? 'Peserta';
+        return redirect()->route('admin.detail', $pengajuan->id_pengajuan)
+            ->with('warning', "Pendaftaran atas nama {$namaPeserta} telah DITOLAK.");
     }
 
 
@@ -769,12 +895,14 @@ $bidangData = $chartDivisi->pluck('total');
         $divisi = Divisi::all();
         $jurusan = Jurusan::all();
         $universitas = Universitas::all();
+        $pembimbings = User::whereIn('role', ['Pembimbing', 'Pembimbing Lapangan'])->get();
 
         return view('admin.edit', compact(
             'pengajuan',
             'divisi',
             'jurusan',
-            'universitas'
+            'universitas',
+            'pembimbings'
         ));
     }
 
@@ -922,9 +1050,19 @@ $bidangData = $chartDivisi->pluck('total');
             );
         }
 
+        $pembimbingUser = User::whereIn('role', ['Pembimbing', 'Pembimbing Lapangan'])
+            ->where(function($q) use ($request) {
+                if ($request->filled('pembimbing_id')) {
+                    $q->where('id_users', $request->pembimbing_id);
+                } elseif ($request->filled('nama_pembimbing')) {
+                    $q->whereRaw('LOWER(TRIM(nama_lengkap)) = ?', [strtolower(trim($request->nama_pembimbing))]);
+                }
+            })->first();
+
         $pengajuan->update([
             'divisi_id' => $divisiId,
-            'nama_pembimbing' => $request->nama_pembimbing,
+            'nama_pembimbing' => $pembimbingUser ? $pembimbingUser->nama_lengkap : $request->nama_pembimbing,
+            'pembimbing_id' => $pembimbingUser ? $pembimbingUser->id_users : $pengajuan->pembimbing_id,
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'status' => $this->generateStatus(

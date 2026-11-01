@@ -54,4 +54,9 @@
         <i class="fa-regular fa-building"></i>
         <span>Info & Pengumuman</span>
     </a>
+
+    <a href="{{ route('admin.chatbot.index') }}" class="sidebar-menu {{ request()->routeIs('admin.chatbot*') ? 'active' : '' }}">
+        <i class="fa-solid fa-robot"></i>
+        <span>Chatbot FAQ</span>
+    </a>
 </div>

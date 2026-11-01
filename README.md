@@ -120,126 +120,240 @@ Database seeder telah menyiapkan beberapa akun dengan role berbeda untuk penguji
 | Role | Username / Identifier | Email | Password | Hak Akses Utama |
 |---|---|---|---|---|
 | **Super Admin** | `superadmin` | `superadmin@pltu.com` | `admin123` | Kelola master akun user, monitoring menyeluruh, profil sistem |
-| **Admin Divisi / Pembimbing** | `admin` | `admin@pltu.com` | `admin123` | Approval logbook, review absensi & koreksi, kelola cuti, aduan, nilai harian, info perusahaan, verifikasi ID card & sertifikat |
+| **Admin** | `admin` | `admin@pltu.com` | `admin123` | Approval logbook, review absensi & koreksi, kelola cuti, aduan, nilai harian, info perusahaan, verifikasi ID card & sertifikat |
+| **Pembimbing Lapangan / Divisi** | `Pembimbing` | `pembimbing@pltu.com` | `pembimbing123` | Approval logbook, review absensi & koreksi, kelola cuti, aduan, nilai harian |
 | **Peserta Magang 1** | `2311102001` (NIM) | `rian.pratama@pltu.com` | `mhs123` | Divisi Sistem Informasi, presensi GPS, pengisian logbook, ajukan izin/cuti/aduan |
 | **Peserta Magang 2** | `2311102002` (NIM) | `siti.nurhaliza@pltu.com` | `mhs123` | Divisi SDM & Umum, presensi GPS, pengisian logbook, ajukan izin/cuti/aduan |
 | **Peserta Magang Telkom** | `2311102324` (NIM) | `mhs1@gmail.com` | `mhs123` | Data mahasiswa Telkom University terintegrasi |
 
 ---
 
-## 📌 Update Fitur yang Sudah Dilakukan
+## 📱 Integrasi Mobile Backend API (Satu Database Web & Mobile)
 
-Berikut adalah daftar modul dan fitur komprehensif yang telah diimplementasikan ke dalam sistem:
-
-### 1. Portal Mandiri Peserta Magang (`/peserta/*`)
-* **Dashboard Interaktif**:
-  * Ringkasan presensi harian (status masuk, pulang, durasi kerja, dan indikator keterlambatan).
-  * Statistik akumulasi kehadiran, sakit, izin, cuti, serta rata-rata skor evaluasi.
-  * *Quick Action Cards* untuk akses cepat ke seluruh menu utama.
-  * Feed pengumuman perusahaan dan notifikasi terbaru.
-* **Presensi Geofencing & Selfie (`/peserta/absensi`)**:
-  * Perhitungan jarak koordinat pengguna ke titik koordinat kantor PLTU Adipala secara otomatis menggunakan algoritma *Haversine formula*.
-  * Radius validasi presensi (maksimal 150 meter dari titik koordinat PLTU Adipala `-7.6808102, 109.1366922`).
-  * Integrasi webcam browser untuk pengambilan foto selfie saat check-in dan check-out.
-  * Form pengajuan koreksi presensi jika peserta lupa absen atau terkendala akurasi GPS.
-* **Logbook Kegiatan Harian (`/peserta/logbook`)**:
-  * Input jam mulai dan jam selesai kegiatan magang per tanggal kerja.
-  * Detail deskripsi aktivitas, hasil yang dicapai, kendala yang dihadapi, solusi, serta rencana kegiatan berikutnya.
-  * Upload berkas bukti pekerjaan (PDF, JPG, PNG, DOCX).
-  * Status alur kerja: `Draft` ➔ `Submitted` ➔ `Revision Required` ➔ `Approved`.
-  * Panel riwayat komentar revisi langsung dari pembimbing lapangan.
-* **Pengajuan Cuti & Izin Terintegrasi (`/peserta/cuti`)**:
-  * Kategori izin: Cuti Pribadi, Sakit, Izin Akademik/Kampus, Tugas Dinas, Keperluan Darurat.
-  * Rentang tanggal fleksibel disertai upload dokumen pendukung (misal: surat dokter).
-  * Opsi pembatalan mandiri sebelum pengajuan diproses pembimbing.
-* **Pusat Aduan Masalah & Helpdesk (`/peserta/aduan`)**:
-  * Pelaporan kendala teknis, lingkungan kerja, K3, administrasi, maupun bimbingan.
-  * Penomoran tiket aduan otomatis (`ADU-YYYYMMDD-XXXX`).
-  * Tingkat kerahasiaan (*confidentiality*) dan prioritas aduan.
-  * Sistem *two-way thread response* antara peserta dan admin.
-* **Arsip Nilai Harian (`/peserta/nilai`)**:
-  * Transparansi evaluasi berdasarkan indikator terstandarisasi (Kedisiplinan, Kemampuan Teknis, Komunikasi, Kerja Sama, Inisiatif, Tanggung Jawab & K3).
-  * Rekap catatan evaluasi dan feedback pembimbing.
-* **Informasi Perusahaan & K3 (`/peserta/informasi`)**:
-  * Profil operasional PLTU Adipala, struktur jam kerja, tata tertib PKL, nomor kontak darurat, dan pedoman K3.
-* **Pusat Notifikasi & Profil (`/peserta/notifikasi`, `/peserta/profil`)**:
-  * Notifikasi database realtime ketika status logbook, cuti, absensi, atau aduan diperbarui.
-  * Pembaruan data pribadi, kontak darurat keluarga, dan penggantian password akun.
-
-### 2. Portal Manajemen Admin Divisi & Pembimbing (`/admin/*`)
-* **Manajemen & Review Absensi**:
-  * Rekapitulasi absensi seluruh peserta (jam datang, jam pulang, foto selfie, koordinat dan akurasi GPS).
-  * Modal review persetujuan atau penolakan pengajuan koreksi presensi mahasiswa.
-* **Review & Validasi Logbook**:
-  * Pemeriksaan berkas dan rincian kerja harian mahasiswa bimbingan.
-  * Aksi persetujuan (*Approve*) atau permintaan revisi (*Request Revision*) dilengkapi catatan perbaikan.
-* **Manajemen Aduan Masalah**:
-  * Pemantauan tiket aduan masuk, penentuan status penanganan (`in_progress`, `resolved`, `closed`), dan pengiriman balasan resmi ke portal peserta.
-* **Persetujuan Cuti & Izin**:
-  * Verifikasi surat dokter/keterangan kampus dan aksi persetujuan (*Approved*) / penolakan (*Rejected*).
-* **Penilaian Harian Mahasiswa**:
-  * Form input skor penilaian berkala berdasarkan kriteria pembobotan divisi.
-* **Pusat Pengumuman & Konfigurasi Perusahaan**:
-  * Pembuatan dan penerbitan pengumuman internal perusahaan.
-  * Pengaturan parameter jam kerja dan radius geofencing presensi.
-* **Administrasi Dokumen & Sertifikat Magang**:
-  * Pengelolaan surat balasan pengajuan magang, verifikasi ID Card, unggah berkas sertifikat akhir magang, dan arsip laporan akhir mahasiswa.
-
-### 3. Peningkatan Arsitektur & Basis Data
-* Penambahan migrasi komprehensif (`comprehensive_monitoring_features_table` dan `add_selfie_out_path_to_attendances_table`).
-* Implementasi relasi model Eloquent lengkap (`Mahasiswa`, `User`, `Attendance`, `DailyLogbook`, `LeaveRequest`, `Complaint`, `DailyEvaluation`, `CompanyInformation`, `AppNotification`).
-* Desain antarmuka modern dengan skema warna korporat PLTU Adipala (Deep Navy `#0f172a`, PLTU Blue `#1e3a8a`, Teal Cyan `#0ea5e9`, dan Gold Amber `#f59e0b`).
+Aplikasi Web dan Mobile terhubung ke **satu basis data yang sama** (`monitoring_magang` di MySQL) secara *real-time* melalui RESTful API berbasis **Laravel Sanctum**.
 
 ---
 
-## 💡 Saran & Rekomendasi Evaluasi Proyek
+### 📄 Konfigurasi Koneksi (`api.ini`)
+File konfigurasi [api.ini](api.ini) (juga dapat diakses via HTTP di `public/api.ini`) disediakan untuk memudahkan integrasi pada aplikasi Mobile (Flutter, Android Kotlin, React Native, iOS, dsb.):
 
-Untuk pengembangan pada fase berikutnya dan penyempurnaan implementasi di lingkungan operasional riil, berikut beberapa poin evaluasi penting yang direkomendasikan:
+```ini
+[server]
+base_url_local      = "http://127.0.0.1:8000/api"
+base_url_emulator   = "http://10.0.2.2:8000/api"     ; Khusus Android Studio Emulator
+base_url_lan        = "http://192.168.1.10:8000/api"  ; HP Fisik (Sesuaikan IP WiFi Laptop)
 
-### 1. Keamanan Validasi Lokasi (Anti-Fake GPS)
-* **Kondisi Saat Ini**: Koordinat lokasi diambil dari browser Geolocation API (`navigator.geolocation`), yang rentan dimanipulasi menggunakan ekstensi browser pengubah lokasi (*mock location*).
-* **Saran Solusi**:
-  * Terapkan validasi ganda menggunakan **QR Code Dinamis (TOTP / Time-based Rotating QR)** yang ditampilkan pada layar monitor di lobi kantor PLTU. Mahasiswa harus memindai QR fisik tersebut sekaligus mencocokkan koordinat GPS.
-  * Tambahkan deteksi kejanggalan akurasi GPS (misal akurasi `0` atau kecepatan perpindahan lokasi yang tidak wajar).
+[database]
+driver   = "mysql"
+host     = "127.0.0.1"
+port     = 3307
+database = "monitoring_magang"
+```
 
-### 2. Implementasi Otomatisasi Face Recognition & Liveness Detection
-* **Kondisi Saat Ini**: Verifikasi wajah masih berupa foto selfie statis yang disimpan ke server dan diverifikasi secara manual oleh pembimbing.
-* **Saran Solusi**:
-  * Integrasikan library AI ringan di frontend (seperti `face-api.js` berbasis TensorFlow.js) atau cloud face recognition API untuk membandingkan kemiripan wajah selfie dengan foto profil terdaftar secara otomatis (*face match score*).
-  * Terapkan *liveness detection* sederhana (instruksi kedip mata atau toleh kiri-kanan) untuk mencegah kecurangan menggunakan foto cetak.
+---
 
-### 3. Pemisahan Hak Akses (Role Pembimbing Lapangan vs Dosen Kampus)
-* **Kondisi Saat Ini**: Fungsi monitoring dan penilaian saat ini masih terpusat di role `Admin` Divisi.
-* **Saran Solusi**:
-  * Pisahkan role menjadi lebih spesifik:
-    1. **Pembimbing Lapangan**: Khusus menilai aspek teknis harian, verifikasi logbook, dan presensi di divisi terkait.
-    2. **Dosen Pembimbing Kampus**: Diberikan akses *read-only* untuk memantau kehadiran, membaca logbook, dan mengunduh rekap evaluasi akhir mahasiswa bimbingannya.
+### 🔐 Standar Header & Autentikasi API
+Setiap *request* ke endpoint yang memerlukan autentikasi (`auth:sanctum`) wajib menyertakan header HTTP berikut:
+```http
+Accept: application/json
+Authorization: Bearer <TOKEN_HASIL_LOGIN>
+```
 
-### 4. Ekspor Rekapitulasi Otomatis (PDF & Excel)
-* **Kondisi Saat Ini**: Rekap kehadiran dan logbook baru dapat dilihat di layar antarmuka web.
-* **Saran Solusi**:
-  * Tambahkan fitur cetak **Buku Logbook Mingguan/Bulanan ke format PDF** (menggunakan library `barryvdh/laravel-dompdf` atau `snappy`) yang dilengkapi lembar pengesahan dan QR code tanda tangan digital (*TTE*) pembimbing.
-  * Tambahkan ekspor laporan rekap presensi dan rekap nilai akhir ke format Excel (`maatwebsite/excel`).
+---
 
-### 5. Pengelolaan Penyimpanan Berkas (*Storage Security*)
-* **Kondisi Saat Ini**: Berkas selfie, surat dokter, dan lampiran aduan tersimpan di direktori `public/uploads/` yang dapat diakses langsung bila URL diketahui.
-* **Saran Solusi**:
-  * Pindahkan berkas sensitif (terutama surat izin medis, laporan rahasia perusahaan, dan berkas aduan) ke `storage/app/private/`.
-  * Buat route unduh dengan middleware otorisasi agar hanya pemilik berkas dan pembimbing yang bersangkutan yang dapat melihat atau mengunduh file tersebut.
+### 🌐 Daftar Lengkap Endpoint API untuk Mobile
 
-### 6. Otomatisasi Notifikasi & Background Queue
-* **Kondisi Saat Ini**: Notifikasi aplikasi tersimpan di basis data dan pengiriman email berjalan secara sinkron.
-* **Saran Solusi**:
-  * Gunakan **Laravel Queue Worker** (`php artisan queue:work`) untuk pengiriman email notifikasi (surat balasan, sertifikat, reset password) agar proses HTTP request pengguna tidak terhambat (*non-blocking*).
-  * Pertimbangkan implementasi WebSocket realtime (Laravel Reverb / Pusher) agar notifikasi revisi logbook atau balasan aduan langsung muncul sebagai *toast popup* tanpa perlu refresh browser.
+#### 1. Autentikasi (`/api/*`)
+| Method | Endpoint | Hak Akses | Deskripsi |
+|---|---|---|---|
+| `POST` | `/api/login` | Publik | Login akun (email/NIM & password). Menghasilkan Bearer Token. |
+| `POST` | `/api/logout` | Bearer Token | Logout dan mencabut (*revoke*) token akses yang aktif. |
+| `GET` | `/api/user` | Bearer Token | Mendapatkan detail profil user yang sedang login beserta relasi mahasiswa. |
 
-### 7. Pengujian Otomatis (*Automated Testing*)
-* **Kondisi Saat Ini**: Pengujian masih dilakukan secara manual melalui browser.
-* **Saran Solusi**:
-  * Buat pengujian otomatis unit & feature test (`php artisan test`) untuk skenario kritis, misalnya:
-    * Presensi di luar radius 150 meter harus ditolak server.
-    * Peserta tidak dapat melakukan check-out sebelum check-in.
-    * Pengisian logbook ganda pada tanggal yang sama dicegah oleh validasi backend.
+* **Request Body `POST /api/login`**:
+  ```json
+  {
+    "email": "rian.pratama@pltu.com",
+    "password": "mhs123"
+  }
+  ```
+  *(Catatan: Input `email` juga menerima NIM / username peserta).*
+
+* **Contoh Response Sukses `200 OK`**:
+  ```json
+  {
+    "success": true,
+    "message": "Login berhasil.",
+    "token": "1|eXamPLeToKenSanCtUm123456789...",
+    "token_type": "Bearer",
+    "user": {
+      "id_users": 3,
+      "nama_lengkap": "Rian Pratama",
+      "username": "2311102001",
+      "email": "rian.pratama@pltu.com",
+      "role": "Peserta"
+    },
+    "mahasiswa": {
+      "id_mhs": 1,
+      "nim": "2311102001",
+      "nama": "Rian Pratama",
+      "universitas": { "nama_universitas": "Universitas Telkom" },
+      "jurusan": { "nama_jurusan": "S1 Sistem Informasi" }
+    }
+  }
+  ```
+
+---
+
+#### 2. Dashboard Peserta (`/api/peserta/dashboard`)
+| Method | Endpoint | Hak Akses | Deskripsi |
+|---|---|---|---|
+| `GET` | `/api/peserta/dashboard` | Bearer Token | Data ringkasan kehadiran, statistik akumulasi, status presensi hari ini, serta koordinat/radius geofence kantor PLTU Adipala. |
+
+* **Contoh Response `200 OK`**:
+  ```json
+  {
+    "success": true,
+    "mahasiswa": { ... },
+    "attendance_today": null,
+    "company_config": {
+      "name": "PT PLN Indonesia Power UBP Adipala",
+      "latitude": -7.68081019,
+      "longitude": 109.13669216,
+      "radius_meters": 150,
+      "work_start_time": "07:30:00",
+      "work_end_time": "16:00:00"
+    },
+    "summary": {
+      "total_hadir": 22,
+      "total_terlambat": 1,
+      "total_izin": 2,
+      "total_logbook": 20
+    }
+  }
+  ```
+
+---
+
+#### 3. Presensi & Absensi Geofencing (`/api/peserta/absensi/*`)
+| Method | Endpoint | Hak Akses | Deskripsi |
+|---|---|---|---|
+| `GET` | `/api/peserta/absensi/today` | Bearer Token | Cek status absensi hari ini & konfigurasi kantor. |
+| `POST` | `/api/peserta/absensi/check-in` | Bearer Token | Presensi masuk (validasi jarak GPS kantor & unggah foto selfie). |
+| `POST` | `/api/peserta/absensi/check-out` | Bearer Token | Presensi pulang & kalkulasi durasi jam kerja. |
+| `GET` | `/api/peserta/absensi/history` | Bearer Token | Riwayat presensi peserta (mendukung parameter `per_page`). |
+| `POST` | `/api/peserta/absensi/koreksi` | Bearer Token | Pengajuan koreksi absensi jika lupa absen/terkendala GPS. |
+
+* **Payload `POST /api/peserta/absensi/check-in`**:
+  - `latitude` (numeric, required)
+  - `longitude` (numeric, required)
+  - `accuracy` (numeric, optional — default: 20)
+  - `notes` (string, optional)
+  - `selfie_image` (file gambar `multipart/form-data` atau string base64 `data:image/png;base64,...`)
+
+* **Payload `POST /api/peserta/absensi/check-out`**:
+  - `latitude` (numeric, optional)
+  - `longitude` (numeric, optional)
+  - `selfie_image` (file gambar atau string base64, optional)
+
+* **Payload `POST /api/peserta/absensi/koreksi`**:
+  - `attendance_date` (date: `YYYY-MM-DD`, required)
+  - `requested_check_in` (time: `HH:mm`, required)
+  - `requested_check_out` (time: `HH:mm`, optional)
+  - `reason` (string, required)
+  - `attachment` (file pdf/jpg/png, optional)
+
+---
+
+#### 4. Logbook Harian (`/api/peserta/logbook/*`)
+| Method | Endpoint | Hak Akses | Deskripsi |
+|---|---|---|---|
+| `GET` | `/api/peserta/logbook` | Bearer Token | Daftar logbook harian beserta catatan revisi/komentar pembimbing. |
+| `POST` | `/api/peserta/logbook/store` | Bearer Token | Simpan logbook harian baru (status `draft` atau `submit`). |
+
+* **Payload `POST /api/peserta/logbook/store`**:
+  - `logbook_date` (date: `YYYY-MM-DD`, required)
+  - `title` (string, max: 200, required)
+  - `activity` (string, min: 10 karakter, required)
+  - `result` (string, optional)
+  - `obstacle` (string, optional)
+  - `solution` (string, optional)
+  - `next_plan` (string, optional)
+  - `action_type` (`draft` atau `submit`, default: `submit`)
+  - `attachment` (file dokumen pdf/jpg/png/docx maks 10MB, optional)
+
+---
+
+#### 5. Pengajuan Cuti & Izin (`/api/peserta/cuti/*`)
+| Method | Endpoint | Hak Akses | Deskripsi |
+|---|---|---|---|
+| `GET` | `/api/peserta/cuti` | Bearer Token | Daftar riwayat permohonan cuti / izin dan status approval. |
+| `POST` | `/api/peserta/cuti/store` | Bearer Token | Kirim pengajuan cuti/izin baru beserta bukti surat keterangan. |
+
+* **Payload `POST /api/peserta/cuti/store`**:
+  - `type` (`izin`, `sakit`, atau `cuti`, required)
+  - `start_date` (date: `YYYY-MM-DD`, required)
+  - `end_date` (date: `YYYY-MM-DD`, required, `>= start_date`)
+  - `reason` (string, required)
+  - `attachment` (file surat dokter / izin kampus maks 5MB, optional)
+
+---
+
+#### 6. Aduan Masalah & Helpdesk (`/api/peserta/aduan/*`)
+| Method | Endpoint | Hak Akses | Deskripsi |
+|---|---|---|---|
+| `GET` | `/api/peserta/aduan` | Bearer Token | Daftar tiket aduan beserta respon/tanggapan dari admin. |
+| `POST` | `/api/peserta/aduan/store` | Bearer Token | Kirim tiket aduan kendala / fasilitas baru. |
+
+* **Payload `POST /api/peserta/aduan/store`**:
+  - `title` (string, max: 200, required)
+  - `category` (string: `fasilitas`, `bimbingan`, `k3`, `administrasi`, required)
+  - `content` (string deskripsi kendala, required)
+  - `attachment` (file foto/bukti pendukung, optional)
+
+---
+
+#### 7. Nilai, Informasi & Profil (`/api/peserta/*`)
+| Method | Endpoint | Hak Akses | Deskripsi |
+|---|---|---|---|
+| `GET` | `/api/peserta/nilai` | Bearer Token | Rekap nilai harian & evaluasi dari pembimbing lapangan. |
+| `GET` | `/api/peserta/informasi` | Bearer Token | Informasi operasional perusahaan, tata tertib, dan pedoman K3. |
+| `GET` | `/api/peserta/notifikasi` | Bearer Token | Riwayat notifikasi aktivitas akun peserta. |
+| `POST` | `/api/peserta/profil/update` | Bearer Token | Pembaruan nomor telepon, alamat, kontak darurat, & foto profil. |
+
+---
+
+### 🧪 Panduan Menjalankan & Menguji API dari Mobile
+
+1. **Jalankan Backend Server:**
+   Buka terminal di root project dan jalankan:
+   ```bash
+   php artisan serve --host=0.0.0.0 --port=8000
+   ```
+   *(Gunakan opsi `--host=0.0.0.0` agar server dapat diakses dari luar perangkat host).*
+
+2. **Pengujian pada Android Emulator:**
+   - Gunakan Base URL: `http://10.0.2.2:8000/api`
+   - Android Emulator mengarahkan IP `10.0.2.2` ke `127.0.0.1` (localhost) di komputer host.
+
+3. **Pengujian pada HP Fisik (Real Device):**
+   - Pastikan laptop dan HP terhubung ke **jaringan Wi-Fi yang sama**.
+   - Cari tahu IP LAN laptop Anda (jalankan `ipconfig` di command prompt, misal `192.168.1.15`).
+   - Gunakan Base URL: `http://192.168.1.15:8000/api`.
+
+4. **Uji Coba Cepat via cURL:**
+   ```bash
+   # 1. Login untuk mendapatkan Token
+   curl -X POST http://127.0.0.1:8000/api/login \
+     -H "Accept: application/json" \
+     -d "email=rian.pratama@pltu.com" \
+     -d "password=mhs123"
+
+   # 2. Panggil Data Dashboard Peserta
+   curl -X GET http://127.0.0.1:8000/api/peserta/dashboard \
+     -H "Accept: application/json" \
+     -H "Authorization: Bearer <TOKEN_DARI_LOGIN>"
+   ```
 
 ---
 
@@ -247,17 +361,25 @@ Untuk pengembangan pada fase berikutnya dan penyempurnaan implementasi di lingku
 
 1. **Error: `SQLSTATE[HY000] [2002] Connection refused`**
    * **Penyebab**: MySQL di XAMPP belum menyala atau port database tidak sesuai.
-   * **Solusi**: Pastikan MySQL di XAMPP sudah berwarna hijau. Cek port di XAMPP (jika `3307`, ubah `DB_PORT=3307` di file `.env`).
+   * **Solusi**: Pastikan modul MySQL di XAMPP sudah aktif. Cek port di XAMPP (jika `3307`, ubah `DB_PORT=3307` di file `.env`).
 
-2. **Error: `Vite manifest not found` atau tampilan styling berantakan**
+2. **Error: `Unauthenticated` pada Endpoint API**
+   * **Penyebab**: Header `Authorization` tidak dikirim atau format token salah.
+   * **Solusi**: Pastikan menyertakan header `Authorization: Bearer <token_dari_api_login>` dan `Accept: application/json`.
+
+3. **Mobile Emulator tidak dapat menghubungi API (`Connection Timeout`)**
+   * **Penyebab**: Menggunakan URL `localhost` di dalam emulator atau firewall memblokir port 8000.
+   * **Solusi**: Pada Android Emulator ganti `localhost` menjadi `10.0.2.2`. Pastikan server berjalan dengan `php artisan serve --host=0.0.0.0 --port=8000`.
+
+4. **Error: `Vite manifest not found` atau tampilan styling berantakan pada versi Web**
    * **Penyebab**: Aset frontend belum di-compile oleh Vite.
    * **Solusi**: Jalankan perintah `npm run dev` atau `npm run build`.
 
-3. **Kamera Selfie atau GPS tidak merespons di halaman absensi**
+5. **Kamera Selfie atau GPS tidak merespons di halaman absensi Web**
    * **Penyebab**: Izin perangkat diblokir oleh browser.
    * **Solusi**: Klik ikon gembok/pengaturan situs di sebelah kiri address bar browser (`http://127.0.0.1:8000`), ubah status **Camera** dan **Location** menjadi **Allow**.
 
-4. **Gambar / Lampiran tidak muncul setelah diunggah**
+6. **Gambar / Lampiran tidak muncul setelah diunggah**
    * **Solusi**: Jalankan perintah `php artisan storage:link` di terminal projek.
 
 ---

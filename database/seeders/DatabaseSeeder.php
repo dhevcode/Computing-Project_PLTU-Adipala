@@ -153,6 +153,12 @@ class DatabaseSeeder extends Seeder
         // 8. Akun Peserta Mahasiswa (Dummy & Existing)
         $this->call(DummyPesertaSeeder::class);
 
+        // 9. Akun Pembimbing Lapangan
+        $this->call(PembimbingSeeder::class);
+
+        // 10. Data FAQ Chatbot Asisten Virtual
+        $this->call(ChatbotFaqSeeder::class);
+
         $mhs = Mahasiswa::where('nim', '2311102324')->first();
         if ($mhs) {
             $userMhs = User::updateOrCreate(

@@ -227,6 +227,11 @@
                     <select name="status" id="status">
                         <option value="">Semua Status</option>
 
+                        <option value="Menunggu Verifikasi"
+                            {{ request('status') == 'Menunggu Verifikasi' ? 'selected' : '' }}>
+                            Menunggu Verifikasi
+                        </option>
+
                         <option value="Akan Magang"
                             {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>
                             Akan Magang
@@ -240,6 +245,11 @@
                         <option value="Selesai Magang"
                             {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>
                             Selesai Magang
+                        </option>
+
+                        <option value="Ditolak"
+                            {{ request('status') == 'Ditolak' ? 'selected' : '' }}>
+                            Ditolak
                         </option>
                     </select>
                 </div>
@@ -358,6 +368,7 @@
                             <th>Universitas</th>
                             <th>Jurusan</th>
                             <th>Divisi</th>
+                            <th>Pembimbing Lapangan</th>
                             <th>Periode Magang</th>
                             <th>Status</th>
                             <th>Aksi</th>
@@ -399,13 +410,31 @@
                             </td>
 
                             <td>
+                                @if($row->pembimbing)
+                                    <span style="font-weight:600;color:#0A5F63;">
+                                        <i class="fa-solid fa-user-tie"></i> {{ $row->pembimbing->nama_lengkap }}
+                                    </span>
+                                @elseif($row->nama_pembimbing)
+                                    <span>{{ $row->nama_pembimbing }}</span>
+                                @else
+                                    <span style="color:#DC2626;font-size:11px;font-weight:600;">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Belum Diplot
+                                    </span>
+                                @endif
+                            </td>
+
+                            <td>
                                 {{ \Carbon\Carbon::parse($row->tanggal_mulai)->format('d M Y') }}
                                 s.d.
                                 {{ \Carbon\Carbon::parse($row->tanggal_selesai)->format('d M Y') }}
                             </td>
 
                             <td>
-                                @if($row->status === 'Akan Magang')
+                                @if($row->status === 'Menunggu Verifikasi')
+                                <span class="status" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;font-weight:600;font-size:11px;padding:4px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;">
+                                    <i class="fa-solid fa-hourglass-half"></i> Menunggu Verifikasi
+                                </span>
+                                @elseif($row->status === 'Akan Magang')
                                 <span class="status status-upcoming">
                                     Akan Magang
                                 </span>
@@ -417,9 +446,13 @@
                                 <span class="status status-finished">
                                     Selesai Magang
                                 </span>
+                                @elseif($row->status === 'Ditolak')
+                                <span class="status" style="background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-weight:600;font-size:11px;padding:4px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;">
+                                    <i class="fa-solid fa-ban"></i> Ditolak
+                                </span>
                                 @else
                                 <span class="status status-empty">
-                                    -
+                                    {{ $row->status }}
                                 </span>
                                 @endif
                             </td>
@@ -427,12 +460,22 @@
                             <td>
                                 <div class="action">
 
+                                    @if($row->status === 'Menunggu Verifikasi')
+                                    <a
+                                        href="{{ route('admin.detail', $row->id_pengajuan) }}"
+                                        class="detail"
+                                        style="background:#059669;color:#fff;"
+                                        title="Verifikasi & Plot Pembimbing">
+                                        <i class="fa-solid fa-user-check"></i>
+                                    </a>
+                                    @else
                                     <a
                                         href="{{ route('admin.detail', $row->id_pengajuan) }}"
                                         class="detail"
                                         title="Detail">
                                         <i class="fa-regular fa-eye"></i>
                                     </a>
+                                    @endif
 
                                     <form
                                         action="{{ route('admin.destroy', $row->id_pengajuan) }}"

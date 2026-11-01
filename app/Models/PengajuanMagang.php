@@ -16,6 +16,7 @@ class PengajuanMagang extends Model
         'mahasiswa_id',
         'divisi_id',
         'nama_pembimbing',
+        'pembimbing_id',
         'tanggal_mulai',
         'tanggal_selesai',
         'status',
@@ -23,6 +24,10 @@ class PengajuanMagang extends Model
         'proposal',
         'cv',
         'surat_balasan',
+        'alasan_penolakan',
+        'catatan_admin',
+        'verified_at',
+        'verified_by',
         'created_by'
     ];
 
@@ -35,12 +40,23 @@ class PengajuanMagang extends Model
     {
         return $this->belongsTo(Divisi::class, 'divisi_id', 'id_divisi');
     }
+
+    public function pembimbing()
+    {
+        return $this->belongsTo(User::class, 'pembimbing_id', 'id_users');
+    }
+
+    public function verifiedBy()
+    {
+        return $this->belongsTo(User::class, 'verified_by', 'id_users');
+    }
+
     public function sertifikat()
-{
-    return $this->hasOne(
-        Sertifikat::class,
-        'pengajuan_id',
-        'id_pengajuan'
-    );
-}
+    {
+        return $this->hasOne(
+            Sertifikat::class,
+            'pengajuan_id',
+            'id_pengajuan'
+        );
+    }
 }

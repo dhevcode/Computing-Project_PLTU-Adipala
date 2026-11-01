@@ -7,7 +7,10 @@
     <link rel="icon" type="image/png" href="{{ asset('assets/image/logo-sie.png') }}">
 
     {{-- Google Font --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    {{-- Font Awesome 6 --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
 <body>
@@ -24,11 +27,20 @@
             <h1>Monitoring<br>Mahasiswa<br>Magang/PKL</h1>
 
             <p class="desc">
-                Platform monitoring terpadu mahasiswa PKL untuk mendukung efisiensi pengelolaan data, presensi, dan rekapitulasi kegiatan secara terstruktur.
+                Platform monitoring terpadu mahasiswa PKL untuk mendukung efisiensi pengelolaan data, presensi berbasis geofencing, dan rekapitulasi logbook kegiatan secara terstruktur.
             </p>
 
             <div class="company">
                 PT PLN Indonesia Power UBP Jawa Tengah 2 Adipala
+            </div>
+
+            <div class="left-register-card">
+                <div class="reg-card-tag"><i class="fa-solid fa-graduation-cap"></i> Pendaftaran Online</div>
+                <p>Ingin melaksanakan program PKL / Magang di PLTU Adipala? Daftarkan data diri, CV, dan proposal Anda secara mandiri.</p>
+                <a href="{{ route('magang.daftar') }}" class="btn-left-register">
+                    <span>Ajukan Magang Baru</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -44,15 +56,22 @@
             <h2>Masuk ke Sistem</h2>
             <p class="subtitle">Gunakan email atau NIM untuk mengakses portal</p>
 
+            @if(session('success'))
+                <div class="alert-success">
+                    <span style="font-size: 16px;">✅</span>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert-error">
+                    <span>⚠️</span>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
             <form action="{{ route('login.process') }}" method="POST">
                 @csrf
-
-                @if(session('error'))
-                    <div class="alert-error">
-                        <span>⚠️</span>
-                        <span>{{ session('error') }}</span>
-                    </div>
-                @endif
 
                 <div class="form-group">
                     <label for="email">Email atau NIM</label>
@@ -85,15 +104,29 @@
                 </div>
 
                 <button type="submit">
-                    Masuk ke Dashboard
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    <span>Masuk ke Dashboard</span>
                 </button>
             </form>
+
+            <!-- CTA PENGAJUAN MAGANG BARU -->
+            <div class="register-cta-box">
+                <div class="divider-text">
+                    <span>Belum terdaftar sebagai peserta?</span>
+                </div>
+
+                <a href="{{ route('magang.daftar') }}" class="btn-ajukan-magang">
+                    <i class="fa-solid fa-file-signature"></i>
+                    <span>Ajukan Pendaftaran Magang</span>
+                </a>
+            </div>
 
             <div class="warning" style="font-size: 11.5px; line-height: 1.4;">
                 <div class="warning-icon">ℹ️</div>
                 <div>
                     <strong>Akun Demo Tersedia:</strong><br>
-                    &bull; <strong>Peserta:</strong> <code>mhs1@gmail.com</code> / NIM: <code>2311102324</code> (Pass: <code>mhs123</code>)<br>
+                    &bull; <strong>Peserta:</strong> <code>mhs1@gmail.com</code> (Pass: <code>mhs123</code>)<br>
+                    &bull; <strong>Pembimbing:</strong> <code>pembimbing@pltu.com</code> (Pass: <code>pembimbing123</code>)<br>
                     &bull; <strong>Admin:</strong> <code>admin@pltu.com</code> (Pass: <code>admin123</code>)
                 </div>
             </div>
@@ -102,6 +135,9 @@
     </div>
 
 </div>
+
+<!-- Virtual Assistant Chatbot Widget -->
+@include('components.chatbot-widget')
 
 </body>
 </html>
