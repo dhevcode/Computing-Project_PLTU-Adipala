@@ -1,237 +1,176 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('superadmin.layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Superadmin - Monitoring PKL PLTU</title>
-    <link rel="icon" type="image/png" href="{{ asset('assets/image/logo-sie.png') }}">
+@section('title', 'Dashboard Superadmin')
+@section('page_title', 'Kelola Akun')
+@section('page_subtitle', 'Sistem Pengelolaan & Kontrol Akses Administrator PLTU')
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/superadmin/dashboard.css') }}">
-</head>
+@section('content')
 
-<body>
-
-    <!-- HEADER -->
-    <header class="header">
-        <div class="header-left">
-            <div class="logo-box">
-                <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
+    <!-- QUICK STATS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Admin Sistem</h4>
+                <div class="stat-value">{{ $totalAdmin ?? $admins->whereIn('role', ['Admin', 'Super Admin'])->count() }}</div>
             </div>
-            <div class="header-title">
-                <h2>Monitoring Mahasiswa PKL <span>Superadmin</span></h2>
-                <p>Sistem Pengelolaan & Kontrol Akses Administrator PLTU</p>
+            <div class="stat-icon primary">
+                <i class="fa-solid fa-shield-halved"></i>
             </div>
         </div>
-        <div class="header-right">
 
-            <!-- Navigasi Menu Super Admin -->
-            <a href="{{ route('superadmin.dashboard') }}" class="btn-header-nav active">
-                <i class="fa-solid fa-users-gear"></i>
-                <span>Kelola Akun</span>
-            </a>
-
-            <a href="{{ route('superadmin.pembimbing') }}" class="btn-header-nav">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Pembimbing Lapangan</h4>
+                <div class="stat-value">{{ $totalPembimbing ?? $admins->whereIn('role', ['Pembimbing', 'Pembimbing Lapangan'])->count() }}</div>
+            </div>
+            <div class="stat-icon warning">
                 <i class="fa-solid fa-user-tie"></i>
-                <span>Pembimbing Lapangan</span>
-            </a>
+            </div>
+        </div>
 
-            <a href="{{ route('superadmin.peserta') }}" class="btn-header-nav">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Total Peserta Magang</h4>
+                <div class="stat-value">{{ $totalMahasiswa ?? 0 }}</div>
+            </div>
+            <div class="stat-icon success">
                 <i class="fa-solid fa-graduation-cap"></i>
-                <span>Peserta Magang</span>
-            </a>
-
-            <a href="{{ route('superadmin.create') }}" class="btn-header-action">
-                <i class="fa-solid fa-user-plus"></i>
-                <span>Tambah Akun</span>
-            </a>
-
-            <a href="{{ route('superadmin.profile') }}" class="btn-header-nav">
-                <i class="fa-solid fa-user"></i>
-                <span>Profile</span>
-            </a>
-
-            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                @csrf
-                <button type="submit" class="btn-header-icon" title="Logout dari Sistem">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </button>
-            </form>
-
-        </div>
-    </header>
-
-    <!-- CONTENT -->
-    <div class="content">
-
-        <!-- QUICK STATS WIDGETS -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h4>Admin Sistem</h4>
-                    <div class="stat-value">{{ $totalAdmin ?? $admins->whereIn('role', ['Admin', 'Super Admin'])->count() }}</div>
-                </div>
-                <div class="stat-icon primary">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h4>Pembimbing Lapangan</h4>
-                    <div class="stat-value">{{ $totalPembimbing ?? $admins->whereIn('role', ['Pembimbing', 'Pembimbing Lapangan'])->count() }}</div>
-                </div>
-                <div class="stat-icon warning">
-                    <i class="fa-solid fa-user-tie"></i>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h4>Total Peserta Magang</h4>
-                    <div class="stat-value">{{ $totalMahasiswa ?? 0 }}</div>
-                </div>
-                <div class="stat-icon success">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h4>Peserta Belum Ada Akun</h4>
-                    <div class="stat-value" style="color: {{ ($mahasiswaTanpaAkun ?? 0) > 0 ? '#DC2626' : '#059669' }};">
-                        {{ $mahasiswaTanpaAkun ?? 0 }}
-                    </div>
-                </div>
-                <div class="stat-icon primary" style="background: #FEE2E2; color: #DC2626;">
-                    <i class="fa-solid fa-user-clock"></i>
-                </div>
             </div>
         </div>
 
-        <!-- MAIN DATA TABLE CARD -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title-group">
-                    <h3>Daftar Administrator Sistem</h3>
-                    <p>Kelola hak akses, status akun, dan penugasan divisi admin PKL.</p>
-                </div>
-                <div class="table-controls">
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="searchInput" placeholder="Cari admin, username, divisi..." onkeyup="filterTable()">
-                    </div>
+        @php $tanpaAkun = $mahasiswaTanpaAkun ?? 0; @endphp
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Peserta Belum Ada Akun</h4>
+                <div class="stat-value" style="color: {{ $tanpaAkun > 0 ? 'var(--error-text)' : 'var(--success-text)' }};">
+                    {{ $tanpaAkun }}
                 </div>
             </div>
-
-            @if(session('success'))
-                <div class="alert alert-success">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <span>{{ session('success') }}</span>
-                </div>
-            @endif
-
-            <div class="table-wrapper">
-                <table id="adminTable">
-                    <thead>
-                        <tr>
-                            <th style="width: 60px; text-align: center;">No</th>
-                            <th>Nama & Email</th>
-                            <th>Username</th>
-                            <th>Bagian / Divisi</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th style="width: 100px; text-align: center;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($admins as $index => $admin)
-                            <tr>
-                                <td style="text-align: center; font-weight: 700; color: #94A3B8;">{{ $index + 1 }}</td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="avatar-circle">
-                                            {{ strtoupper(substr($admin->nama_lengkap ?? 'A', 0, 1)) }}
-                                        </div>
-                                        <div class="user-info">
-                                            <span class="name">{{ $admin->nama_lengkap }}</span>
-                                            <span class="email">{{ $admin->email }}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><code style="background: #F1F5F9; padding: 3px 8px; border-radius: 6px; color: #0A5F63; font-weight: 600;">{{ $admin->username }}</code></td>
-                                <td>
-                                    <span style="font-weight: 600; color: #334155;">
-                                        {{ $admin->divisi->nama_divisi ?? 'Belum Diatur' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge badge-role">
-                                        <i class="fa-solid fa-shield-halved" style="font-size: 10px;"></i>
-                                        {{ $admin->role }}
-                                    </span>
-                                </td>
-                                <td>
-                                    @if($admin->is_active)
-                                        <span class="badge badge-active">
-                                            <span class="badge-dot"></span> Aktif
-                                        </span>
-                                    @else
-                                        <span class="badge badge-inactive">
-                                            <span class="badge-dot"></span> Nonaktif
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="action-group" style="justify-content: center;">
-                                        <a href="{{ route('superadmin.edit', $admin->id_users) }}" class="btn-action btn-edit" title="Edit Admin">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </a>
-                                        <form action="{{ route('superadmin.destroy', $admin->id_users) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun admin ini?');" style="margin: 0;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn-action btn-delete" title="Hapus Admin">
-                                                <i class="fa-solid fa-trash-can"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7">
-                                    <div class="empty-state">
-                                        <i class="fa-solid fa-user-slash"></i>
-                                        <p>Belum ada data admin terdaftar.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div class="stat-icon {{ $tanpaAkun > 0 ? 'danger' : 'success' }}">
+                <i class="fa-solid fa-user-clock"></i>
             </div>
         </div>
     </div>
 
-    <script>
-        function filterTable() {
-            const input = document.getElementById("searchInput");
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById("adminTable");
-            const tr = table.getElementsByTagName("tr");
+    <!-- DAFTAR ADMIN -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title-group">
+                <h3>Daftar Administrator Sistem</h3>
+                <p>Kelola hak akses, status akun, dan penugasan divisi admin PKL.</p>
+            </div>
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Cari admin, username, divisi..." autocomplete="off">
+            </div>
+        </div>
 
-            for (let i = 1; i < tr.length; i++) {
-                let rowText = tr[i].textContent.toLowerCase();
-                if (rowText.includes(filter)) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
-                }
-            }
-        }
-    </script>
-</body>
+        <div class="table-wrapper">
+            <table id="adminTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 60px;">No</th>
+                        <th>Nama & Email</th>
+                        <th>Username</th>
+                        <th>Bagian / Divisi</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th class="text-center" style="width: 110px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($admins as $index => $admin)
+                        <tr class="data-row">
+                            <td class="text-center row-number cell-number">{{ $index + 1 }}</td>
+                            <td class="cell-user">
+                                <div class="user-cell">
+                                    <div class="avatar-circle">
+                                        {{ strtoupper(substr($admin->nama_lengkap ?? 'A', 0, 1)) }}
+                                    </div>
+                                    <div class="user-info">
+                                        <span class="name">{{ $admin->nama_lengkap }}</span>
+                                        <span class="email">{{ $admin->email }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-label="Username"><span class="code-tag">{{ $admin->username }}</span></td>
+                            <td data-label="Divisi">{{ $admin->divisi->nama_divisi ?? 'Belum Diatur' }}</td>
+                            <td data-label="Role">
+                                <span class="badge badge-role">
+                                    <i class="fa-solid fa-shield-halved" style="font-size: 10px;"></i>
+                                    {{ $admin->role }}
+                                </span>
+                            </td>
+                            <td data-label="Status">
+                                @if($admin->is_active)
+                                    <span class="badge badge-active"><span class="badge-dot"></span> Aktif</span>
+                                @else
+                                    <span class="badge badge-inactive"><span class="badge-dot"></span> Nonaktif</span>
+                                @endif
+                            </td>
+                            <td class="cell-action">
+                                <div class="action-group">
+                                    <a href="{{ route('superadmin.edit', $admin->id_users) }}" class="btn-action btn-edit" title="Edit Admin" aria-label="Edit {{ $admin->nama_lengkap }}">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <form action="{{ route('superadmin.destroy', $admin->id_users) }}" method="POST"
+                                          data-confirm="Akun {{ $admin->nama_lengkap }} akan dihapus permanen dan tidak bisa dikembalikan."
+                                          data-confirm-title="Hapus akun admin?">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-action btn-delete" title="Hapus Admin" aria-label="Hapus {{ $admin->nama_lengkap }}">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-user-slash"></i>
+                                    <p>Belum ada data admin terdaftar.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
 
-</html>
+                    {{-- Muncul saat hasil pencarian kosong --}}
+                    <tr id="noResultRow" class="d-none">
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <p>Tidak ada data yang cocok dengan pencarian.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+@endsection
+
+@push('scripts')
+<script>
+    (function () {
+        var input = document.getElementById('searchInput');
+        var rows = document.querySelectorAll('#adminTable tr.data-row');
+        var noResult = document.getElementById('noResultRow');
+
+        input.addEventListener('input', function () {
+            var q = input.value.trim().toLowerCase();
+            var visible = 0;
+
+            rows.forEach(function (row) {
+                var match = row.textContent.toLowerCase().includes(q);
+                row.classList.toggle('d-none', !match);
+                if (match) visible++;
+            });
+
+            noResult.classList.toggle('d-none', !(rows.length > 0 && visible === 0));
+        });
+    })();
+</script>
+@endpush
