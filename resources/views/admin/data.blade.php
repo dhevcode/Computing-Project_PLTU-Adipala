@@ -1,593 +1,301 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('admin.layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('title', 'Data Mahasiswa')
+@section('page_title', 'Data Mahasiswa')
+@section('page_subtitle', 'Kelola, cari, dan pantau seluruh data mahasiswa magang')
 
-    <title>Data Mahasiswa - Sistem Magang</title>
-    <link rel="icon" type="image/png" href="{{ asset('assets/image/logo-sie.png') }}">
+@push('styles')
+<style>
+    /* Filter Section */
+    .filter-section { background: var(--bg); border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(0,0,0,0.03); border: 1px solid var(--border); }
+    .filter-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--page); }
+    .filter-header i { color: var(--primary); font-size: 18px; }
+    .filter-header h3 { font-size: 15px; font-weight: 700; color: var(--text); }
+    .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .input-group label { display: block; font-size: 12.5px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+    .filter-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
-    <!-- FONT -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    .btn-reset { background: #F1F5F9; color: #475569; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; text-decoration: none; }
+    .btn-reset:hover { background: #E2E8F0; color: var(--text); }
+    .btn-filter { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.2s; font-family: inherit; }
+    .btn-filter:hover { background: var(--primary-dark); }
 
-    <!-- FONT AWESOME -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    /* Tombol Aksi Tabel */
+    .btn-add { background: var(--primary); color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+    .btn-add:hover { background: var(--primary-dark); }
+    .btn-export { background: #F0FDF4; color: #166534; border: 1.5px solid #BBF7D0; text-decoration: none; padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+    .btn-export:hover { background: #DCFCE7; border-color: #86EFAC; }
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/admin/data.css') }}">
-</head>
+    .status-badge { padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .status-menunggu { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+    .status-akan { background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; }
+    .status-sedang { background: var(--success-bg); color: var(--success-text); border: 1px solid #A7F3D0; }
+    .status-selesai { background: #F1F5F9; color: #475569; border: 1px solid var(--border); }
+    .status-ditolak { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
 
-<body>
+    /* Paginasi */
+    .pagination-wrapper { display: flex; justify-content: center; gap: 6px; padding: 20px 0 10px; }
+    .pagination-btn { width: 34px; height: 34px; display: inline-flex; justify-content: center; align-items: center; border-radius: 8px; background: #fff; border: 1.5px solid var(--border); color: var(--text); font-size: 13px; font-weight: 600; text-decoration: none; transition: 0.2s; }
+    .pagination-btn:hover:not(.disabled):not(.active) { border-color: var(--primary); color: var(--primary); }
+    .pagination-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .pagination-btn.disabled { background: #F8FAFC; color: #CBD5E1; cursor: not-allowed; }
 
-    <!-- ================= HEADER ================= -->
+    /* Responsive */
+    @media (max-width: 1100px) { .filter-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 760px) {
+        .filter-grid { grid-template-columns: 1fr; }
+        .filter-actions { flex-direction: column-reverse; }
+        .btn-reset, .btn-filter { width: 100%; justify-content: center; }
+        .card-header { flex-direction: column; align-items: stretch; gap: 14px; }
+        .card-header > div:last-child { display: flex; flex-direction: column; gap: 10px; }
+        .btn-add, .btn-export { width: 100%; justify-content: center; }
 
-    <header class="header">
-        <div class="header-left">
-            <div class="logo-box">
-                <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
-            </div>
+        /* Tabel Mobile */
+        table, tbody, tr, td { display: block; width: 100%; }
+        thead { display: none; }
+        tbody tr { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px; padding: 16px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        tbody td { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F1F5F9; text-align: right; }
+        tbody td:last-child { border-bottom: none; padding-bottom: 0; }
+        tbody td[data-label]::before { content: attr(data-label); font-weight: 600; color: var(--muted); text-align: left; flex-shrink: 0; margin-right: 12px; }
 
-            <div class="header-title">
-                <h2>Monitoring Mahasiswa PKL</h2>
-                <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
+        tbody td.cell-user { display: block; text-align: left; background: var(--page); padding: 14px; border-radius: 8px; margin-bottom: 12px; border-bottom: none; }
+        tbody td.cell-user::before { display: none; }
+        tbody td.cell-action { display: flex; justify-content: flex-end; padding-top: 16px; margin-top: 8px; }
+        tbody td.cell-action::before { display: none; }
+    }
+</style>
+@endpush
+
+@section('content')
+    @if(session('success'))
+        <div class="alert alert-success animate-fade-up">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
+    <form method="GET" action="{{ route('admin.data') }}" class="filter-section animate-fade-up delay-1">
+        <div class="filter-header">
+            <i class="fa-solid fa-filter"></i>
+            <div>
+                <h3>Filter Data Mahasiswa</h3>
+                <p style="font-size: 12px; color: var(--muted); margin-top: 4px;">Saring data berdasarkan kriteria tertentu</p>
             </div>
         </div>
 
-        <div class="header-right">
-            <button type="button" class="menu-btn" id="menuBtn" title="Menu">
-                <i class="fa-solid fa-bars"></i>
-            </button>
+        <div class="filter-grid">
+            <div class="input-group">
+                <label>Pencarian</label>
+                <input type="text" name="search" value="{{ request('search') }}" class="input-box" placeholder="Nama / NIM...">
+            </div>
 
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
+            <div class="input-group">
+                <label>Jurusan</label>
+                <select name="jurusan_id" class="d-none custom-filter-select">
+                    <option value="">Semua Jurusan</option>
+                    @foreach($listJurusan as $j)
+                        <option value="{{ $j->id_jurusan }}" {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>{{ $j->nama_jurusan }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-                <button type="submit" class="logout" title="Logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </button>
-            </form>
+            <div class="input-group">
+                <label>Universitas</label>
+                <select name="universitas_id" class="d-none custom-filter-select">
+                    <option value="">Semua Universitas</option>
+                    @foreach($listUniversitas as $u)
+                        <option value="{{ $u->id_universitas }}" {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>{{ $u->nama_universitas }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Divisi</label>
+                <select name="divisi_id" class="d-none custom-filter-select">
+                    <option value="">Semua Divisi</option>
+                    @foreach($listDivisi as $d)
+                        <option value="{{ $d->id_divisi }}" {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>{{ $d->nama_divisi }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Jenis Kelamin</label>
+                <select name="jenis_kelamin" class="d-none custom-filter-select">
+                    <option value="">Semua</option>
+                    <option value="Laki-laki" {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                    <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Tanggal Masuk</label>
+                <input type="text" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}" class="flatpickr-date" placeholder="Pilih Tanggal">
+            </div>
+
+            <div class="input-group">
+                <label>Tanggal Selesai</label>
+                <input type="text" name="tanggal_selesai" value="{{ request('tanggal_selesai') }}" class="flatpickr-date" placeholder="Pilih Tanggal">
+            </div>
+
+            <div class="input-group">
+                <label>Status Magang</label>
+                <select name="status" class="d-none custom-filter-select">
+                    <option value="">Semua Status</option>
+                    <option value="Menunggu Verifikasi" {{ request('status') == 'Menunggu Verifikasi' ? 'selected' : '' }}>Menunggu Verifikasi</option>
+                    <option value="Akan Magang" {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>Akan Magang</option>
+                    <option value="Sedang Magang" {{ request('status') == 'Sedang Magang' ? 'selected' : '' }}>Sedang Magang</option>
+                    <option value="Selesai Magang" {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>Selesai Magang</option>
+                    <option value="Ditolak" {{ request('status') == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
+                </select>
+            </div>
         </div>
-    </header>
 
+        <div class="filter-actions">
+            <a href="{{ route('admin.data') }}" class="btn-reset"><i class="fa-solid fa-rotate-left"></i> Reset Filter</a>
+            <button type="submit" class="btn-filter"><i class="fa-solid fa-filter"></i> Terapkan Filter</button>
+        </div>
+    </form>
 
-    <!-- ================= SIDEBAR ================= -->
-    @include('admin.sidebar')
-
-
-    <!-- ================= CONTENT ================= -->
-
-    <main class="content">
-
-        <!-- PAGE TITLE -->
-
-        <section class="page-title">
-            <h1>Data Mahasiswa</h1>
-            <p>Kelola, cari, dan pantau seluruh data mahasiswa magang.</p>
-        </section>
-
-
-        <!-- ================= FILTER ================= -->
-
-        <form method="GET"
-            action="{{ route('admin.data') }}"
-            class="filter-section">
-
-            <div class="filter-header">
-                <div class="filter-icon">
-                    <i class="fa-solid fa-filter"></i>
-                </div>
-
-                <div>
-                    <h3>Filter Data Mahasiswa</h3>
-                    <p>Gunakan filter untuk mencari data mahasiswa berdasarkan kriteria tertentu.</p>
-                </div>
+    <div class="card animate-fade-up delay-2">
+        <div class="card-header">
+            <div class="card-title-group">
+                <h3>Daftar Data Peserta Magang</h3>
+                <p style="font-size: 12px; color: var(--muted); margin-top: 4px;">Menampilkan semua data yang sesuai dengan pencarian Anda.</p>
             </div>
-
-
-            <div class="filter-grid">
-
-                <!-- PENCARIAN -->
-
-                <div class="input-group">
-                    <label for="search">Pencarian</label>
-                    <input
-                        type="text"
-                        id="search"
-                        name="search"
-                        value="{{ request('search') }}"
-                        placeholder="Nama / NIM...">
-                </div>
-
-
-                <!-- JURUSAN -->
-
-                <div class="input-group">
-                    <label for="jurusan_id">Jurusan</label>
-
-                    <select name="jurusan_id" id="jurusan_id">
-                        <option value="">Semua Jurusan</option>
-
-                        @foreach($listJurusan as $j)
-                        <option value="{{ $j->id_jurusan }}"
-                            {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
-                            {{ $j->nama_jurusan }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-
-                <!-- UNIVERSITAS -->
-
-                <div class="input-group">
-                    <label for="universitas_id">Universitas</label>
-
-                    <select name="universitas_id" id="universitas_id">
-                        <option value="">Semua Universitas</option>
-
-                        @foreach($listUniversitas as $u)
-                        <option value="{{ $u->id_universitas }}"
-                            {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
-                            {{ $u->nama_universitas }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-
-                <!-- DIVISI -->
-
-                <div class="input-group">
-                    <label for="divisi_id">Divisi</label>
-
-                    <select name="divisi_id" id="divisi_id">
-                        <option value="">Semua Divisi</option>
-
-                        @foreach($listDivisi as $d)
-                        <option value="{{ $d->id_divisi }}"
-                            {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
-                            {{ $d->nama_divisi }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-
-                <!-- JENIS KELAMIN -->
-
-                <div class="input-group">
-                    <label for="jenis_kelamin">Jenis Kelamin</label>
-
-                    <select name="jenis_kelamin" id="jenis_kelamin">
-                        <option value="">Semua Jenis Kelamin</option>
-
-                        <option value="Laki-laki"
-                            {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                            Laki-laki
-                        </option>
-
-                        <option value="Perempuan"
-                            {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                            Perempuan
-                        </option>
-                    </select>
-                </div>
-
-
-                <!-- TANGGAL MULAI -->
-
-                <div class="input-group">
-                    <label for="tanggal_mulai">Tanggal Masuk</label>
-
-                    <input
-                        type="date"
-                        id="tanggal_mulai"
-                        name="tanggal_mulai"
-                        value="{{ request('tanggal_mulai') }}">
-                </div>
-
-
-                <!-- TANGGAL SELESAI -->
-
-                <div class="input-group">
-                    <label for="tanggal_selesai">Tanggal Selesai</label>
-
-                    <input
-                        type="date"
-                        id="tanggal_selesai"
-                        name="tanggal_selesai"
-                        value="{{ request('tanggal_selesai') }}">
-                </div>
-
-
-                <!-- TAHUN -->
-
-                <div class="input-group">
-                    <label for="tahun">Tahun</label>
-
-                    <select name="tahun" id="tahun">
-                        <option value="">Semua Tahun</option>
-
-                        @for($i = date('Y') + 2; $i >= 2020; $i--)
-                        <option value="{{ $i }}"
-                            {{ request('tahun') == $i ? 'selected' : '' }}>
-                            {{ $i }}
-                        </option>
-                        @endfor
-                    </select>
-                </div>
-
-
-                <!-- STATUS -->
-
-                <div class="input-group">
-                    <label for="status">Status Magang</label>
-
-                    <select name="status" id="status">
-                        <option value="">Semua Status</option>
-
-                        <option value="Menunggu Verifikasi"
-                            {{ request('status') == 'Menunggu Verifikasi' ? 'selected' : '' }}>
-                            Menunggu Verifikasi
-                        </option>
-
-                        <option value="Akan Magang"
-                            {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>
-                            Akan Magang
-                        </option>
-
-                        <option value="Sedang Magang"
-                            {{ request('status') == 'Sedang Magang' ? 'selected' : '' }}>
-                            Sedang Magang
-                        </option>
-
-                        <option value="Selesai Magang"
-                            {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>
-                            Selesai Magang
-                        </option>
-
-                        <option value="Ditolak"
-                            {{ request('status') == 'Ditolak' ? 'selected' : '' }}>
-                            Ditolak
-                        </option>
-                    </select>
-                </div>
-
-                <!-- URUTKAN -->
-
-                <div class="input-group sort-group">
-
-                    <label for="sort">Urutkan Berdasarkan</label>
-
-                    <select name="sort" id="sort">
-
-                        <option value="terbaru"
-                            {{ request('sort', 'terbaru') == 'terbaru' ? 'selected' : '' }}>
-                            Terbaru Ditambahkan
-                        </option>
-
-                        <option value="terlama"
-                            {{ request('sort') == 'terlama' ? 'selected' : '' }}>
-                            Terlama Ditambahkan
-                        </option>
-
-                        <option value="nama_asc"
-                            {{ request('sort') == 'nama_asc' ? 'selected' : '' }}>
-                            Nama A–Z
-                        </option>
-
-                        <option value="nama_desc"
-                            {{ request('sort') == 'nama_desc' ? 'selected' : '' }}>
-                            Nama Z–A
-                        </option>
-
-                        <option value="mulai_asc"
-                            {{ request('sort') == 'mulai_asc' ? 'selected' : '' }}>
-                            Tanggal Mulai Terdekat
-                        </option>
-
-                        <option value="mulai_desc"
-                            {{ request('sort') == 'mulai_desc' ? 'selected' : '' }}>
-                            Tanggal Mulai Terjauh
-                        </option>
-
-                        <option value="selesai_asc"
-                            {{ request('sort') == 'selesai_asc' ? 'selected' : '' }}>
-                            Tanggal Selesai Terdekat
-                        </option>
-
-                        <option value="selesai_desc"
-                            {{ request('sort') == 'selesai_desc' ? 'selected' : '' }}>
-                            Tanggal Selesai Terjauh
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-
-            <!-- FILTER ACTIONS -->
-
-            <div class="filter-actions">
-                <a href="{{ route('admin.data') }}" class="btn-reset">
-                    <i class="fa-solid fa-rotate-left"></i>
-                    Reset
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ route('admin.export', request()->query()) }}" class="btn-export">
+                    <i class="fa-solid fa-file-export"></i> Ekspor CSV
                 </a>
-
-                <button type="submit" class="btn-filter">
-                    <i class="fa-solid fa-filter"></i>
-                    Terapkan Filter
-                </button>
+                <a href="{{ route('admin.create') }}" class="btn-add">
+                    <i class="fa-solid fa-plus"></i> Tambah Manual
+                </a>
             </div>
+        </div>
 
-        </form>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px; text-align: center;">No</th>
+                        <th>Mahasiswa & NIM</th>
+                        <th>Kampus & Jurusan</th>
+                        <th>Divisi Penempatan</th>
+                        <th>Pembimbing</th>
+                        <th>Periode Magang</th>
+                        <th style="text-align: center;">Status</th>
+                        <th style="text-align: center; width: 100px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($pengajuans as $index => $row)
+                    <tr>
+                        <td style="text-align: center; color: var(--muted); font-weight: 600;" data-label="No">
+                            {{ $pengajuans->firstItem() + $index }}
+                        </td>
 
+                        <td class="cell-user">
+                            <strong style="color: var(--text); display: block;">{{ $row->mahasiswa->nama_lengkap ?? '-' }}</strong>
+                            <small style="color: var(--muted);">NIM: <span class="code-tag" style="background: transparent; padding: 0;">{{ $row->mahasiswa->nim ?? '-' }}</span></small>
+                        </td>
 
-        <!-- ================= TABLE ================= -->
+                        <td data-label="Kampus">
+                            <strong style="color: var(--text); display: block;">{{ $row->mahasiswa->universitas->nama_universitas ?? '-' }}</strong>
+                            <small style="color: var(--muted);">{{ $row->mahasiswa->jurusan->nama_jurusan ?? '-' }}</small>
+                        </td>
 
-        <section class="table-card">
+                        <td data-label="Divisi" style="font-weight: 600; color: var(--primary);">
+                            {{ $row->divisi->nama_divisi ?? '-' }}
+                        </td>
 
-            <div class="table-header">
+                        <td data-label="Pembimbing">
+                            @if($row->pembimbing)
+                                <span style="font-weight:600; color:var(--text);"><i class="fa-solid fa-user-tie" style="color: var(--primary); margin-right: 4px;"></i> {{ $row->pembimbing->nama_lengkap }}</span>
+                            @elseif($row->nama_pembimbing)
+                                <span>{{ $row->nama_pembimbing }}</span>
+                            @else
+                                <span style="color:var(--error-text); font-size:12px; font-weight:600;"><i class="fa-solid fa-triangle-exclamation"></i> Belum Diplot</span>
+                            @endif
+                        </td>
 
-                <div class="table-title">
-                    <h3>Data Mahasiswa</h3>
-                    <p>Menampilkan data mahasiswa yang terdaftar dalam sistem.</p>
-                </div>
+                        <td data-label="Periode Magang" style="font-size: 12.5px;">
+                            {{ \Carbon\Carbon::parse($row->tanggal_mulai)->format('d M Y') }}<br>s/d {{ \Carbon\Carbon::parse($row->tanggal_selesai)->format('d M Y') }}
+                        </td>
 
-                <div class="table-actions">
+                        <td data-label="Status" style="text-align: center;">
+                            @if($row->status === 'Menunggu Verifikasi')
+                                <span class="status-badge status-menunggu"><i class="fa-solid fa-hourglass-half"></i> Menunggu</span>
+                            @elseif($row->status === 'Akan Magang')
+                                <span class="status-badge status-akan">Akan Magang</span>
+                            @elseif($row->status === 'Sedang Magang')
+                                <span class="status-badge status-sedang">Sedang Magang</span>
+                            @elseif($row->status === 'Selesai Magang')
+                                <span class="status-badge status-selesai">Selesai Magang</span>
+                            @elseif($row->status === 'Ditolak')
+                                <span class="status-badge status-ditolak"><i class="fa-solid fa-ban"></i> Ditolak</span>
+                            @else
+                                <span class="status-badge">{{ $row->status }}</span>
+                            @endif
+                        </td>
 
-                    <a href="{{ route('admin.create') }}" class="btn-add">
-                        <i class="fa-solid fa-user-plus"></i>
-                        Tambah Mahasiswa
-                    </a>
-
-                    <a href="{{ route('admin.export', request()->query()) }}" class="btn-export">
-                        <i class="fa-solid fa-file-export"></i>
-                        Ekspor Data
-                    </a>
-
-                </div>
-
-            </div>
-
-
-            <!-- TABLE -->
-
-            <div class="table-wrapper">
-                <table class="table-admin">
-
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>NIM</th>
-                            <th>Nama Lengkap</th>
-                            <th>Jenis Kelamin</th>
-                            <th>Universitas</th>
-                            <th>Jurusan</th>
-                            <th>Divisi</th>
-                            <th>Pembimbing Lapangan</th>
-                            <th>Periode Magang</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        @forelse($pengajuans as $index => $row)
-
-                        <tr>
-
-                            <td>
-                                {{ $pengajuans->firstItem() + $index }}
-                            </td>
-
-                            <td>
-                                {{ $row->mahasiswa->nim ?? '-' }}
-                            </td>
-
-                            <td>
-                                {{ $row->mahasiswa->nama_lengkap ?? '-' }}
-                            </td>
-
-                            <td>
-                                {{ $row->mahasiswa->jenis_kelamin ?? '-' }}
-                            </td>
-
-                            <td>
-                                {{ $row->mahasiswa->universitas->nama_universitas ?? '-' }}
-                            </td>
-
-                            <td>
-                                {{ $row->mahasiswa->jurusan->nama_jurusan ?? '-' }}
-                            </td>
-
-                            <td>
-                                {{ $row->divisi->nama_divisi ?? '-' }}
-                            </td>
-
-                            <td>
-                                @if($row->pembimbing)
-                                    <span style="font-weight:600;color:#0A5F63;">
-                                        <i class="fa-solid fa-user-tie"></i> {{ $row->pembimbing->nama_lengkap }}
-                                    </span>
-                                @elseif($row->nama_pembimbing)
-                                    <span>{{ $row->nama_pembimbing }}</span>
-                                @else
-                                    <span style="color:#DC2626;font-size:11px;font-weight:600;">
-                                        <i class="fa-solid fa-triangle-exclamation"></i> Belum Diplot
-                                    </span>
-                                @endif
-                            </td>
-
-                            <td>
-                                {{ \Carbon\Carbon::parse($row->tanggal_mulai)->format('d M Y') }}
-                                s.d.
-                                {{ \Carbon\Carbon::parse($row->tanggal_selesai)->format('d M Y') }}
-                            </td>
-
-                            <td>
+                        <td class="cell-action" style="text-align: center;">
+                            <div class="action-group">
                                 @if($row->status === 'Menunggu Verifikasi')
-                                <span class="status" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;font-weight:600;font-size:11px;padding:4px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;">
-                                    <i class="fa-solid fa-hourglass-half"></i> Menunggu Verifikasi
-                                </span>
-                                @elseif($row->status === 'Akan Magang')
-                                <span class="status status-upcoming">
-                                    Akan Magang
-                                </span>
-                                @elseif($row->status === 'Sedang Magang')
-                                <span class="status status-active">
-                                    Sedang Magang
-                                </span>
-                                @elseif($row->status === 'Selesai Magang')
-                                <span class="status status-finished">
-                                    Selesai Magang
-                                </span>
-                                @elseif($row->status === 'Ditolak')
-                                <span class="status" style="background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-weight:600;font-size:11px;padding:4px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;">
-                                    <i class="fa-solid fa-ban"></i> Ditolak
-                                </span>
-                                @else
-                                <span class="status status-empty">
-                                    {{ $row->status }}
-                                </span>
-                                @endif
-                            </td>
-
-                            <td>
-                                <div class="action">
-
-                                    @if($row->status === 'Menunggu Verifikasi')
-                                    <a
-                                        href="{{ route('admin.detail', $row->id_pengajuan) }}"
-                                        class="detail"
-                                        style="background:#059669;color:#fff;"
-                                        title="Verifikasi & Plot Pembimbing">
+                                    <a href="{{ route('admin.detail', $row->id_pengajuan) }}" class="btn-action" style="background: var(--success-bg); color: var(--success-text);" title="Verifikasi Pendaftaran">
                                         <i class="fa-solid fa-user-check"></i>
                                     </a>
-                                    @else
-                                    <a
-                                        href="{{ route('admin.detail', $row->id_pengajuan) }}"
-                                        class="detail"
-                                        title="Detail">
+                                @else
+                                    <a href="{{ route('admin.detail', $row->id_pengajuan) }}" class="btn-action" style="background: #E0F2FE; color: #0284C7;" title="Detail & Edit">
                                         <i class="fa-regular fa-eye"></i>
                                     </a>
-                                    @endif
+                                @endif
 
-                                    <form
-                                        action="{{ route('admin.destroy', $row->id_pengajuan) }}"
-                                        method="POST"
-                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')">
+                                <form action="{{ route('admin.destroy', $row->id_pengajuan) }}" method="POST" data-confirm="Hapus data pendaftaran {{ $row->mahasiswa->nama_lengkap ?? '' }}?" data-confirm-title="Hapus Data">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-action btn-delete" title="Hapus Data">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-folder-open"></i>
+                                <p>Belum ada data mahasiswa yang sesuai dengan filter.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button
-                                            type="submit"
-                                            class="delete"
-                                            title="Hapus">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-
-                                    </form>
-
-                                </div>
-                            </td>
-
-                        </tr>
-
-                        @empty
-
-                        <tr>
-                            <td colspan="10" class="empty-data">
-                                <i class="fa-regular fa-folder-open"></i>
-                                <span>Belum ada data mahasiswa yang sesuai dengan filter.</span>
-                            </td>
-                        </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
-            </div>
-
-
-            <!-- PAGINATION -->
-
-            @if($pengajuans->hasPages())
-            <div class="pagination-wrapper">
-
-                {{-- Previous --}}
-                @if ($pengajuans->onFirstPage())
-                <span class="pagination-btn disabled">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </span>
-                @else
-                <a href="{{ $pengajuans->appends(request()->query())->previousPageUrl() }}"
-                    class="pagination-btn">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </a>
-                @endif
-
-                {{-- Nomor Halaman --}}
-                @foreach ($pengajuans->getUrlRange(1, $pengajuans->lastPage()) as $page => $url)
-
-                @if ($page == $pengajuans->currentPage())
-                <span class="pagination-btn active">
-                    {{ $page }}
-                </span>
-                @else
-                <a href="{{ $pengajuans->appends(request()->query())->url($page) }}"
-                    class="pagination-btn">
-                    {{ $page }}
-                </a>
-                @endif
-
-                @endforeach
-
-                {{-- Next --}}
-                @if ($pengajuans->hasMorePages())
-                <a href="{{ $pengajuans->appends(request()->query())->nextPageUrl() }}"
-                    class="pagination-btn">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </a>
-                @else
-                <span class="pagination-btn disabled">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </span>
-                @endif
-
-            </div>
+        @if($pengajuans->hasPages())
+        <div class="pagination-wrapper">
+            @if ($pengajuans->onFirstPage())
+                <span class="pagination-btn disabled"><i class="fa-solid fa-chevron-left"></i></span>
+            @else
+                <a href="{{ $pengajuans->appends(request()->query())->previousPageUrl() }}" class="pagination-btn"><i class="fa-solid fa-chevron-left"></i></a>
             @endif
-        </section>
 
-    </main>
+            @foreach ($pengajuans->getUrlRange(1, $pengajuans->lastPage()) as $page => $url)
+                @if ($page == $pengajuans->currentPage())
+                    <span class="pagination-btn active">{{ $page }}</span>
+                @else
+                    <a href="{{ $pengajuans->appends(request()->query())->url($page) }}" class="pagination-btn">{{ $page }}</a>
+                @endif
+            @endforeach
 
-
-    <!-- ================= SCRIPT ================= -->
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuBtn = document.getElementById('menuBtn');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-
-            menuBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-            });
-
-            overlay.addEventListener('click', function() {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            });
-        });
-    </script>
-
-</body>
-
-</html>
+            @if ($pengajuans->hasMorePages())
+                <a href="{{ $pengajuans->appends(request()->query())->nextPageUrl() }}" class="pagination-btn"><i class="fa-solid fa-chevron-right"></i></a>
+            @else
+                <span class="pagination-btn disabled"><i class="fa-solid fa-chevron-right"></i></span>
+            @endif
+        </div>
+        @endif
+    </div>
+@endsection

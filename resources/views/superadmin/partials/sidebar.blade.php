@@ -25,10 +25,6 @@
 <aside class="sidebar" id="sidebar" aria-label="Menu utama">
     <div class="sidebar-brand">
         <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
-        <div class="sidebar-brand-text">
-            <strong>Monitoring PKL</strong>
-            <span>Panel Superadmin</span>
-        </div>
         <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Tutup menu">
             <i class="fa-solid fa-xmark"></i>
         </button>

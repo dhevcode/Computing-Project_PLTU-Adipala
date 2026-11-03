@@ -146,6 +146,11 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
 // =====================================================
 Route::middleware(['auth', 'role:Admin'])->group(function () {
 
+    // ================= PROFILE ==================
+    Route::get('/profile', [App\Http\Controllers\AdminProfileController::class, 'index'])->name('admin.profile');
+    Route::post('/profile/update-info', [App\Http\Controllers\AdminProfileController::class, 'updateInfo'])->name('admin.profile.update');
+    Route::post('/profile/update-password', [App\Http\Controllers\AdminProfileController::class, 'updatePassword'])->name('admin.profile.password');
+
     // ================= DASHBOARD =================
     Route::get('/admin/dashboard', [AdminController::class, 'index'])
         ->name('admin.dashboard');
@@ -216,6 +221,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
         ->name('admin.id-card.verify');
 
     // ================= NEW ADMIN ROUTES FOR README FEATURES =================
+
     // 1. Absensi & Koreksi
     Route::get('/admin/absensi', [AdminAbsensiController::class, 'index'])
         ->name('admin.absensi');

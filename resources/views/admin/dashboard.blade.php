@@ -1,585 +1,268 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Sistem Magang</title>
-    <link rel="icon" type="image/png" href="{{ asset('assets/image/logo-sie.png') }}">
+@extends('admin.layouts.app')
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/admin/dashboard.css') }}">
-</head>
-<body>
+@section('title', 'Dashboard Admin')
+@section('page_title', 'Dashboard Admin')
+@section('page_subtitle', 'Ringkasan statistik dan sebaran mahasiswa PKL')
 
-<header class="header">
-    <div class="header-left">
-        <div class="logo-box">
-            <img src="{{ asset('assets/image/logo-pln.png') }}" alt="Logo PLN">
-        </div>
+@push('styles')
+<style>
+    /* Filter Section */
+    .filter-section { background: var(--bg); border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(0,0,0,0.03); border: 1px solid var(--border); }
+    .filter-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--page); }
+    .filter-header i { color: var(--primary); font-size: 18px; }
+    .filter-header h3 { font-size: 15px; font-weight: 700; color: var(--text); }
+    .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .input-group label { display: block; font-size: 12.5px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+    .filter-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
-        <div class="header-title">
-            <h2>Monitoring Mahasiswa PKL</h2>
-            <p>Kelola dan pantau data mahasiswa PKL dengan mudah dan efisien.</p>
-        </div>
-    </div>
+    .btn-reset { background: #F1F5F9; color: #475569; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; text-decoration: none; }
+    .btn-reset:hover { background: #E2E8F0; color: var(--text); }
+    .btn-filter { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.2s; font-family: inherit; }
+    .btn-filter:hover { background: var(--primary-dark); }
 
-    <div class="header-right">
-        <button type="button" class="menu-btn" id="menuBtn">
-            <i class="fa-solid fa-bars"></i>
-        </button>
+    /* Charts */
+    .chart-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 24px; }
+    .chart-body { position: relative; height: 300px; width: 100%; margin-top: 16px; }
+    .full-width { grid-column: 1 / -1; }
 
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="logout">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            </button>
-        </form>
-    </div>
-</header>
+    @media (max-width: 1100px) {
+        .filter-grid { grid-template-columns: repeat(2, 1fr); }
+        .chart-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+        .filter-grid { grid-template-columns: 1fr; }
+        .filter-actions { flex-direction: column-reverse; }
+        .btn-reset, .btn-filter { width: 100%; justify-content: center; }
+    }
+</style>
+@endpush
 
-@include('admin.sidebar')
-
-<div class="content">
-
-    <!-- Header Dashboard -->
-    <div class="page-header-card">
-        <div class="page-header-content">
-            <div class="page-icon">
-                <i class="fa-solid fa-chart-line"></i>
-            </div>
-
-            <div>
-                <h1>Dashboard Admin</h1>
-                <p>Ringkasan statistik mahasiswa PKL, status magang, divisi, dan sebaran universitas.</p>
-            </div>
-        </div>
-    </div>
-
+@section('content')
     @if(session('success'))
-    <div class="alert-success">
-        <i class="fa-solid fa-circle-check"></i>
-        <span>{{ session('success') }}</span>
-    </div>
+        <div class="alert alert-success animate-fade-up">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>{{ session('success') }}</span>
+        </div>
     @endif
 
     @if(isset($menungguVerifikasi) && $menungguVerifikasi > 0)
-    <div style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1.5px solid #F59E0B; border-radius: 14px; padding: 16px 22px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.12);">
-        <div style="display: flex; align-items: center; gap: 14px;">
-            <div style="width: 44px; height: 44px; border-radius: 12px; background: #F59E0B; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
-                <i class="fa-solid fa-user-clock"></i>
-            </div>
-            <div>
-                <strong style="color: #92400E; font-size: 15px; display: block; margin-bottom: 2px;">
-                    Ada {{ $menungguVerifikasi }} Pendaftaran Calon Peserta Magang Menunggu Keputusan!
-                </strong>
-                <span style="color: #B45309; font-size: 12px;">
-                    Segera verifikasi berkas dan tentukan ploting Pembimbing Lapangan agar mahasiswa dapat segera magang.
-                </span>
+        <div class="card animate-fade-up" style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1.5px solid #F59E0B; margin-bottom: 24px;">
+            <div class="card-header" style="border: none; padding: 20px 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="width: 46px; height: 46px; border-radius: 12px; background: #F59E0B; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                            <i class="fa-solid fa-user-clock"></i>
+                        </div>
+                        <div>
+                            <strong style="color: #92400E; font-size: 15px; display: block; margin-bottom: 4px;">{{ $menungguVerifikasi }} Pendaftaran Menunggu Keputusan!</strong>
+                            <span style="color: #B45309; font-size: 13px;">Segera verifikasi berkas dan ploting Pembimbing Lapangan agar mahasiswa dapat segera magang.</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.data', ['status' => 'Menunggu Verifikasi']) }}" class="btn-topbar-action" style="background: #0A5F63; border-color: #0A5F63;">
+                        <i class="fa-solid fa-list-check"></i> Tinjau Pendaftaran
+                    </a>
+                </div>
             </div>
         </div>
-        <a href="{{ route('admin.data', ['status' => 'Menunggu Verifikasi']) }}" style="background: #0A5F63; color: #fff; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; transition: 0.2s; box-shadow: 0 2px 6px rgba(10, 95, 99, 0.25);">
-            <i class="fa-solid fa-list-check"></i> Tinjau Pendaftaran
-        </a>
-    </div>
     @endif
 
-    <!-- ================= FILTER ================= -->
-
-        <form method="GET"
-            action="{{ route('admin.dashboard') }}"
-            class="filter-section">
-
-            <div class="filter-header">
-                <div class="filter-icon">
-                    <i class="fa-solid fa-filter"></i>
-                </div>
-
-                <div>
-                    <h3>Filter Data Mahasiswa</h3>
-                    <p>Gunakan filter untuk mencari data mahasiswa berdasarkan kriteria tertentu.</p>
-                </div>
+    <!-- STATISTIK GRID -->
+    <div class="stats-grid animate-fade-up delay-1">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Magang Hari Ini</h4>
+                <div class="stat-value">{{ str_pad($magangHariIni,2,'0',STR_PAD_LEFT) }}</div>
             </div>
-
-
-            <div class="filter-grid">
-
-                <!-- PENCARIAN -->
-
-                <div class="input-group">
-                    <label for="search">Pencarian</label>
-                    <input
-                        type="text"
-                        id="search"
-                        name="search"
-                        value="{{ request('search') }}"
-                        placeholder="Nama / NIM...">
-                </div>
-
-
-                <!-- JURUSAN -->
-
-                <div class="input-group">
-                    <label for="jurusan_id">Jurusan</label>
-
-                    <select name="jurusan_id" id="jurusan_id">
-                        <option value="">Semua Jurusan</option>
-
-                        @foreach($listJurusan as $j)
-                        <option value="{{ $j->id_jurusan }}"
-                            {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>
-                            {{ $j->nama_jurusan }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-
-                <!-- UNIVERSITAS -->
-
-                <div class="input-group">
-                    <label for="universitas_id">Universitas</label>
-
-                    <select name="universitas_id" id="universitas_id">
-                        <option value="">Semua Universitas</option>
-
-                        @foreach($listUniversitas as $u)
-                        <option value="{{ $u->id_universitas }}"
-                            {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>
-                            {{ $u->nama_universitas }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-
-                <!-- DIVISI -->
-
-                <div class="input-group">
-                    <label for="divisi_id">Divisi</label>
-
-                    <select name="divisi_id" id="divisi_id">
-                        <option value="">Semua Divisi</option>
-
-                        @foreach($listDivisi as $d)
-                        <option value="{{ $d->id_divisi }}"
-                            {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>
-                            {{ $d->nama_divisi }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-
-                <!-- JENIS KELAMIN -->
-
-                <div class="input-group">
-                    <label for="jenis_kelamin">Jenis Kelamin</label>
-
-                    <select name="jenis_kelamin" id="jenis_kelamin">
-                        <option value="">Semua Jenis Kelamin</option>
-
-                        <option value="Laki-laki"
-                            {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                            Laki-laki
-                        </option>
-
-                        <option value="Perempuan"
-                            {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                            Perempuan
-                        </option>
-                    </select>
-                </div>
-
-
-                <!-- TANGGAL MULAI -->
-
-                <div class="input-group">
-                    <label for="tanggal_mulai">Tanggal Masuk</label>
-
-                    <input
-                        type="date"
-                        id="tanggal_mulai"
-                        name="tanggal_mulai"
-                        value="{{ request('tanggal_mulai') }}">
-                </div>
-
-
-                <!-- TANGGAL SELESAI -->
-
-                <div class="input-group">
-                    <label for="tanggal_selesai">Tanggal Selesai</label>
-
-                    <input
-                        type="date"
-                        id="tanggal_selesai"
-                        name="tanggal_selesai"
-                        value="{{ request('tanggal_selesai') }}">
-                </div>
-
-
-                <!-- TAHUN -->
-
-                <div class="input-group">
-                    <label for="tahun">Tahun</label>
-
-                    <select name="tahun" id="tahun">
-                        <option value="">Semua Tahun</option>
-
-                        @for($i = date('Y') + 2; $i >= 2020; $i--)
-                        <option value="{{ $i }}"
-                            {{ request('tahun') == $i ? 'selected' : '' }}>
-                            {{ $i }}
-                        </option>
-                        @endfor
-                    </select>
-                </div>
-
-
-                <!-- STATUS -->
-
-                <div class="input-group">
-                    <label for="status">Status Magang</label>
-
-                    <select name="status" id="status">
-                        <option value="">Semua Status</option>
-
-                        <option value="Menunggu Verifikasi"
-                            {{ request('status') == 'Menunggu Verifikasi' ? 'selected' : '' }}>
-                            Menunggu Verifikasi
-                        </option>
-
-                        <option value="Akan Magang"
-                            {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>
-                            Akan Magang
-                        </option>
-
-                        <option value="Sedang Magang"
-                            {{ request('status') == 'Sedang Magang' ? 'selected' : '' }}>
-                            Sedang Magang
-                        </option>
-
-                        <option value="Selesai Magang"
-                            {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>
-                            Selesai Magang
-                        </option>
-
-                        <option value="Ditolak"
-                            {{ request('status') == 'Ditolak' ? 'selected' : '' }}>
-                            Ditolak
-                        </option>
-                    </select>
-                </div>
-
-                
-
+            <div class="stat-icon" style="background: #ECFDF5; color: #059669;">
+                <i class="fa-solid fa-calendar-check"></i>
             </div>
-
-
-            <!-- FILTER ACTIONS -->
-
-            <div class="filter-actions">
-                <a href="{{ route('admin.dashboard') }}" class="btn-reset">
-                    <i class="fa-solid fa-rotate-left"></i>
-                    Reset
-                </a>
-
-                <button type="submit" class="btn-filter">
-                    <i class="fa-solid fa-filter"></i>
-                    Terapkan Filter
-                </button>
-            </div>
-
-        </form>
-
-    <!-- Statistik -->
-    <div class="cards">
-
-        <div class="card green">
-            <div class="icon-circle">
-                <i class="fa-regular fa-calendar"></i>
-            </div>
-
-            <div class="card-title">Magang Hari Ini</div>
-            <div class="card-value">{{ str_pad($magangHariIni,2,'0',STR_PAD_LEFT) }}</div>
-            <div class="card-desc">Mahasiswa aktif saat ini</div>
         </div>
-
-        <div class="card">
-            <div class="icon-circle">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Total Mahasiswa Aktif</h4>
+                <div class="stat-value">{{ str_pad($totalMahasiswa,2,'0',STR_PAD_LEFT) }}</div>
+            </div>
+            <div class="stat-icon primary">
                 <i class="fa-solid fa-users"></i>
             </div>
-
-            <div class="card-title">Total Mahasiswa</div>
-            <div class="card-value">{{ str_pad($totalMahasiswa,2,'0',STR_PAD_LEFT) }}</div>
-            <div class="card-desc">{{ $belumSelesai }} mahasiswa belum selesai</div>
         </div>
-
-        <div class="card">
-            <div class="icon-circle">
-                <i class="fa-regular fa-clock"></i>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Akan Datang</h4>
+                <div class="stat-value">{{ str_pad($akanDatang,2,'0',STR_PAD_LEFT) }}</div>
             </div>
-
-            <div class="card-title">Akan Datang</div>
-            <div class="card-value">{{ str_pad($akanDatang,2,'0',STR_PAD_LEFT) }}</div>
-            <div class="card-desc">Belum memulai magang</div>
+            <div class="stat-icon warning">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
         </div>
-
-        <div class="card">
-            <div class="icon-circle">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Divisi Terlibat</h4>
+                <div class="stat-value">{{ str_pad($divisiTerlibat,2,'0',STR_PAD_LEFT) }}</div>
+            </div>
+            <div class="stat-icon" style="background: #F5F3FF; color: #7C3AED;">
                 <i class="fa-solid fa-building-user"></i>
             </div>
-
-            <div class="card-title">Divisi Terlibat</div>
-            <div class="card-value">{{ str_pad($divisiTerlibat,2,'0',STR_PAD_LEFT) }}</div>
-            <div class="card-desc">Divisi penempatan aktif</div>
         </div>
-
     </div>
 
-    <!-- Charts -->
-    <div class="chart-grid">
+    <!-- FILTER SECTION -->
+    <form method="GET" action="{{ route('admin.dashboard') }}" class="filter-section animate-fade-up delay-2">
+        <div class="filter-header">
+            <i class="fa-solid fa-filter"></i>
+            <h3>Filter Data Mahasiswa</h3>
+        </div>
 
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>Jumlah Mahasiswa per Divisi</h3>
-                <p>Total mahasiswa magang aktif pada setiap divisi penempatan.</p>
+        <div class="filter-grid">
+            <div class="input-group">
+                <label>Pencarian</label>
+                <input type="text" name="search" value="{{ request('search') }}" class="input-box" placeholder="Nama / NIM...">
             </div>
-
-            <div class="chart-body">
-                <canvas
-                    id="bidangChart"
-                    data-labels='@json($bidangLabels)'
-                    data-values='@json($bidangData)'>
-                </canvas>
+            <div class="input-group">
+                <label>Jurusan</label>
+                <select name="jurusan_id" class="d-none custom-filter-select">
+                    <option value="" {{ !request('jurusan_id') ? 'selected' : '' }}>Semua Jurusan</option>
+                    @foreach($listJurusan as $j)
+                        <option value="{{ $j->id_jurusan }}" {{ request('jurusan_id') == $j->id_jurusan ? 'selected' : '' }}>{{ $j->nama_jurusan }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Universitas</label>
+                <select name="universitas_id" class="d-none custom-filter-select">
+                    <option value="" {{ !request('universitas_id') ? 'selected' : '' }}>Semua Universitas</option>
+                    @foreach($listUniversitas as $u)
+                        <option value="{{ $u->id_universitas }}" {{ request('universitas_id') == $u->id_universitas ? 'selected' : '' }}>{{ $u->nama_universitas }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Divisi</label>
+                <select name="divisi_id" class="d-none custom-filter-select">
+                    <option value="" {{ !request('divisi_id') ? 'selected' : '' }}>Semua Divisi</option>
+                    @foreach($listDivisi as $d)
+                        <option value="{{ $d->id_divisi }}" {{ request('divisi_id') == $d->id_divisi ? 'selected' : '' }}>{{ $d->nama_divisi }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Jenis Kelamin</label>
+                <select name="jenis_kelamin" class="d-none custom-filter-select">
+                    <option value="" {{ !request('jenis_kelamin') ? 'selected' : '' }}>Semua</option>
+                    <option value="Laki-laki" {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                    <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Tanggal Masuk</label>
+                <input type="text" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}" class="flatpickr-date" placeholder="Pilih Tanggal...">
+            </div>
+            <div class="input-group">
+                <label>Tanggal Selesai</label>
+                <input type="text" name="tanggal_selesai" value="{{ request('tanggal_selesai') }}" class="flatpickr-date" placeholder="Pilih Tanggal...">
+            </div>
+            <div class="input-group">
+                <label>Status Magang</label>
+                <select name="status" class="d-none custom-filter-select">
+                    <option value="" {{ !request('status') ? 'selected' : '' }}>Semua Status</option>
+                    <option value="Menunggu Verifikasi" {{ request('status') == 'Menunggu Verifikasi' ? 'selected' : '' }}>Menunggu Verifikasi</option>
+                    <option value="Akan Magang" {{ request('status') == 'Akan Magang' ? 'selected' : '' }}>Akan Magang</option>
+                    <option value="Sedang Magang" {{ request('status') == 'Sedang Magang' ? 'selected' : '' }}>Sedang Magang</option>
+                    <option value="Selesai Magang" {{ request('status') == 'Selesai Magang' ? 'selected' : '' }}>Selesai Magang</option>
+                </select>
             </div>
         </div>
 
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>Status Magang</h3>
-                <p>Proporsi mahasiswa berdasarkan status magang.</p>
-            </div>
+        <div class="filter-actions">
+            <a href="{{ route('admin.dashboard') }}" class="btn-reset"><i class="fa-solid fa-rotate-left"></i> Reset Filter</a>
+            <button type="submit" class="btn-filter"><i class="fa-solid fa-filter"></i> Terapkan Filter</button>
+        </div>
+    </form>
 
-            <div class="chart-body">
-                <canvas
-                    id="statusChart"
-                    data-aktif="{{ $statusAktif }}"
-                    data-akan-datang="{{ $statusAkanDatang }}"
-                    data-selesai="{{ $statusSelesai }}">
-                </canvas>
-            </div>
-
-            <div class="doughnut-legend">
-                <div class="legend-item">
-                    <span class="legend-dot active"></span>Aktif
-                </div>
-
-                <div class="legend-item">
-                    <span class="legend-dot coming"></span>Akan Datang
-                </div>
-
-                <div class="legend-item">
-                    <span class="legend-dot done"></span>Selesai
-                </div>
+    <!-- CHARTS SECTION -->
+    <div class="chart-grid animate-fade-up delay-3">
+        <div class="card">
+            <div class="card-header"><div class="card-title-group"><h3>Jumlah Mahasiswa per Divisi</h3></div></div>
+            <div class="chart-body" style="padding: 0 24px 24px;">
+                <canvas id="bidangChart" data-labels='@json($bidangLabels)' data-values='@json($bidangData)'></canvas>
             </div>
         </div>
-
-        <div class="chart-card full-width">
-            <div class="chart-header">
-                <h3>Sebaran Mahasiswa per Universitas</h3>
-                <p>Jumlah mahasiswa PKL berdasarkan institusi pendidikan.</p>
-            </div>
-
-            <div class="chart-body large">
-                <canvas
-                    id="universitasChart"
-                    data-labels='@json($univLabels)'
-                    data-values='@json($univData)'>
-                </canvas>
+        <div class="card">
+            <div class="card-header"><div class="card-title-group"><h3>Status Magang</h3></div></div>
+            <div class="chart-body" style="padding: 0 24px 24px;">
+                <canvas id="statusChart" data-aktif="{{ $statusAktif }}" data-akan-datang="{{ $statusAkanDatang }}" data-selesai="{{ $statusSelesai }}"></canvas>
             </div>
         </div>
-
+        <div class="card full-width">
+            <div class="card-header"><div class="card-title-group"><h3>Sebaran Mahasiswa per Universitas</h3></div></div>
+            <div class="chart-body" style="padding: 0 24px 24px; min-height: 350px;">
+                <canvas id="universitasChart" data-labels='@json($univLabels)' data-values='@json($univData)'></canvas>
+            </div>
+        </div>
     </div>
-        </div>
-</div>
+@endsection
 
+@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+    Chart.defaults.color = '#64748B';
 
-    /* ================= SIDEBAR ================= */
-    const menuBtn = document.getElementById('menuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-
-    menuBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-    });
-
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-    });
-
-    /* ================= CHART DIVISI ================= */
+    // Chart Divisi
     const bidangCanvas = document.getElementById('bidangChart');
-
     if (bidangCanvas) {
-        const labels = JSON.parse(bidangCanvas.dataset.labels || '[]');
-        const values = JSON.parse(bidangCanvas.dataset.values || '[]');
-
         new Chart(bidangCanvas, {
             type: 'bar',
             data: {
-                labels,
-                datasets: [{
-                    data: values,
-                    backgroundColor: '#2B7C82',
-                    borderRadius: 8,
-                    maxBarThickness: 48
-                }]
+                labels: JSON.parse(bidangCanvas.dataset.labels || '[]'),
+                datasets: [{ data: JSON.parse(bidangCanvas.dataset.values || '[]'), backgroundColor: '#00a2b9', borderRadius: 6, maxBarThickness: 32 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { precision: 0, stepSize: 1 },
-                        grid: { color: '#E8ECEF' }
-                    },
-                    x: { grid: { display: false } }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#F1F5F9' } }, x: { grid: { display: false } } } }
         });
     }
 
-    /* ================= CHART STATUS ================= */
+    // Chart Status
     const statusCanvas = document.getElementById('statusChart');
-
     if (statusCanvas) {
         new Chart(statusCanvas, {
             type: 'doughnut',
             data: {
-                labels: ['Aktif','Akan Datang','Selesai'],
+                labels: ['Sedang Magang', 'Akan Magang', 'Selesai Magang'],
                 datasets: [{
-                    data: [
-                        Number(statusCanvas.dataset.aktif),
-                        Number(statusCanvas.dataset.akanDatang),
-                        Number(statusCanvas.dataset.selesai)
-                    ],
-                    backgroundColor: ['#0A5F63','#11B5B3','#062E43'],
-                    borderWidth: 0
+                    data: [Number(statusCanvas.dataset.aktif), Number(statusCanvas.dataset.akanDatang), Number(statusCanvas.dataset.selesai)],
+                    backgroundColor: ['#00a2b9', '#10B981', '#CBD5E1'], borderWidth: 0, hoverOffset: 4
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '70%',
-                plugins: { legend: { display: false } }
-            }
+            options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } } }
         });
     }
 
-    /* ================= CHART UNIVERSITAS ================= */
-const univCanvas = document.getElementById('universitasChart');
+    // Chart Universitas
+    const univCanvas = document.getElementById('universitasChart');
+    if (univCanvas) {
+        const labels = JSON.parse(univCanvas.dataset.labels || '[]');
+        const chartHeight = Math.max(350, labels.length * 40);
+        univCanvas.parentElement.style.height = `${chartHeight}px`;
 
-if (univCanvas) {
-    const labels = JSON.parse(univCanvas.dataset.labels || '[]');
-    const values = JSON.parse(univCanvas.dataset.values || '[]');
-
-    // Tinggi chart menyesuaikan jumlah universitas
-const tinggiPerData = 32;
-const tinggiMinimum = 320;
-
-const chartHeight = Math.max(
-    tinggiMinimum,
-    labels.length * tinggiPerData
-);
-
-univCanvas.parentElement.style.height = `${chartHeight}px`;
-
-    new Chart(univCanvas, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [{
-                data: values,
-                borderRadius: 6,
-                barThickness: 20,
-                backgroundColor: ctx => {
-                    const chart = ctx.chart;
-                    const { ctx: c, chartArea } = chart;
-
-                    if (!chartArea) return '#0A5F63';
-
-                    const gradient = c.createLinearGradient(
-                        0, 0,
-                        chartArea.right, 0
-                    );
-
-                    gradient.addColorStop(0, '#18A7A5');
-                    gradient.addColorStop(1, '#0A5F63');
-
-                    return gradient;
-                }
-            }]
-        },
-
-        options: {
-            indexAxis: 'y',
-
-            responsive: true,
-            maintainAspectRatio: false,
-
-            plugins: {
-                legend: {
-                    display: false
-                }
+        new Chart(univCanvas, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: JSON.parse(univCanvas.dataset.values || '[]'), borderRadius: 6, barThickness: 16,
+                    backgroundColor: ctx => {
+                        const { ctx: c, chartArea } = ctx.chart;
+                        if (!chartArea) return '#00a2b9';
+                        const gradient = c.createLinearGradient(0, 0, chartArea.right, 0);
+                        gradient.addColorStop(0, '#10B981'); gradient.addColorStop(1, '#00a2b9');
+                        return gradient;
+                    }
+                }]
             },
-
-            scales: {
-                x: {
-                    beginAtZero: true,
-
-                    ticks: {
-                        precision: 0,
-                        stepSize: 1
-                    },
-
-                    grid: {
-                        display: false
-                    }
-                },
-
-                y: {
-                    grid: {
-                        display: false
-                    },
-
-                    ticks: {
-                        color: '#555',
-
-                        font: {
-                            size: 11,
-                            weight: '500'
-                        },
-
-                        autoSkip: false
-                    }
-                }
-            }
-        }
-    });
-}
-
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { display: false } }, y: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' } } } } }
+        });
+    }
 });
 </script>
-
-</body>
-</html>
+@endpush
