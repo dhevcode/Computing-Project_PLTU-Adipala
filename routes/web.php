@@ -133,10 +133,10 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::post('/superadmin/peserta/{id}/reset-password', [SuperAdminController::class, 'resetPasswordPeserta'])
         ->name('superadmin.peserta.reset_password');
 
-    Route::get('/profile', [ProfileSuperAdminController::class, 'edit'])
+Route::get('/superadmin/profile', [ProfileSuperAdminController::class, 'edit'])
         ->name('superadmin.profile');
 
-    Route::put('/profile', [ProfileSuperAdminController::class, 'update'])
+    Route::put('/superadmin/profile', [ProfileSuperAdminController::class, 'update'])
         ->name('superadmin.profile.update');
 });
 
