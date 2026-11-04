@@ -2,12 +2,12 @@
 
 @section('title', 'Pembimbing Lapangan')
 @section('page_title', 'Pembimbing Lapangan')
-@section('page_subtitle', 'Pantau beban pembimbingan dan daftar mahasiswa yang magang bersama setiap mentor')
+@section('page_subtitle', 'Pantau data pembimbing lapangan dan daftar mahasiswa magang yang mereka bina')
 
 @push('styles')
 <style>
     /* =========================================
-       BADGE DAN TOMBOL KHUSUS
+       BADGE KHUSUS MENTOR
        ========================================= */
     .mentor-badge {
         background: #E0F2FE;
@@ -20,100 +20,6 @@
         align-items: center;
         gap: 5px;
     }
-    .btn-view-mhs {
-        background: var(--primary);
-        color: #ffffff;
-        border: none;
-        padding: 8px 14px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s ease;
-        text-decoration: none;
-    }
-    .btn-view-mhs:hover {
-        background: var(--primary-dark);
-        transform: translateY(-1px);
-    }
-
-    /* =========================================
-       MODAL MAHASISWA BIMBINGAN
-       ========================================= */
-    .modal-overlay {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(15, 23, 42, 0.65);
-        backdrop-filter: blur(4px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        padding: 20px;
-    }
-    .modal-overlay.active { display: flex; }
-    .modal-card {
-        background: #ffffff;
-        border-radius: 16px;
-        width: 100%;
-        max-width: 820px;
-        max-height: 85vh;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-        animation: modalFadeIn 0.2s ease;
-    }
-    @keyframes modalFadeIn {
-        from { opacity: 0; transform: scale(0.96); }
-        to { opacity: 1; transform: scale(1); }
-    }
-    .modal-header {
-        padding: 20px 24px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .modal-header h3 {
-        font-size: 17px;
-        font-weight: 700;
-        color: var(--text);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .modal-close {
-        background: none;
-        border: none;
-        font-size: 20px;
-        color: var(--muted);
-        cursor: pointer;
-        padding: 4px;
-        transition: color 0.2s;
-    }
-    .modal-close:hover { color: var(--error-text); }
-    .modal-body { padding: 24px; overflow-y: auto; }
-
-    .sub-table-wrapper { overflow-x: auto; }
-    .sub-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .sub-table th {
-        background: #F8FAFC;
-        padding: 10px 14px;
-        text-align: left;
-        font-weight: 700;
-        color: var(--muted);
-        border-bottom: 1.5px solid var(--border);
-        white-space: nowrap;
-    }
-    .sub-table td {
-        padding: 12px 14px;
-        border-bottom: 1px solid #F1F5F9;
-        vertical-align: middle;
-        white-space: nowrap;
-    }
 
     /* =========================================
        RESPONSIVE (DESKTOP -> TABLET -> MOBILE)
@@ -125,17 +31,11 @@
     }
 
     @media (max-width: 760px) {
-        /* Box stats turun ke bawah */
         .stats-grid { grid-template-columns: 1fr; gap: 14px; }
 
-        /* Modal disesuaikan untuk HP */
-        .modal-overlay { padding: 12px; }
-        .modal-card { max-height: 92vh; border-radius: 12px; }
-        .modal-header { padding: 16px; }
-        .modal-body { padding: 16px; }
-
-        /* PERBAIKAN TABEL UTAMA (PEMBIMBING) */
-        #pembimbingTable td[data-label] {
+        /* Responsive Tabel Pembimbing & Mahasiswa */
+        #pembimbingTable td[data-label],
+        #mahasiswaTable td[data-label] {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -143,69 +43,21 @@
             padding: 10px 0;
             white-space: normal;
         }
-        #pembimbingTable td.cell-user {
+        #pembimbingTable td.cell-user,
+        #mahasiswaTable td.cell-user {
             background: var(--page);
             padding: 14px;
             border-radius: 8px;
             margin-bottom: 10px;
         }
-        #pembimbingTable td[data-label]::before {
+        #pembimbingTable td[data-label]::before,
+        #mahasiswaTable td[data-label]::before {
             content: attr(data-label);
             font-weight: 600;
             color: var(--muted);
             text-align: left;
             margin-right: 12px;
         }
-
-        /* PERBAIKAN TABEL MODAL (MAHASISWA) MENJADI KARTU */
-        .sub-table thead { display: none !important; }
-        .sub-table, .sub-table tbody, .sub-table tr, .sub-table td {
-            display: block;
-            width: 100%;
-        }
-        .sub-table tr {
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-bottom: 16px;
-            padding: 14px;
-            background: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        .sub-table td {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #F1F5F9;
-            text-align: right;
-            white-space: normal;
-        }
-        .sub-table td:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-        .sub-table td::before {
-            content: attr(data-label);
-            font-weight: 600;
-            color: var(--muted);
-            font-size: 12.5px;
-            text-align: left;
-            flex-shrink: 0;
-            margin-right: 12px;
-        }
-
-        /* Desain Khusus untuk Nama Mahasiswa di HP */
-        .sub-table td.cell-mhs-name {
-            display: block;
-            text-align: left;
-            background: var(--page);
-            padding: 14px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border-bottom: none;
-        }
-        .sub-table td.cell-mhs-name::before { display: none; }
-        .sub-table td.cell-number-desktop { display: none; } /* Hilangkan nomor urut samping di HP */
     }
 </style>
 @endpush
@@ -245,16 +97,16 @@
         </div>
     </div>
 
-    <!-- MAIN TABLE CARD -->
+    <!-- TABEL 1: DATA PEMBIMBING LAPANGAN -->
     <div class="card">
         <div class="card-header">
             <div class="card-title-group">
-                <h3>Data Pembimbing Lapangan & Mahasiswa</h3>
-                <p>Daftar lengkap pembimbing beserta mahasiswa magang yang mereka bina.</p>
+                <h3>Data Pembimbing Lapangan</h3>
+                <p>Daftar lengkap pembimbing lapangan beserta divisi penugasan dan beban bimbingan.</p>
             </div>
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" placeholder="Cari pembimbing, divisi..." autocomplete="off">
+                <input type="text" id="searchPembimbing" placeholder="Cari pembimbing, NIP, divisi..." autocomplete="off">
             </div>
         </div>
 
@@ -268,7 +120,6 @@
                         <th>Divisi / Bagian</th>
                         <th class="text-center">Beban Bimbingan</th>
                         <th>Status Akun</th>
-                        <th class="text-center">Mahasiswa</th>
                         <th class="text-center" style="width: 80px;">Aksi</th>
                     </tr>
                 </thead>
@@ -276,9 +127,8 @@
                     @forelse($pembimbingData as $index => $item)
                         @php
                             $mentor = $item['user'];
-                            $mhsList = $item['daftar_bimbingan'];
                         @endphp
-                        <tr class="data-row">
+                        <tr class="data-row-pembimbing">
                             <td class="text-center row-number cell-number">{{ $index + 1 }}</td>
                             <td class="cell-user">
                                 <div class="user-cell">
@@ -312,16 +162,6 @@
                                     <span class="badge badge-inactive"><span class="badge-dot"></span> Nonaktif</span>
                                 @endif
                             </td>
-                            <td data-label="Mahasiswa" class="text-center">
-                                @if($item['total_mahasiswa'] > 0)
-                                    <button type="button" class="btn-view-mhs" onclick="showMhsModal({{ $mentor->id_users }})">
-                                        <i class="fa-solid fa-list-check"></i>
-                                        <span>Lihat Daftar ({{ $item['total_mahasiswa'] }})</span>
-                                    </button>
-                                @else
-                                    <span style="font-size: 12px; color: var(--muted); font-style: italic;">Belum ada bimbingan</span>
-                                @endif
-                            </td>
                             <td class="cell-action text-center">
                                 <div class="action-group">
                                     <a href="{{ route('superadmin.edit', $mentor->id_users) }}" class="btn-action btn-edit" title="Edit Akun Pembimbing">
@@ -330,77 +170,9 @@
                                 </div>
                             </td>
                         </tr>
-
-                        <!-- MODAL DAFTAR MAHASISWA -->
-                        @if($item['total_mahasiswa'] > 0)
-                            <div id="modal_mentor_{{ $mentor->id_users }}" class="modal-overlay" onclick="closeModalOnBg(event, {{ $mentor->id_users }})">
-                                <div class="modal-card">
-                                    <div class="modal-header">
-                                        <h3>
-                                            <i class="fa-solid fa-user-graduate" style="color: var(--primary);"></i>
-                                            Mahasiswa Bimbingan: {{ $mentor->nama_lengkap }}
-                                        </h3>
-                                        <button type="button" class="modal-close" onclick="closeMhsModal({{ $mentor->id_users }})">&times;</button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div style="margin-bottom: 16px; font-size: 13.5px; color: var(--text);">
-                                            Divisi Penugasan: <strong>{{ $mentor->divisi->nama_divisi ?? '-' }}</strong> <br>
-                                            Total Anak Bimbingan: <strong>{{ $item['total_mahasiswa'] }} Orang</strong>
-                                        </div>
-
-                                        <div class="sub-table-wrapper">
-                                            <table class="sub-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width: 40px;">No</th>
-                                                        <th>Nama Mahasiswa</th>
-                                                        <th>NIM</th>
-                                                        <th>Asal Kampus / Sekolah</th>
-                                                        <th>Periode Magang</th>
-                                                        <th class="text-center">Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($mhsList as $idx => $p)
-                                                        @php $m = $p->mahasiswa; @endphp
-                                                        <tr>
-                                                            <td class="cell-number-desktop" style="color: var(--muted); font-weight: 600;">{{ $idx + 1 }}</td>
-
-                                                            <td class="cell-mhs-name">
-                                                                <div style="font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 4px; display: inline-block;" class="d-none d-md-block">MAHASISWA #{{ $idx + 1 }}</div>
-                                                                <strong style="display:block; color: var(--text); font-size: 14px;">{{ $m->nama_lengkap ?? '-' }}</strong>
-                                                                <small style="color: var(--muted); display:block; margin-top: 2px;">{{ $m->jurusan->nama_jurusan ?? '-' }}</small>
-                                                            </td>
-
-                                                            <td data-label="NIM / Username"><span class="code-tag">{{ $m->nim ?? '-' }}</span></td>
-
-                                                            <td data-label="Asal Kampus">{{ $m->universitas->nama_universitas ?? '-' }}</td>
-
-                                                            <td data-label="Periode Magang" style="font-size: 12.5px;">
-                                                                {{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d/m/Y') }} <br> s/d {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d/m/Y') }}
-                                                            </td>
-
-                                                            <td data-label="Status Magang" class="text-center">
-                                                                @if($p->status === 'Sedang Magang')
-                                                                    <span class="badge badge-active">Sedang Magang</span>
-                                                                @elseif($p->status === 'Akan Magang')
-                                                                    <span class="badge" style="background: #EEF2FF; color: #4338CA;">Akan Magang</span>
-                                                                @else
-                                                                    <span class="badge badge-inactive">Selesai</span>
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
                     @empty
                         <tr>
-                            <td colspan="8">
+                            <td colspan="7">
                                 <div class="empty-state">
                                     <i class="fa-solid fa-user-slash"></i>
                                     <p>Belum ada data pembimbing lapangan terdaftar dalam sistem.</p>
@@ -409,11 +181,122 @@
                         </tr>
                     @endforelse
 
-                    <tr id="noResultRow" class="d-none">
-                        <td colspan="8">
+                    <tr id="noResultPembimbing" class="d-none">
+                        <td colspan="7">
                             <div class="empty-state">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                                 <p>Tidak ada data pembimbing yang cocok dengan pencarian.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TABEL 2: DATA MAHASISWA BIMBINGAN (TERPISAH DI BAWAH) -->
+    <div class="card" style="margin-top: 24px;">
+        <div class="card-header">
+            <div class="card-title-group">
+                <h3>Data Mahasiswa Bimbingan</h3>
+                <p>Daftar seluruh mahasiswa magang beserta pembimbing lapangan yang membina.</p>
+            </div>
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchMahasiswa" placeholder="Cari nama, NIM, kampus, pembimbing..." autocomplete="off">
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="mahasiswaTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 60px;">No</th>
+                        <th>Nama Mahasiswa</th>
+                        <th>NIM</th>
+                        <th>Asal Kampus / Sekolah</th>
+                        <th>Divisi / Bagian</th>
+                        <th>Pembimbing Lapangan</th>
+                        <th>Periode Magang</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center" style="width: 80px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($daftarMahasiswa as $idx => $p)
+                        @php
+                            $m = $p->mahasiswa;
+                            $mentorName = $p->pembimbing->nama_lengkap ?? ($p->nama_pembimbing ?? 'Belum Ditentukan');
+                        @endphp
+                        <tr class="data-row-mahasiswa">
+                            <td class="text-center row-number cell-number">{{ $idx + 1 }}</td>
+                            <td class="cell-user">
+                                <div class="user-cell">
+                                    <div class="avatar-circle" style="background: linear-gradient(135deg, #10B981, #059669);">
+                                        {{ strtoupper(substr($m->nama_lengkap ?? 'M', 0, 1)) }}
+                                    </div>
+                                    <div class="user-info">
+                                        <span class="name">{{ $m->nama_lengkap ?? '-' }}</span>
+                                        <span class="email">{{ $m->jurusan->nama_jurusan ?? ($m->email ?? '-') }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-label="NIM"><span class="code-tag">{{ $m->nim ?? '-' }}</span></td>
+                            <td data-label="Asal Kampus">{{ $m->universitas->nama_universitas ?? '-' }}</td>
+                            <td data-label="Divisi / Bagian">
+                                <span style="font-weight: 600;">{{ $p->divisi->nama_divisi ?? '-' }}</span>
+                            </td>
+                            <td data-label="Pembimbing Lapangan">
+                                <span class="mentor-badge">
+                                    <i class="fa-solid fa-user-tie"></i> {{ $mentorName }}
+                                </span>
+                            </td>
+                            <td data-label="Periode Magang" style="font-size: 12.5px;">
+                                @if($p->tanggal_mulai && $p->tanggal_selesai)
+                                    {{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d/m/Y') }}
+                                    <br><span style="color: var(--muted); font-size: 11px;">s/d</span>
+                                    {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d/m/Y') }}
+                                @else
+                                    <span style="color: var(--muted);">-</span>
+                                @endif
+                            </td>
+                            <td data-label="Status" class="text-center">
+                                @if($p->status === 'Sedang Magang')
+                                    <span class="badge badge-active"><span class="badge-dot"></span> Sedang Magang</span>
+                                @elseif($p->status === 'Akan Magang')
+                                    <span class="badge" style="background: #EEF2FF; color: #4338CA;"><span class="badge-dot" style="background: #4338CA;"></span> Akan Magang</span>
+                                @else
+                                    <span class="badge badge-inactive"><span class="badge-dot"></span> Selesai</span>
+                                @endif
+                            </td>
+                            <td class="cell-action text-center">
+                                <div class="action-group">
+                                    @if($m && $m->id_mhs)
+                                        <a href="{{ route('superadmin.peserta.show', $m->id_mhs) }}" class="btn-action" style="background: #E0F2FE; color: #0284C7;" title="Lihat Detail Mahasiswa">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                    @else
+                                        <span style="color: var(--muted); font-size: 11px;">-</span>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="9">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-user-graduate"></i>
+                                    <p>Belum ada mahasiswa bimbingan yang terdaftar.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+
+                    <tr id="noResultMahasiswa" class="d-none">
+                        <td colspan="9">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <p>Tidak ada data mahasiswa yang cocok dengan pencarian.</p>
                             </div>
                         </td>
                     </tr>
@@ -426,41 +309,40 @@
 
 @push('scripts')
 <script>
-    function showMhsModal(id) {
-        const modal = document.getElementById('modal_mentor_' + id);
-        if (modal) {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Kunci scroll di background
-        }
-    }
-
-    function closeMhsModal(id) {
-        const modal = document.getElementById('modal_mentor_' + id);
-        if (modal) {
-            modal.classList.remove('active');
-            document.body.style.overflow = ''; // Kembalikan scroll
-        }
-    }
-
-    function closeModalOnBg(e, id) {
-        if (e.target.classList.contains('modal-overlay')) closeMhsModal(id);
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
-        const input = document.getElementById('searchInput');
-        const rows = document.querySelectorAll('#pembimbingTable tr.data-row');
-        const noResult = document.getElementById('noResultRow');
+        // Search Filter untuk Tabel Pembimbing Lapangan
+        const inputPembimbing = document.getElementById('searchPembimbing');
+        const rowsPembimbing = document.querySelectorAll('#pembimbingTable tr.data-row-pembimbing');
+        const noResultPembimbing = document.getElementById('noResultPembimbing');
 
-        if (input) {
-            input.addEventListener('input', function () {
-                const q = input.value.trim().toLowerCase();
+        if (inputPembimbing) {
+            inputPembimbing.addEventListener('input', function () {
+                const q = inputPembimbing.value.trim().toLowerCase();
                 let visibleCount = 0;
-                rows.forEach(function (row) {
+                rowsPembimbing.forEach(function (row) {
                     const match = row.textContent.toLowerCase().includes(q);
                     row.classList.toggle('d-none', !match);
                     if (match) visibleCount++;
                 });
-                if (noResult) noResult.classList.toggle('d-none', !(rows.length > 0 && visibleCount === 0));
+                if (noResultPembimbing) noResultPembimbing.classList.toggle('d-none', !(rowsPembimbing.length > 0 && visibleCount === 0));
+            });
+        }
+
+        // Search Filter untuk Tabel Mahasiswa Bimbingan
+        const inputMahasiswa = document.getElementById('searchMahasiswa');
+        const rowsMahasiswa = document.querySelectorAll('#mahasiswaTable tr.data-row-mahasiswa');
+        const noResultMahasiswa = document.getElementById('noResultMahasiswa');
+
+        if (inputMahasiswa) {
+            inputMahasiswa.addEventListener('input', function () {
+                const q = inputMahasiswa.value.trim().toLowerCase();
+                let visibleCount = 0;
+                rowsMahasiswa.forEach(function (row) {
+                    const match = row.textContent.toLowerCase().includes(q);
+                    row.classList.toggle('d-none', !match);
+                    if (match) visibleCount++;
+                });
+                if (noResultMahasiswa) noResultMahasiswa.classList.toggle('d-none', !(rowsMahasiswa.length > 0 && visibleCount === 0));
             });
         }
     });

@@ -220,6 +220,15 @@ class SuperAdminController extends Controller
             ];
         });
 
+        // Ambil daftar seluruh mahasiswa bimbingan secara terpisah
+        $daftarMahasiswa = PengajuanMagang::with(['mahasiswa.universitas', 'mahasiswa.jurusan', 'divisi', 'pembimbing'])
+            ->where(function ($q) {
+                $q->whereNotNull('pembimbing_id')
+                    ->orWhereNotNull('nama_pembimbing');
+            })
+            ->latest('id_pengajuan')
+            ->get();
+
         // Statistik Pembimbing
         $totalPembimbing = $pembimbings->count();
         $totalMahasiswaDibimbing = PengajuanMagang::whereNotNull('pembimbing_id')
@@ -229,6 +238,7 @@ class SuperAdminController extends Controller
 
         return view('superadmin.pembimbing.index', compact(
             'pembimbingData',
+            'daftarMahasiswa',
             'totalPembimbing',
             'totalMahasiswaDibimbing',
             'pembimbingAktif'
