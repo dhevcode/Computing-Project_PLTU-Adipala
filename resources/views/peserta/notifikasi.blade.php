@@ -1,192 +1,227 @@
-@extends('peserta.layout')
+@extends('peserta.layouts.app')
 
 @section('title', 'Notifikasi Aktivitas')
+@section('page_title', 'Pusat Notifikasi')
+@section('page_subtitle', 'Riwayat pemberitahuan status absensi, peninjauan logbook, keputusan izin, aduan, dan publikasi nilai.')
 
-@section('content')
-
+@push('styles')
 <style>
     /* ==========================================================================
-       NOTIFIKASI - PANEL KACA & DAFTAR (TEMA DASHBOARD)
+       MODUL NOTIFIKASI - TEMA CLEAN DASHBOARD & RESPONSIVE
        ========================================================================== */
-    .nt-page {
-        box-sizing: border-box; width: 100%; max-width: 1200px;
-        margin-left: auto; margin-right: auto; color: var(--text);
-    }
-    .nt-page *, .nt-page *::before, .nt-page *::after { box-sizing: border-box; }
 
-    /* ---------- Panel Utama ---------- */
-    .nt-panel {
-        background: var(--panel);
-        backdrop-filter: blur(40px) saturate(140%); -webkit-backdrop-filter: blur(40px) saturate(140%);
-        border: 1px solid var(--panel-border); border-radius: 40px; padding: 30px;
-        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-    }
-    .nt-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 18px 24px; margin-bottom: 26px; }
-    .nt-top-text { flex: 1 1 360px; min-width: 0; }
-    .nt-title { margin: 0; font-size: clamp(24px, 3vw, 36px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; color: #ffffff; }
-    .nt-sub { margin: 10px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--muted); font-weight: 500; }
-    .nt-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    /* ANIMATIONS */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ---------- Tombol Dasar ---------- */
-    .nt-page .btn {
+    /* ================= HEADER DASHBOARD ================= */
+    .dashboard-header {
+        display: flex; justify-content: space-between; align-items: center;
+        flex-wrap: wrap; gap: 16px; margin-bottom: 24px;
+        animation: fadeIn 0.4s ease-out;
+    }
+    .header-info h2 {
+        font-size: 20px; font-weight: 800; color: var(--text); margin: 0 0 4px 0;
+    }
+    .header-info p {
+        font-size: 13.5px; color: var(--muted); margin: 0; line-height: 1.4;
+    }
+
+    .btn-outline {
         display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-        height: 40px; padding: 0 20px; border-radius: 9999px; font-family: inherit; font-size: 13.5px; font-weight: 600; line-height: 1;
-        border: 1px solid transparent; cursor: pointer; text-decoration: none; white-space: nowrap;
-        transition: background .2s ease, border-color .2s ease, transform .2s ease, color .2s ease;
+        height: 40px; padding: 0 20px; border-radius: 8px; font-family: inherit; font-size: 13.5px; font-weight: 700;
+        border: 1px solid var(--border); background: #fff; color: var(--text); cursor: pointer; text-decoration: none; transition: 0.2s;
     }
-    .nt-page .btn:hover { transform: translateY(-1px); }
-    .nt-page .btn-sm { height: 34px; padding: 0 14px; font-size: 12px; }
-    .nt-page .btn-outline { background: var(--card-2); color: var(--text); border-color: var(--border-strong); }
-    .nt-page .btn-outline:hover { background: var(--card-2-hover); color: #ffffff; }
+    .btn-outline:hover { background: var(--page); border-color: #CBD5E1; }
 
-    /* ---------- Daftar Notifikasi ---------- */
+    /* ================= KARTU NOTIFIKASI ================= */
     .nt-card {
-        background: var(--card); backdrop-filter: blur(16px) saturate(130%); -webkit-backdrop-filter: blur(16px) saturate(130%);
-        border: 1px solid var(--border); border-radius: 26px; padding: 22px; min-width: 0;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 24px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.02); animation: fadeInUp 0.4s ease-out both;
     }
-    .nt-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .nt-list { display: flex; flex-direction: column; gap: 16px; }
 
     .nt-item {
-        display: flex; justify-content: space-between; align-items: flex-start; gap: 14px;
-        padding: 18px; border-radius: 18px; transition: 0.2s ease;
-        background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border);
+        display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+        padding: 20px; border-radius: 12px; transition: 0.2s ease;
+        background: #fff; border: 1px solid var(--border);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.01);
     }
+    .nt-item:hover { border-color: #CBD5E1; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+
+    /* Notifikasi Belum Dibaca (Unread) */
     .nt-item.is-unread {
-        background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border-strong);
-        border-left: 4px solid var(--accent);
+        background: var(--page); border: 1px solid var(--border);
+        border-left: 4px solid var(--primary);
     }
 
     .nt-body { display: flex; gap: 16px; align-items: flex-start; flex: 1; min-width: 0; }
 
     .nt-ico {
-        width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
-        font-size: 20px; flex-shrink: 0; border: 1px solid transparent;
+        width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-size: 20px; flex-shrink: 0;
     }
-    .tone-ok     { background: var(--ok-bg);     color: var(--ok);     border-color: var(--ok-bd); }
-    .tone-warn   { background: var(--warn-bg);   color: var(--warn);   border-color: var(--warn-bd); }
-    .tone-danger { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-bd); }
-    .tone-info   { background: var(--info-bg);   color: var(--info);   border-color: var(--info-bd); }
+    .tone-ok     { background: #ECFDF5; color: #059669; }
+    .tone-warn   { background: #FFFBEB; color: #D97706; }
+    .tone-danger { background: #FEF2F2; color: #DC2626; }
+    .tone-info   { background: var(--primary-soft); color: var(--primary-dark); }
 
-    .nt-content { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-    .nt-item-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: #ffffff; margin: 0; line-height: 1.3; }
-    .nt-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; flex-shrink: 0; box-shadow: 0 0 8px var(--accent); }
+    .nt-content { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .nt-item-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: var(--text); margin: 0; line-height: 1.3; }
+    .nt-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); display: inline-block; flex-shrink: 0; }
 
-    .nt-item-msg { font-size: 13.5px; color: var(--text-2); line-height: 1.5; margin: 0; }
-    .nt-item-time { font-size: 11.5px; color: var(--muted); font-family: var(--font-num); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+    .nt-item-msg { font-size: 13.5px; color: var(--muted); line-height: 1.5; margin: 0; word-wrap: break-word; }
+    .nt-item-time { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
 
     /* ---------- State Kosong ---------- */
-    .nt-empty { text-align: center; padding: 48px 20px; color: var(--muted); background: rgba(255, 255, 255, 0.02); border-radius: 20px; border: 1px dashed var(--border-strong); }
-    .nt-empty i { font-size: 40px; margin-bottom: 16px; opacity: 0.5; color: var(--accent); }
-    .nt-empty h3 { font-size: 16px; color: #ffffff; margin: 0 0 6px 0; }
-    .nt-empty p { font-size: 13px; margin: 0; }
+    .nt-empty { text-align: center; padding: 60px 20px; color: var(--muted); background: var(--page); border-radius: 12px; border: 2px dashed var(--border); }
+    .nt-empty i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; color: var(--muted); }
+    .nt-empty h3 { font-size: 18px; font-weight: 800; color: var(--text); margin: 0 0 8px 0; }
+    .nt-empty p { font-size: 14px; margin: 0; }
 
-    /* ---------- Pagination ---------- */
-    .nt-pager { margin-top: 24px; }
-    .nt-pager nav[role="navigation"] > div:first-child { display: none; }
-    .nt-pager nav[role="navigation"] svg { width: 16px; height: 16px; }
-    .nt-pager nav[role="navigation"] p { font-size: 12px; color: var(--muted); margin: 0; }
-    .nt-pager .pagination { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
-    .nt-pager a, .nt-pager .page-link, .nt-pager span[aria-current] > span, .nt-pager span[aria-disabled] > span {
-        display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 12px;
-        border-radius: 9999px; font-size: 12.5px; font-weight: 600; text-decoration: none;
-        color: var(--text-2); background: var(--card-2); border: 1px solid var(--border);
+    /* ================= PAGINATION FIX (PERBAIKAN PANAH & LAYOUT) ================= */
+    .pager-container { margin-top: 24px; width: 100%; border-top: 1px dashed var(--border); padding-top: 20px; }
+    .pager-container nav { display: flex; flex-direction: column; gap: 16px; align-items: center; }
+    @media (min-width: 640px) { .pager-container nav { flex-direction: row; justify-content: space-between; } }
+
+    /* Mencegah Icon Panah Raksasa */
+    .pager-container svg { width: 18px !important; height: 18px !important; }
+
+    /* Teks Showing 1 to 10 of ... */
+    .pager-container p { font-size: 13.5px !important; color: var(--muted) !important; margin: 0; }
+
+    /* Wadah Pembungkus Angka */
+    .pager-container .relative.z-0.inline-flex, .pager-container .pagination {
+        display: inline-flex; flex-wrap: wrap; gap: 6px; box-shadow: none !important; margin: 0; padding: 0;
     }
-    .nt-pager .page-item.active .page-link, .nt-pager span[aria-current] > span { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
-    @media (max-width: 768px) {
-        .nt-panel { padding: 18px; border-radius: 30px; }
-        .nt-card { padding: 18px; border-radius: 20px; }
-        .nt-item { flex-direction: column; }
+    /* Tombol Navigasi & Angka */
+    .pager-container a,
+    .pager-container span[aria-disabled] > span,
+    .pager-container span[aria-current] > span,
+    .pager-container .page-link {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 36px; height: 36px; padding: 0 10px;
+        font-size: 13.5px; font-weight: 700; text-decoration: none; line-height: 1;
+        color: var(--text); background: #fff; border: 1px solid var(--border); border-radius: 8px !important;
+        transition: 0.2s; margin: 0 !important;
+    }
+    .pager-container a:hover, .pager-container .page-link:hover { background: var(--page); border-color: #CBD5E1; z-index: 2; }
+
+    /* Tombol Sedang Aktif (Current Page) */
+    .pager-container span[aria-current] > span, .pager-container .page-item.active .page-link {
+        background: var(--primary); color: #fff; border-color: var(--primary); z-index: 3;
+    }
+
+    /* Tombol Mati (Disabled Page) */
+    .pager-container span[aria-disabled] > span, .pager-container .page-item.disabled .page-link {
+        background: var(--page); color: #CBD5E1; cursor: not-allowed; border-color: var(--page);
+    }
+
+    /* Sembunyikan navigasi mobile ganda dari Laravel Tailwind */
+    .pager-container nav > div.flex.justify-between.flex-1.sm\:hidden { display: none; }
+
+    /* ================= RESPONSIVE MOBILE ================= */
+    @media (max-width: 640px) {
+        .dashboard-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+        .btn-outline { width: 100%; justify-content: center; }
+
+        .nt-card { padding: 16px; }
+        .nt-item { flex-direction: column; padding: 16px; }
         .nt-body { width: 100%; }
-        .nt-item form { align-self: flex-end; }
+
+        /* Tombol tandai dibaca pindah ke bawah pada mobile */
+        .nt-item form { align-self: stretch; width: 100%; margin-top: 12px; border-top: 1px dashed var(--page); padding-top: 12px; }
+        .nt-item form button { width: 100%; justify-content: center; }
     }
 </style>
+@endpush
 
-<div class="nt-page">
-<div class="nt-panel">
+@section('content')
 
-    <!-- ================= KEPALA PANEL ================= -->
-    <header class="nt-top">
-        <div class="nt-top-text">
-            <h1 class="nt-title">Pusat Notifikasi & Pemberitahuan</h1>
-            <p class="nt-sub">Riwayat pemberitahuan status absensi, peninjauan logbook, keputusan cuti, aduan, dan publikasi nilai.</p>
-        </div>
-        <div class="nt-controls">
-            <form action="{{ route('peserta.notifikasi.readall') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-outline">
-                    <i class="fa-solid fa-check-double"></i> Tandai Semua Sudah Dibaca
-                </button>
-            </form>
-        </div>
-    </header>
+<!-- ================= HEADER DASHBOARD ================= -->
+<div class="dashboard-header">
+    <div class="header-info">
+        <h2>Pusat Notifikasi & Pemberitahuan</h2>
+        <p>Kelola semua notifikasi terkait progres aktivitas magang Anda.</p>
+    </div>
+    <div>
+        <form action="{{ route('peserta.notifikasi.readall') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn-outline">
+                <i class="fa-solid fa-check-double"></i> Tandai Semua Sudah Dibaca
+            </button>
+        </form>
+    </div>
+</div>
 
-    <!-- ================= DAFTAR NOTIFIKASI ================= -->
-    <div class="nt-card">
-        <div class="nt-list">
-            @forelse($notifications as $n)
-                <div class="nt-item {{ !$n->is_read ? 'is-unread' : '' }}">
+<!-- ================= DAFTAR NOTIFIKASI ================= -->
+<div class="nt-card">
+    <div class="nt-list">
+        @forelse($notifications ?? [] as $n)
+            <div class="nt-item {{ !$n->is_read ? 'is-unread' : '' }}">
 
-                    <div class="nt-body">
-                        <!-- Ikon Notifikasi -->
-                        <div class="nt-ico {{ match($n->type) {
-                            'success' => 'tone-ok',
-                            'warning' => 'tone-warn',
-                            'danger'  => 'tone-danger',
-                            default   => 'tone-info',
-                        } }}">
-                            <i class="fa-solid {{ match($n->type) {
-                                'success' => 'fa-circle-check',
-                                'warning' => 'fa-triangle-exclamation',
-                                'danger'  => 'fa-circle-xmark',
-                                default   => 'fa-circle-info',
-                            } }}"></i>
-                        </div>
-
-                        <!-- Konten Teks -->
-                        <div class="nt-content">
-                            <h3 class="nt-item-title">
-                                {{ $n->title }}
-                                @if(!$n->is_read)
-                                    <span class="nt-dot" aria-label="Belum dibaca"></span>
-                                @endif
-                            </h3>
-                            <p class="nt-item-msg">{{ $n->message }}</p>
-                            <div class="nt-item-time">
-                                <i class="fa-regular fa-clock"></i> {{ $n->created_at->diffForHumans() }}
-                                ({{ $n->created_at->format('d/m/Y H:i') }} WIB)
-                            </div>
-                        </div>
+                <div class="nt-body">
+                    <!-- Ikon Notifikasi -->
+                    <div class="nt-ico {{ match($n->type ?? 'info') {
+                        'success' => 'tone-ok',
+                        'warning' => 'tone-warn',
+                        'danger'  => 'tone-danger',
+                        default   => 'tone-info',
+                    } }}">
+                        <i class="fa-solid {{ match($n->type ?? 'info') {
+                            'success' => 'fa-circle-check',
+                            'warning' => 'fa-triangle-exclamation',
+                            'danger'  => 'fa-circle-xmark',
+                            default   => 'fa-bell',
+                        } }}"></i>
                     </div>
 
-                    <!-- Tombol Aksi -->
-                    @if(!$n->is_read)
-                        <div>
-                            <form action="{{ route('peserta.notifikasi.read', $n->id_notification) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-outline" title="Tandai Sudah Dibaca">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                            </form>
+                    <!-- Konten Teks -->
+                    <div class="nt-content">
+                        <h3 class="nt-item-title">
+                            {{ $n->title ?? 'Pemberitahuan' }}
+                            @if(!$n->is_read)
+                                <span class="nt-dot" title="Belum dibaca"></span>
+                            @endif
+                        </h3>
+                        <p class="nt-item-msg">{{ $n->message ?? '-' }}</p>
+                        <div class="nt-item-time">
+                            <i class="fa-regular fa-clock"></i> {{ isset($n->created_at) ? $n->created_at->diffForHumans() : '' }}
+                            @if(isset($n->created_at))
+                            <span style="font-weight: 500; font-size: 11px;">({{ $n->created_at->format('d/m/Y H:i') }} WIB)</span>
+                            @endif
                         </div>
-                    @endif
+                    </div>
                 </div>
-            @empty
-                <div class="nt-empty">
-                    <i class="fa-regular fa-bell-slash"></i>
-                    <h3>Tidak Ada Notifikasi</h3>
-                    <p>Pemberitahuan aktivitas akan tampil di sini saat terjadi pembaharuan status.</p>
-                </div>
-            @endforelse
-        </div>
 
-        <div class="nt-pager">
-            {{ $notifications->links() }}
-        </div>
+                <!-- Tombol Aksi (Hanya muncul jika belum dibaca) -->
+                @if(!$n->is_read)
+                    <div>
+                        <form action="{{ route('peserta.notifikasi.read', $n->id_notification ?? 0) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn-outline" style="height: 36px; padding: 0 16px; font-size: 12.5px; border-radius: 8px;">
+                                <i class="fa-solid fa-check"></i> Tandai Dibaca
+                            </button>
+                        </form>
+                    </div>
+                @endif
+            </div>
+        @empty
+            <div class="nt-empty">
+                <i class="fa-regular fa-bell-slash"></i>
+                <h3>Tidak Ada Notifikasi Baru</h3>
+                <p>Pemberitahuan mengenai peninjauan logbook, cuti, atau informasi sistem akan tampil di sini.</p>
+            </div>
+        @endforelse
     </div>
 
-</div>
+    @if(($notifications ?? null) && $notifications->hasPages())
+    <div class="pager-container">
+        {{ $notifications->links() }}
+    </div>
+    @endif
 </div>
 
 @endsection

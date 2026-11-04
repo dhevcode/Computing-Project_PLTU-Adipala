@@ -376,6 +376,8 @@ class PesertaController extends Controller
                 (float) $company->latitude,
                 (float) $company->longitude
             );
+            // Batasi nilai jarak maksimal ke 999999 agar tidak melebihi kapasitas digit database (Out of range 1264)
+            $distance = min($distance, 999999);
         }
 
         $selfieOutPath = null;
