@@ -4,6 +4,69 @@
 @section('page_title', 'Kelola Akun')
 @section('page_subtitle', 'Sistem Pengelolaan & Kontrol Akses Administrator PLTU')
 
+@push('styles')
+<style>
+    /* ==========================================================================
+       ANIMASI DASHBOARD SUPERADMIN (SMOOTH & CLEAN)
+       ========================================================================== */
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Animasi Grid & Header */
+    .stats-grid { animation: fadeIn 0.4s ease-out; }
+
+    /* Efek Kartu Statistik Muncul Bergantian (Staggered) & Interaktif */
+    .stat-card {
+        animation: fadeInUp 0.5s ease-out both;
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        will-change: transform, opacity;
+    }
+    .stats-grid .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stats-grid .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stats-grid .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stats-grid .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+    .stat-card:hover {
+        transform: translateY(-6px) !important;
+        box-shadow: 0 12px 24px rgba(0,0,0,0.08) !important;
+    }
+
+    /* Animasi Kartu Tabel Utama */
+    .card {
+        animation: fadeInUp 0.5s ease-out both;
+        animation-delay: 0.3s;
+    }
+
+    /* Animasi Baris Tabel Muncul Bergantian */
+    .data-row {
+        animation: fadeIn 0.4s ease-out both;
+        transition: all 0.2s ease;
+    }
+    .data-row:nth-child(1) { animation-delay: 0.4s; }
+    .data-row:nth-child(2) { animation-delay: 0.45s; }
+    .data-row:nth-child(3) { animation-delay: 0.5s; }
+    .data-row:nth-child(4) { animation-delay: 0.55s; }
+    .data-row:nth-child(5) { animation-delay: 0.6s; }
+
+    .data-row:hover {
+        background-color: #F8FAFC !important;
+        transform: scale(1.002);
+    }
+
+    /* Animasi Tombol Aksi */
+    .btn-action { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .btn-action:hover { transform: translateY(-3px) scale(1.1); }
+
+    /* Animasi Search Box */
+    .search-box input { transition: all 0.3s ease; }
+    .search-box input:focus {
+        box-shadow: 0 0 0 3px var(--primary-soft, rgba(10, 95, 99, 0.15));
+        transform: translateY(-1px);
+    }
+</style>
+@endpush
+
 @section('content')
 
     <!-- QUICK STATS -->
