@@ -200,22 +200,68 @@
 
 @section('content')
 
+@php
+    $isAlumni = $mhs ? $mhs->isAlumni() : false;
+    $isOnLeave = (isset($activeLeave) && $activeLeave) || ($attendanceToday && in_array($attendanceToday->check_in_status, ['leave', 'sick']));
+    $leaveTypeLabel = 'Cuti / Izin';
+    if (isset($activeLeave) && $activeLeave) {
+        $leaveTypeLabel = \App\Models\LeaveRequest::getLeaveTypeLabel($activeLeave->leave_type);
+    } elseif ($attendanceToday && $attendanceToday->check_in_status === 'sick') {
+        $leaveTypeLabel = 'Sakit';
+    } elseif ($attendanceToday && $attendanceToday->check_in_status === 'leave') {
+        $leaveTypeLabel = 'Cuti / Izin';
+    }
+@endphp
+
 <!-- ================= HEADER DASHBOARD ================= -->
 <div class="dashboard-header">
     <div class="header-info">
-        <h2>Presensi & Geofencing</h2>
-        <p>Lakukan absen harian secara akurat dengan validasi titik kordinat area perusahaan.</p>
+        <h2>{{ $isAlumni ? 'Arsip Riwayat Presensi' : 'Presensi & Geofencing' }}</h2>
+        <p>{{ $isAlumni ? 'Data rekapitulasi kehadiran magang Anda bersifat arsip permanen dan dapat di-export.' : 'Lakukan absen harian secara akurat dengan validasi titik kordinat area perusahaan.' }}</p>
     </div>
     <div class="header-actions">
-        <span class="btn-pill" style="cursor: default;"><i class="fa-regular fa-clock"></i> <span id="liveClock" style="font-family: monospace; font-size: 14.5px;">00:00:00 WIB</span></span>
-        <button type="button" class="btn-pill warning" onclick="openKoreksiModal()">
-            <i class="fa-solid fa-file-pen"></i> Ajukan Koreksi
-        </button>
+        <a href="{{ route('peserta.absensi.export.pdf') }}" class="btn-pill" style="background: #FEF2F2; color: #DC2626; border-color: #FECACA; text-decoration: none;" target="_blank">
+            <i class="fa-solid fa-file-pdf"></i> Export PDF
+        </a>
+        <a href="{{ route('peserta.absensi.export.excel') }}" class="btn-pill" style="background: #F0FDF4; color: #16A34A; border-color: #BBF7D0; text-decoration: none;">
+            <i class="fa-solid fa-file-excel"></i> Export Excel
+        </a>
+        @if(!$isAlumni)
+            <span class="btn-pill" style="cursor: default;"><i class="fa-regular fa-clock"></i> <span id="liveClock" style="font-family: monospace; font-size: 14.5px;">00:00:00 WIB</span></span>
+            <button type="button" class="btn-pill warning" onclick="openKoreksiModal()">
+                <i class="fa-solid fa-file-pen"></i> Ajukan Koreksi
+            </button>
+        @endif
     </div>
 </div>
 
 <div class="bento-grid">
 
+    @if($isAlumni)
+        <!-- ================= ALUMNI / SELESAI MAGANG HERO CARD ================= -->
+        <section class="card span-3" style="background: #F8FAFC; border: 1.5px solid #CBD5E1; text-align: center; padding: 36px 24px;">
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: #ECFDF5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px; border: 2px solid #A7F3D0;">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <span class="badge-label badge-ok" style="font-size: 12px; padding: 6px 16px; margin-bottom: 12px; text-transform: uppercase;">
+                <i class="fa-solid fa-circle-check"></i> STATUS: ALUMNI (MASA MAGANG TELAH BERAKHIR)
+            </span>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--text); margin: 8px 0 6px 0;">
+                Arsip Riwayat Presensi & Kehadiran (Read-Only)
+            </h2>
+            <p style="font-size: 14px; color: var(--muted); max-width: 620px; margin: 0 auto 20px; line-height: 1.6;">
+                Masa kontrak magang Anda di PT PLN Indonesia Power UBP Adipala telah berakhir. Akses presensi masuk dan pulang telah dinonaktifkan. Anda dapat melihat riwayat kehadiran lengkap di bawah serta mengunduh berkas rekapitulasi resmi.
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ route('peserta.absensi.export.pdf') }}" class="btn-custom btn-primary" target="_blank" style="background: #DC2626; border-color: #DC2626;">
+                    <i class="fa-solid fa-file-pdf"></i> Unduh Rekap Presensi (PDF)
+                </a>
+                <a href="{{ route('peserta.absensi.export.excel') }}" class="btn-custom btn-outline" style="color: #16A34A; border-color: #86EFAC; background: #fff;">
+                    <i class="fa-solid fa-file-excel"></i> Unduh Rekap Presensi (Excel)
+                </a>
+            </div>
+        </section>
+    @else
     <!-- ================= 1. STATUS DETEKSI LOKASI ================= -->
     <section class="card span-2">
         <div class="card-head">
@@ -226,10 +272,24 @@
             <div class="icon-box"><i class="fa-solid fa-satellite-dish"></i></div>
         </div>
 
-        <h2 id="radarStatusText" style="margin: 0 0 6px 0; font-size: 22px; font-weight: 800; color: var(--text);">Menunggu Izin GPS...</h2>
-        <p id="radarDesc" style="margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.6;">
-            Sistem memverifikasi posisi koordinat perangkat Anda terhadap titik PLTU Adipala (Radius Maksimal: {{ $company->attendance_radius_meters ?? 150 }} m).
-        </p>
+        @if($isOnLeave)
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <span class="badge-label badge-info" style="font-size: 12.5px; padding: 4px 12px;">
+                    <i class="fa-solid fa-circle-check"></i> DISPENSASI PRESENSI
+                </span>
+            </div>
+            <h2 style="margin: 0 0 6px 0; font-size: 22px; font-weight: 800; color: #2563EB;">
+                Hari Bebas Presensi (Sedang {{ $leaveTypeLabel }})
+            </h2>
+            <p style="margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.6;">
+                Anda tidak diwajibkan berada di dalam area geofence kantor PLTU Adipala karena hari ini Anda tercatat dalam masa cuti / izin resmi yang telah disetujui.
+            </p>
+        @else
+            <h2 id="radarStatusText" style="margin: 0 0 6px 0; font-size: 22px; font-weight: 800; color: var(--text);">Menunggu Izin GPS...</h2>
+            <p id="radarDesc" style="margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.6;">
+                Sistem memverifikasi posisi koordinat perangkat Anda terhadap titik PLTU Adipala (Radius Maksimal: {{ $company->attendance_radius_meters ?? 150 }} m).
+            </p>
+        @endif
 
         <div class="metric-grid">
             <div class="metric-card">
@@ -297,7 +357,51 @@
             <div class="icon-box" style="background: #ECFDF5; color: #10B981;"><i class="fa-solid fa-camera"></i></div>
         </div>
 
-        @if(!$attendanceToday || !$attendanceToday->check_in_at)
+        @if($isOnLeave)
+            <!-- ======== SEDANG CUTI / IZIN ======== -->
+            <div style="text-align: center; padding: 44px 24px; background: rgba(59, 130, 246, 0.04); border: 2px dashed rgba(59, 130, 246, 0.35); border-radius: 16px;">
+                <div style="width: 76px; height: 76px; margin: 0 auto 18px; border-radius: 50%; background: #EFF6FF; display: flex; align-items: center; justify-content: center; font-size: 34px; color: #2563EB; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <span class="badge-label badge-info" style="font-size: 13px; padding: 6px 16px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <i class="fa-solid fa-circle-check"></i> Sedang {{ $leaveTypeLabel }} (Disetujui)
+                </span>
+                <h3 style="font-size: 21px; font-weight: 800; color: var(--text); margin: 16px 0 8px;">
+                    Anda Tidak Perlu Melakukan Presensi Hari Ini
+                </h3>
+                <p style="font-size: 14px; color: var(--muted); max-width: 540px; margin: 0 auto 24px; line-height: 1.6;">
+                    Status kehadiran Anda untuk hari ini telah tercatat secara resmi sebagai <strong>{{ $leaveTypeLabel }}</strong> berdasarkan permohonan yang telah disetujui oleh Pembimbing / Administrator.
+                </p>
+
+                @if(isset($activeLeave) && $activeLeave)
+                    <div style="display: inline-block; text-align: left; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px 22px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 6px;">Periode Izin / Cuti:</div>
+                        <div style="font-size: 14.5px; font-weight: 700; color: var(--text);">
+                            <i class="fa-regular fa-calendar-days" style="color: var(--primary); margin-right: 6px;"></i> 
+                            {{ \Carbon\Carbon::parse($activeLeave->start_date)->translatedFormat('d M Y') }} 
+                            &nbsp;&bull;&nbsp;
+                            {{ \Carbon\Carbon::parse($activeLeave->end_date)->translatedFormat('d M Y') }}
+                        </div>
+                        @if($activeLeave->reason)
+                            <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-top: 10px; margin-bottom: 4px;">Alasan:</div>
+                            <div style="font-size: 13.5px; color: var(--text); font-style: italic;">"{{ $activeLeave->reason }}"</div>
+                        @endif
+                    </div>
+                @elseif($attendanceToday && $attendanceToday->notes)
+                    <div style="display: inline-block; text-align: left; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px 22px; margin-bottom: 24px;">
+                        <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Catatan Kehadiran:</div>
+                        <div style="font-size: 14px; color: var(--text);">{{ $attendanceToday->notes }}</div>
+                    </div>
+                @endif
+
+                <div>
+                    <a href="{{ route('peserta.cuti') }}" class="btn-custom btn-outline" style="display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-file-lines" style="color: var(--primary);"></i> Kelola & Lihat Riwayat Cuti / Izin
+                    </a>
+                </div>
+            </div>
+
+        @elseif(!$attendanceToday || !$attendanceToday->check_in_at)
             <!-- ======== CHECK IN PENDING ======== -->
             <form action="{{ route('peserta.absensi.checkin') }}" method="POST" id="checkInForm">
                 @csrf
@@ -456,15 +560,24 @@
             </div>
         @endif
     </section>
+    @endif
 
     <!-- ================= 4. TABEL RIWAYAT PRESENSI ================= -->
     <section class="card span-3">
         <div class="card-head">
             <div>
-                <h3 class="card-title">Riwayat Log Kehadiran</h3>
-                <div class="card-subtitle">Data rekapitulasi waktu absen Anda</div>
+                <h3 class="card-title">{{ $isAlumni ? 'Arsip Riwayat Kehadiran Lengkap' : 'Riwayat Log Kehadiran' }}</h3>
+                <div class="card-subtitle">Data rekapitulasi waktu absen Anda di PLTU Adipala</div>
             </div>
-            <div class="icon-box" style="background: var(--page); color: var(--muted);"><i class="fa-solid fa-table"></i></div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <a href="{{ route('peserta.absensi.export.pdf') }}" class="btn-custom btn-outline" style="height: 36px; font-size: 12px; color: #DC2626; border-color: #FECACA; background: #FEF2F2;" target="_blank">
+                    <i class="fa-solid fa-file-pdf"></i> Unduh PDF
+                </a>
+                <a href="{{ route('peserta.absensi.export.excel') }}" class="btn-custom btn-outline" style="height: 36px; font-size: 12px; color: #16A34A; border-color: #BBF7D0; background: #F0FDF4;">
+                    <i class="fa-solid fa-file-excel"></i> Unduh Excel
+                </a>
+                <div class="icon-box" style="background: var(--page); color: var(--muted); width: 36px; height: 36px; font-size: 16px;"><i class="fa-solid fa-table"></i></div>
+            </div>
         </div>
 
         <div class="table-container">
@@ -730,6 +843,8 @@
         currentLat = lat; currentLng = lng; currentAcc = acc || 15;
         currentDist = calculateDistance(lat, lng, targetLat, targetLng);
         isInsideRadius = (currentDist <= allowedRadius + 50);
+
+        if (!document.getElementById('radarDistance')) return;
 
         document.getElementById('radarDistance').innerText = currentDist + ' m';
         const zoneEl = document.getElementById('radarZone');

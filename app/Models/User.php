@@ -59,6 +59,23 @@ class User extends Authenticatable
         return $this->appNotifications()->where('is_read', false)->count();
     }
 
+    /**
+     * Ambil record model Mahasiswa yang berelasi dengan user ini.
+     */
+    public function getMahasiswaRecord()
+    {
+        return $this->mahasiswa ?: Mahasiswa::where('user_id', $this->id_users)->first();
+    }
+
+    /**
+     * Cek apakah user (peserta) berstatus Alumni.
+     */
+    public function isAlumni()
+    {
+        $mhs = $this->getMahasiswaRecord();
+        return $mhs ? $mhs->isAlumni() : false;
+    }
+
     public function sertifikatUploaded()
     {
         return $this->hasMany(

@@ -186,9 +186,10 @@
                 <thead>
                     <tr>
                         <th>Mahasiswa & NIM</th>
-                        <th>Tanggal Evaluasi</th>
+                        <th>Periode & Status Magang</th>
+                        <th>Tanggal Evaluasi Akhir</th>
                         <th>Penilai</th>
-                        <th style="text-align: center;">Skor Akhir</th>
+                        <th style="text-align: center;">Skor & Predikat</th>
                         <th style="text-align: center;">Status</th>
                         <th style="text-align: center;">Tindakan</th>
                     </tr>
@@ -198,11 +199,24 @@
                         <tr>
                             <td class="cell-user">
                                 <strong style="color: var(--text, #0f172a); display: block;">{{ $item->mahasiswa->nama_lengkap ?? '-' }}</strong>
-                                <small style="color: var(--muted, #64748b);">NIM: <span class="code-tag" style="background: transparent; padding: 0;">{{ $item->mahasiswa->nim ?? '-' }}</span></small>
+                                <small style="color: var(--muted, #64748b);">NIM: <span class="code-tag" style="background: transparent; padding: 0;">{{ $item->mahasiswa->nim ?? '-' }}</span> &bull; {{ $item->mahasiswa->universitas->nama_universitas ?? '' }}</small>
+                            </td>
+
+                            <td data-label="Periode & Status">
+                                @php
+                                    $isDone = $item->mahasiswa ? $item->mahasiswa->isAlumni() : false;
+                                @endphp
+                                <div style="font-size: 12px; color: var(--text, #0f172a); font-weight: 600;">
+                                    {{ optional($item->mahasiswa->latestPengajuan)->tanggal_mulai ? \Carbon\Carbon::parse($item->mahasiswa->latestPengajuan->tanggal_mulai)->format('d/m/Y') : '-' }} s/d
+                                    {{ optional($item->mahasiswa->latestPengajuan)->tanggal_selesai ? \Carbon\Carbon::parse($item->mahasiswa->latestPengajuan->tanggal_selesai)->format('d/m/Y') : '-' }}
+                                </div>
+                                <span class="status-badge {{ $isDone ? 'badge-published' : 'badge-draft' }}" style="font-size: 10px; margin-top: 4px; display: inline-block;">
+                                    {{ $isDone ? 'Selesai Magang (Alumni)' : 'Sedang Magang' }}
+                                </span>
                             </td>
                             
                             <td data-label="Tanggal Evaluasi">
-                                <span style="font-weight: 600; color: var(--text, #0f172a);">{{ $item->evaluation_date->format('d/m/Y') }}</span>
+                                <span style="font-weight: 600; color: var(--text, #0f172a);">{{ $item->evaluation_date ? $item->evaluation_date->format('d/m/Y') : '-' }}</span>
                             </td>
                             
                             <td data-label="Penilai" style="font-size: 13px;">
@@ -213,26 +227,34 @@
                                 <span style="font-size: 18px; font-weight: 800; color: var(--primary, #0A5F63);">
                                     {{ $item->total_score }}
                                 </span> <span style="font-size: 12px; color: var(--muted, #64748b);">/ 100</span>
+                                <div style="font-size: 11px; font-weight: 700; color: #059669; margin-top: 2px;">
+                                    Predikat {{ $item->grade }} ({{ $item->predicate }})
+                                </div>
                             </td>
                             
                             <td data-label="Status" style="text-align: center;">
                                 <span class="status-badge {{ $item->status === 'published' ? 'badge-published' : 'badge-draft' }}">
-                                    {{ $item->status === 'published' ? 'Dipublikasikan' : 'Draft' }}
+                                    {{ $item->status === 'published' ? 'Final Dipublikasikan' : 'Draft' }}
                                 </span>
                             </td>
                             
                             <td class="cell-action" style="text-align: center;">
-                                <button type="button" class="btn-sm btn-outline" onclick='openDetailNilaiModal(@json($item))'>
-                                    <i class="fa-solid fa-list-check"></i> Rincian Skor
-                                </button>
+                                <div style="display: inline-flex; gap: 6px; align-items: center;">
+                                    <button type="button" class="btn-sm btn-outline" style="font-size: 11.5px; padding: 6px 10px;" onclick='openDetailNilaiModal(@json($item))'>
+                                        <i class="fa-solid fa-eye"></i> Detail
+                                    </button>
+                                    <button type="button" class="btn-sm btn-outline" style="font-size: 11.5px; padding: 6px 10px;" onclick='editNilaiModal(@json($item), @json($item->details))'>
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="empty-state" style="text-align: center; padding: 36px; color: var(--muted, #64748b);">
                                     <i class="fa-solid fa-folder-open" style="font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.5;"></i>
-                                    <p style="margin: 0;">Belum ada data evaluasi penilaian yang diinput.<br>Klik "Input Nilai Baru" untuk memulai.</p>
+                                    <p style="margin: 0;">Belum ada data evaluasi penilaian yang diinput.<br>Klik "Input Nilai Baru" untuk memulai penilaian mahasiswa yang menyelesaikan magang.</p>
                                 </div>
                             </td>
                         </tr>
@@ -254,7 +276,7 @@
 <div class="modal-overlay" id="inputNilaiModal">
     <div class="custom-modal">
         <div class="modal-header">
-            <h3><i class="fa-solid fa-star" style="color: var(--primary, #0A5F63);"></i> Input Penilaian Akhir Magang</h3>
+            <h3><i class="fa-solid fa-star" style="color: var(--primary, #0A5F63);"></i> <span id="modalTitleText">Input Penilaian Akhir Magang</span></h3>
             <button type="button" class="modal-close" onclick="closeInputNilaiModal()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form action="{{ route('pembimbing.nilai.store') }}" method="POST" id="nilaiForm">
@@ -264,24 +286,24 @@
             <div class="modal-body">
                 <div class="form-group" style="margin-bottom: 16px;">
                     <label>Pilih Mahasiswa PKL <span style="color: #DC2626;">*</span></label>
-                    <select name="mahasiswa_id" class="d-none custom-select" required>
-                        <option value="">-- Pilih Mahasiswa --</option>
+                    <select name="mahasiswa_id" id="selectMahasiswaId" class="d-none custom-select" required>
+                        <option value="">-- Pilih Mahasiswa (Utamakan Selesai Magang) --</option>
                         @foreach($mahasiswas as $m)
-                            <option value="{{ $m->id_mhs }}">{{ $m->nama_lengkap }} (NIM: {{ $m->nim }})</option>
+                            <option value="{{ $m->id_mhs }}">{{ $m->nama_lengkap }} (NIM: {{ $m->nim }}) {{ $m->isAlumni() ? '— [SELESAI MAGANG]' : '— [SEDANG MAGANG]' }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 24px;">
-                    <label>Tanggal Evaluasi <span style="color: #DC2626;">*</span></label>
+                    <label>Tanggal Evaluasi Akhir <span style="color: #DC2626;">*</span></label>
                     <div class="date-wrapper">
-                        <input type="text" name="evaluation_date" value="{{ date('Y-m-d') }}" class="flatpickr-date custom-input" required>
+                        <input type="text" name="evaluation_date" id="inputEvaluationDate" value="{{ date('Y-m-d') }}" class="flatpickr-date custom-input" required>
                     </div>
                 </div>
 
                 <div style="margin-bottom: 12px; border-bottom: 2px solid #F1F5F9; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                     <h4 style="font-size: 13px; font-weight: 700; color: var(--primary, #0A5F63); text-transform: uppercase; margin: 0;">
-                        Komponen Penilaian (Skala 0 - 100)
+                        Komponen Penilaian Akhir (Skala 0 - 100)
                     </h4>
                     <div style="font-size: 13px; font-weight: 700; color: var(--primary, #0A5F63);">
                         Total: <span id="previewScore">0.00</span> / 100
@@ -296,20 +318,20 @@
                                 <div class="score-item-desc">Bobot Maksimal: {{ $c->weight }}% &bull; {{ $c->description }}</div>
                             </div>
                             <div>
-                                <input type="number" name="scores[{{ $c->id_criterion }}]" min="0" max="100" class="score-input" data-weight="{{ $c->weight }}" placeholder="0-100" required oninput="calculatePreviewScore()">
+                                <input type="number" name="scores[{{ $c->id_criterion }}]" id="score_{{ $c->id_criterion }}" min="0" max="100" class="score-input" data-weight="{{ $c->weight }}" placeholder="0-100" required oninput="calculatePreviewScore()">
                             </div>
                         </div>
                     @endforeach
                 </div>
 
                 <div class="form-group" style="margin-bottom: 16px;">
-                    <label>Catatan & Masukan untuk Peserta (Tampil di Dashboard Mhs)</label>
-                    <textarea name="participant_note" rows="3" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border, #e2e8f0); border-radius: 8px; font-size: 13.5px; color: var(--text, #0f172a); background: #fff; outline: none; font-family: inherit; resize: vertical;" placeholder="Contoh: Sangat aktif dalam penyelesaian proyek, pertahankan kedisiplinan."></textarea>
+                    <label>Catatan & Rekomendasi untuk Peserta (Tampil di Transkrip Mhs)</label>
+                    <textarea name="participant_note" id="inputParticipantNote" rows="3" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border, #e2e8f0); border-radius: 8px; font-size: 13.5px; color: var(--text, #0f172a); background: #fff; outline: none; font-family: inherit; resize: vertical;" placeholder="Contoh: Sangat aktif dalam penyelesaian proyek, pertahankan kedisiplinan dan komunikasi."></textarea>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Catatan Internal Pembimbing (Opsional, Hanya untuk Arsip)</label>
-                    <input type="text" name="internal_note" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border, #e2e8f0); border-radius: 8px; font-size: 13.5px; color: var(--text, #0f172a); background: #fff; outline: none; font-family: inherit;" placeholder="Catatan khusus pembimbing lapangan...">
+                    <input type="text" name="internal_note" id="inputInternalNote" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border, #e2e8f0); border-radius: 8px; font-size: 13.5px; color: var(--text, #0f172a); background: #fff; outline: none; font-family: inherit;" placeholder="Catatan khusus pembimbing lapangan...">
                 </div>
             </div>
 
@@ -319,7 +341,7 @@
                     <i class="fa-regular fa-bookmark"></i> Simpan Draft
                 </button>
                 <button type="button" class="btn-sm btn-primary" onclick="submitNilaiAs('publish')">
-                    <i class="fa-solid fa-paper-plane"></i> Publikasikan
+                    <i class="fa-solid fa-paper-plane"></i> Publikasikan Nilai Final
                 </button>
             </div>
         </form>
@@ -480,7 +502,7 @@
 
     // ================= FUNGSI MODAL INPUT =================
     window.openInputNilaiModal = function() {
-        // Reset formulir skor
+        document.getElementById('modalTitleText').textContent = 'Input Penilaian Akhir Magang';
         document.getElementById('nilaiForm').reset();
         document.getElementById('previewScore').textContent = '0.00';
         
@@ -493,6 +515,45 @@
         const m = document.getElementById('inputNilaiModal');
         m.classList.remove('active');
         setTimeout(() => m.style.display = 'none', 200);
+    }
+
+    window.editNilaiModal = function(item, details) {
+        document.getElementById('modalTitleText').textContent = 'Edit Penilaian Akhir: ' + (item.mahasiswa ? item.mahasiswa.nama_lengkap : '');
+        
+        const selectMhs = document.getElementById('selectMahasiswaId');
+        if (selectMhs) {
+            selectMhs.value = item.mahasiswa_id;
+            const wrapper = selectMhs.nextElementSibling;
+            if (wrapper && wrapper.classList.contains('custom-select-wrapper')) {
+                const opt = selectMhs.options[selectMhs.selectedIndex];
+                const span = wrapper.querySelector('.custom-select-trigger span');
+                if (span && opt) span.textContent = opt.text;
+            }
+        }
+
+        const dateInput = document.getElementById('inputEvaluationDate');
+        if (dateInput && item.evaluation_date) {
+            dateInput.value = item.evaluation_date.substring(0, 10);
+        }
+
+        const partNote = document.getElementById('inputParticipantNote');
+        if (partNote) partNote.value = item.participant_note || '';
+
+        const intNote = document.getElementById('inputInternalNote');
+        if (intNote) intNote.value = item.internal_note || '';
+
+        if (details && details.length) {
+            details.forEach(d => {
+                const inp = document.getElementById('score_' + d.criterion_id);
+                if (inp) inp.value = d.score;
+            });
+        }
+
+        calculatePreviewScore();
+
+        const m = document.getElementById('inputNilaiModal');
+        m.style.display = 'flex';
+        setTimeout(() => m.classList.add('active'), 10);
     }
 
     window.submitNilaiAs = function(type) {

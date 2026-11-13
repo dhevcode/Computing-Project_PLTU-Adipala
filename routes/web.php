@@ -305,12 +305,20 @@ Route::middleware(['auth', 'role:Peserta,Mahasiswa'])->group(function () {
         ->name('peserta.absensi.checkout');
     Route::post('/peserta/absensi/koreksi', [PesertaController::class, 'storeKoreksiAbsensi'])
         ->name('peserta.absensi.koreksi');
+    Route::get('/peserta/absensi/export/pdf', [PesertaController::class, 'exportAbsensiPdf'])
+        ->name('peserta.absensi.export.pdf');
+    Route::get('/peserta/absensi/export/excel', [PesertaController::class, 'exportAbsensiExcel'])
+        ->name('peserta.absensi.export.excel');
 
     // 3. Logbook Harian
     Route::get('/peserta/logbook', [PesertaController::class, 'logbook'])
         ->name('peserta.logbook');
     Route::post('/peserta/logbook/store', [PesertaController::class, 'storeLogbook'])
         ->name('peserta.logbook.store');
+    Route::get('/peserta/logbook/export/pdf', [PesertaController::class, 'exportLogbookPdf'])
+        ->name('peserta.logbook.export.pdf');
+    Route::get('/peserta/logbook/export/excel', [PesertaController::class, 'exportLogbookExcel'])
+        ->name('peserta.logbook.export.excel');
     Route::get('/peserta/logbook/{id}/detail', [PesertaController::class, 'detailLogbook'])
         ->name('peserta.logbook.detail');
 
@@ -322,9 +330,11 @@ Route::middleware(['auth', 'role:Peserta,Mahasiswa'])->group(function () {
     Route::post('/peserta/aduan/{id}/reply', [PesertaController::class, 'replyAduan'])
         ->name('peserta.aduan.reply');
 
-    // 5. Arsip Nilai Harian
+    // 5. Arsip Nilai & Transkrip Penilaian Akhir
     Route::get('/peserta/nilai', [PesertaController::class, 'nilai'])
         ->name('peserta.nilai');
+    Route::get('/peserta/nilai/export/pdf', [PesertaController::class, 'exportNilaiPdf'])
+        ->name('peserta.nilai.export.pdf');
 
     // 6. Pengajuan Cuti dan Izin
     Route::get('/peserta/cuti', [PesertaController::class, 'cuti'])

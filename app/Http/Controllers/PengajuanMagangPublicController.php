@@ -14,6 +14,9 @@ use App\Models\Universitas;
 use App\Models\Jurusan;
 use App\Models\Divisi;
 use App\Models\AppNotification;
+use App\Mail\PengajuanMagangBaruMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class PengajuanMagangPublicController extends Controller
 {
@@ -152,7 +155,7 @@ class PengajuanMagangPublicController extends Controller
         $status = 'Menunggu Verifikasi';
 
         // 5. Simpan Data Mahasiswa & Pengajuan Magang (Akun User akan dibuat oleh Super Admin)
-        DB::transaction(function () use (
+        $savedData = DB::transaction(function () use (
             $request, $universitasId, $jurusanId, $suratFileName, $proposalFileName, $cvFileName, $status
         ) {
             // A. Simpan data Mahasiswa (user_id dibiarkan null dulu)
@@ -200,7 +203,21 @@ class PengajuanMagangPublicController extends Controller
             } catch (\Exception $e) {
                 // Jangan hentikan transaksi jika notifikasi gagal
             }
+
+            return compact('mahasiswa', 'pengajuan');
         });
+
+        // 6. Kirim Email Notifikasi Otomatis ke Outlook internship.ubpadp@plnindonesiapower.co.id
+        try {
+            $outlookEmail = env('OUTLOOK_INTERNSHIP_EMAIL', 'internship.ubpadp@plnindonesiapower.co.id');
+            $mahasiswaModel = $savedData['mahasiswa']->load(['universitas', 'jurusan']);
+            $pengajuanModel = $savedData['pengajuan']->load(['divisi']);
+
+            Mail::to($outlookEmail)->send(new PengajuanMagangBaruMail($mahasiswaModel, $pengajuanModel));
+            Log::info("Email notifikasi pengajuan magang berhasil dikirim ke Outlook: {$outlookEmail} untuk {$request->nama_lengkap}");
+        } catch (\Exception $e) {
+            Log::error("Gagal mengirim email pengajuan magang ke Outlook: " . $e->getMessage());
+        }
 
         return redirect()->route('login')->with('success', 'Pengajuan magang atas nama ' . $request->nama_lengkap . ' berhasil dikirim! Berkas Anda akan diverifikasi oleh pihak PLTU. Akun portal peserta magang akan dibuatkan oleh Administrator/Super Admin.');
     }

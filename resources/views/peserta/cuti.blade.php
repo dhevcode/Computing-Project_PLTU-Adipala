@@ -171,15 +171,25 @@
 
 @section('content')
 
+@php
+    $isAlumni = ($mhs && $mhs->isAlumni()) || (Auth::user() && Auth::user()->isAlumni());
+@endphp
+
 <!-- ================= HEADER DASHBOARD ================= -->
 <div class="dashboard-header">
     <div class="header-info">
-        <h2>Pengajuan Cuti & Izin</h2>
-        <p>Lakukan permohonan izin ketidakhadiran resmi secara digital kepada pembimbing Anda.</p>
+        <h2>{{ $isAlumni ? 'Arsip Pengajuan Cuti & Izin' : 'Pengajuan Cuti & Izin' }}</h2>
+        <p>{{ $isAlumni ? 'Arsip seluruh riwayat permohonan izin dan cuti selama masa magang Anda.' : 'Lakukan permohonan izin ketidakhadiran resmi secara digital kepada pembimbing Anda.' }}</p>
     </div>
+    @if(!$isAlumni)
     <button type="button" class="btn-pill" onclick="openCutiModal()">
         <i class="fa-solid fa-plus"></i> Buat Pengajuan Baru
     </button>
+    @else
+    <span class="badge-label badge-approved" style="padding: 9px 18px; font-size: 13px; font-weight: 700;">
+        <i class="fa-solid fa-user-graduate"></i> Mode Arsip (Read-Only)
+    </span>
+    @endif
 </div>
 
 <!-- ================= KARTU TABEL RIWAYAT ================= -->
@@ -263,7 +273,7 @@
                         </td>
 
                         <td data-label="AKSI">
-                            @if($item->status === 'submitted')
+                            @if(!$isAlumni && $item->status === 'submitted')
                                 <form action="{{ route('peserta.cuti.cancel', $item->id_leave) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini secara permanen?')">
                                     @csrf
                                     <button type="submit" class="btn-custom btn-sm btn-danger-soft">
@@ -297,6 +307,7 @@
     @endif
 </section>
 
+@if(!$isAlumni)
 <!-- ================= MODAL PENGAJUAN CUTI / IZIN ================= -->
 <div class="modal-backdrop d-none" id="cutiModal">
     <div class="modal-box" style="max-width: 640px; text-align: left; padding: 0; border-radius: 16px; background: #fff;">
@@ -359,6 +370,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <!-- Modal Text Viewer (Catatan/Alasan Panjang) -->
 <div class="modal-backdrop d-none" id="modalNoteViewer">

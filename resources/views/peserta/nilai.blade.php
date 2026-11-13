@@ -27,6 +27,12 @@
     .header-info p {
         font-size: 13.5px; color: var(--muted); margin: 0; line-height: 1.4;
     }
+    .btn-pill {
+        display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px;
+        border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none;
+        transition: 0.2s; cursor: pointer; border: 1px solid transparent;
+    }
+    .btn-pill:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
     /* ================= STATS GRID (BENTO KARTU) ================= */
     .stats-grid {
@@ -309,35 +315,50 @@
 <!-- ================= HEADER DASHBOARD ================= -->
 <div class="dashboard-header">
     <div class="header-info">
-        <h2>Arsip Nilai & Rekapitulasi Evaluasi</h2>
-        <p>Pantau hasil nilai keseluruhan berdasarkan kontrak magang dan evaluasi performa yang telah dipublikasikan.</p>
+        <h2>Transkrip Penilaian Akhir Magang</h2>
+        <p>Hasil evaluasi performa keseluruhan mahasiswa magang di akhir masa kontrak PKL PLTU Adipala.</p>
     </div>
+    @if(($evaluations ?? collect())->count() > 0)
+        <div>
+            <a href="{{ route('peserta.nilai.export.pdf') }}" class="btn-pill" style="background: #FEF2F2; color: #DC2626; border-color: #FECACA;" target="_blank">
+                <i class="fa-solid fa-file-pdf"></i> Unduh Transkrip Nilai (PDF)
+            </a>
+        </div>
+    @endif
 </div>
+
+@php
+    $latestEval = ($evaluations ?? collect())->first();
+@endphp
 
 <!-- ================= STATS GRID KARTU (BENTO) ================= -->
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-text-group">
-            <span class="stat-label">Rata-rata Nilai</span>
-            <div class="stat-value">{{ ($averageScore ?? 0) > 0 ? number_format($averageScore, 1) : '-' }}</div>
+            <span class="stat-label">Skor Akhir Magang</span>
+            <div class="stat-value" style="color: var(--primary-dark);">{{ $latestEval ? $latestEval->total_score : '-' }} <small style="font-size: 14px; color: var(--muted);">/ 100</small></div>
         </div>
-        <div class="stat-icon purple"><i class="fa-solid fa-star"></i></div>
+        <div class="stat-icon primary"><i class="fa-solid fa-award"></i></div>
     </div>
 
     <div class="stat-card">
         <div class="stat-text-group">
-            <span class="stat-label">Nilai Tertinggi Dicapai</span>
-            <div class="stat-value">{{ ($highestScore ?? 0) > 0 ? $highestScore : '-' }}</div>
+            <span class="stat-label">Predikat Kelulusan</span>
+            <div class="stat-value" style="font-size: 24px; color: #059669;">
+                {{ $latestEval ? 'Grade ' . $latestEval->grade : '-' }}
+            </div>
         </div>
-        <div class="stat-icon success"><i class="fa-solid fa-arrow-trend-up"></i></div>
+        <div class="stat-icon success"><i class="fa-solid fa-certificate"></i></div>
     </div>
 
     <div class="stat-card">
         <div class="stat-text-group">
-            <span class="stat-label">Sesi Penilaian Publikasi</span>
-            <div class="stat-value">{{ ($evaluations ?? collect())->count() }}</div>
+            <span class="stat-label">Status Mahasiswa</span>
+            <div class="stat-value" style="font-size: 18px; color: #6366F1; line-height: 1.2;">
+                {{ $mhs ? $mhs->status_magang_label : 'Peserta' }}
+            </div>
         </div>
-        <div class="stat-icon primary"><i class="fa-solid fa-clipboard-check"></i></div>
+        <div class="stat-icon purple"><i class="fa-solid fa-user-graduate"></i></div>
     </div>
 </div>
 

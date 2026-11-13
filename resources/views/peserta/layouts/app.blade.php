@@ -85,17 +85,22 @@
             <div class="topbar-right" style="display: flex; align-items: center; gap: 12px;">
                 <a href="{{ route('peserta.notifikasi') }}" class="header-action-btn" title="Lihat Notifikasi">
                     <i class="fa-regular fa-bell"></i>
-                    @php $unreadCount = Auth::user()->unreadNotificationsCount() ?? 0; @endphp
+                    @php $unreadCount = Auth::user() ? (Auth::user()->unreadNotificationsCount() ?? 0) : 0; @endphp
                     @if($unreadCount > 0)
                         <span class="notif-badge-pill">{{ $unreadCount }}</span>
                     @endif
                 </a>
                 
+                @php
+                    $isUserAlumni = Auth::user() ? Auth::user()->isAlumni() : false;
+                @endphp
                 <a href="{{ route('peserta.profil') }}" class="user-chip" title="Lihat Profil Saya">
                     <div class="avatar-circle">{{ strtoupper(substr(Auth::user()->nama_lengkap ?? 'P', 0, 1)) }}</div>
                     <div class="user-chip-text">
                         <strong>{{ Str::limit(Auth::user()->nama_lengkap ?? 'Peserta', 16) }}</strong>
-                        <span>Peserta Magang</span>
+                        <span style="{{ $isUserAlumni ? 'color: #059669; font-weight: 700;' : '' }}">
+                            {{ $isUserAlumni ? 'Alumni (Selesai Magang)' : 'Peserta Magang' }}
+                        </span>
                     </div>
                 </a>
             </div>
@@ -103,6 +108,32 @@
 
         <!-- KONTEN UTAMA -->
         <main class="content">
+
+            @if($isUserAlumni)
+                <div class="animate-fade-up" style="background: linear-gradient(135deg, #0A5F63 0%, #0d7a7f 100%); color: #ffffff; padding: 14px 20px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 14px rgba(10, 95, 99, 0.2);">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.3px;">STATUS MAHASISWA: ALUMNI (NON-ACTIVE STUDENT)</div>
+                            <div style="font-size: 12px; opacity: 0.92; line-height: 1.4;">Masa magang Anda telah selesai. Hak akses dialihkan ke <strong>Arsip Logbook</strong>, <strong>Arsip Absensi</strong>, dan <strong>Export Berkas (PDF & Excel)</strong>.</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <a href="{{ route('peserta.absensi.export.pdf') }}" class="btn-sm" style="background: #ffffff; color: #DC2626; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 11.5px; text-decoration: none;" target="_blank">
+                            <i class="fa-solid fa-file-pdf"></i> Export Absensi
+                        </a>
+                        <a href="{{ route('peserta.logbook.export.pdf') }}" class="btn-sm" style="background: #ffffff; color: #DC2626; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 11.5px; text-decoration: none;" target="_blank">
+                            <i class="fa-solid fa-file-pdf"></i> Export Logbook
+                        </a>
+                        <a href="{{ route('peserta.nilai') }}" class="btn-sm" style="background: rgba(255,255,255,0.2); color: #ffffff; border: 1px solid rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 11.5px; text-decoration: none;">
+                            <i class="fa-solid fa-award"></i> Transkrip Nilai
+                        </a>
+                    </div>
+                </div>
+            @endif
+
             <!-- Alert Global -->
             @if(session('success'))
                 <div class="alert alert-success animate-fade-up" style="margin-bottom: 24px;">

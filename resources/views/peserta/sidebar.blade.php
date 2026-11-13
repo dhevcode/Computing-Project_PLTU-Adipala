@@ -7,36 +7,48 @@
     </div>
 
     <nav class="sidebar-nav">
+        @php
+            $isAlumni = Auth::user() ? Auth::user()->isAlumni() : false;
+        @endphp
         <div class="nav-group">
-            <div class="nav-group-title">Menu Utama</div>
+            <div class="nav-group-title">{{ $isAlumni ? 'Menu Alumni (Arsip)' : 'Menu Utama' }}</div>
             <a href="{{ route('peserta.dashboard') }}" class="nav-link {{ request()->routeIs('peserta.dashboard') ? 'active' : '' }}">
                 <i class="fa-solid fa-chart-pie"></i>
                 <span>Dashboard</span>
             </a>
             <a href="{{ route('peserta.absensi') }}" class="nav-link {{ request()->routeIs('peserta.absensi*') ? 'active' : '' }}">
                 <i class="fa-solid fa-location-dot"></i>
-                <span>Presensi & Koreksi</span>
+                <span>{{ $isAlumni ? 'Arsip Presensi' : 'Presensi & Koreksi' }}</span>
             </a>
             <a href="{{ route('peserta.logbook') }}" class="nav-link {{ request()->routeIs('peserta.logbook*') ? 'active' : '' }}">
                 <i class="fa-solid fa-book-open"></i>
-                <span>Logbook Harian</span>
-            </a>
-            <a href="{{ route('peserta.cuti') }}" class="nav-link {{ request()->routeIs('peserta.cuti*') ? 'active' : '' }}">
-                <i class="fa-solid fa-calendar-check"></i>
-                <span>Cuti & Izin</span>
-            </a>
-        </div>
-
-        <div class="nav-group">
-            <div class="nav-group-title">Aktivitas & Evaluasi</div>
-            <a href="{{ route('peserta.aduan') }}" class="nav-link {{ request()->routeIs('peserta.aduan*') ? 'active' : '' }}">
-                <i class="fa-solid fa-circle-exclamation"></i>
-                <span>Aduan Masalah</span>
+                <span>{{ $isAlumni ? 'Arsip Logbook' : 'Logbook Harian' }}</span>
             </a>
             <a href="{{ route('peserta.nilai') }}" class="nav-link {{ request()->routeIs('peserta.nilai*') ? 'active' : '' }}">
                 <i class="fa-solid fa-star-half-stroke"></i>
-                <span>Arsip Nilai</span>
+                <span>{{ $isAlumni ? 'Transkrip Nilai Akhir' : 'Arsip Nilai' }}</span>
             </a>
+            @if(!$isAlumni)
+                <a href="{{ route('peserta.cuti') }}" class="nav-link {{ request()->routeIs('peserta.cuti*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Cuti & Izin</span>
+                </a>
+            @endif
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-title">{{ $isAlumni ? 'Layanan & Bantuan' : 'Aktivitas & Evaluasi' }}</div>
+            @if(!$isAlumni)
+                <a href="{{ route('peserta.aduan') }}" class="nav-link {{ request()->routeIs('peserta.aduan*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>Aduan Masalah</span>
+                </a>
+            @else
+                <a href="{{ route('peserta.cuti') }}" class="nav-link {{ request()->routeIs('peserta.cuti*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Riwayat Izin / Cuti</span>
+                </a>
+            @endif
         </div>
 
         <div class="nav-group">

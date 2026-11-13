@@ -43,4 +43,20 @@ class DailyEvaluation extends Model
     {
         return $this->hasMany(EvaluationDetail::class, 'daily_evaluation_id', 'id_evaluation');
     }
+
+    public function getGradeAttribute()
+    {
+        if ($this->total_score >= 85) return 'A';
+        if ($this->total_score >= 75) return 'B';
+        if ($this->total_score >= 60) return 'C';
+        return 'D';
+    }
+
+    public function getPredicateAttribute()
+    {
+        if ($this->total_score >= 85) return 'Sangat Baik';
+        if ($this->total_score >= 75) return 'Baik';
+        if ($this->total_score >= 60) return 'Cukup';
+        return 'Kurang';
+    }
 }

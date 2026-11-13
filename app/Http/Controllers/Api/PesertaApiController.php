@@ -106,6 +106,8 @@ class PesertaApiController extends Controller
 
         return response()->json([
             'success' => true,
+            'is_alumni' => $mhs->isAlumni(),
+            'status_magang_label' => $mhs->status_magang_label,
             'mahasiswa' => $mhs->load(['universitas', 'jurusan', 'latestPengajuan.divisi']),
             'attendance_today' => $attendanceToday,
             'company_config' => [
@@ -152,8 +154,36 @@ class PesertaApiController extends Controller
             return response()->json(['success' => false, 'message' => 'Mahasiswa tidak ditemukan'], 404);
         }
 
+        if ($mhs->isAlumni()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Masa magang Anda telah selesai. Anda berstatus Alumni (Non-Active Student) dan tidak dapat melakukan presensi.',
+            ], 403);
+        }
+
         $today = Carbon::today()->toDateString();
         $now = Carbon::now('Asia/Jakarta');
+
+        // Cek apakah mahasiswa sedang dalam masa cuti / izin yang disetujui
+        $activeLeave = LeaveRequest::where('mahasiswa_id', $mhs->id_mhs)
+            ->where('status', 'approved')
+            ->where('start_date', '<=', $today)
+            ->where('end_date', '>=', $today)
+            ->first();
+
+        $existing = Attendance::where('mahasiswa_id', $mhs->id_mhs)
+            ->where('attendance_date', $today)
+            ->first();
+
+        if ($activeLeave || ($existing && in_array($existing->check_in_status, ['leave', 'sick']))) {
+            $typeLabel = $activeLeave ? LeaveRequest::getLeaveTypeLabel($activeLeave->leave_type) : 'Izin / Cuti';
+            return response()->json([
+                'success' => false,
+                'message' => "Hari ini Anda tercatat sedang {$typeLabel} yang telah disetujui. Anda tidak perlu melakukan presensi masuk.",
+                'leave' => $activeLeave,
+                'attendance' => $existing,
+            ], 400);
+        }
 
         $request->validate([
             'latitude' => 'required|numeric',
@@ -264,12 +294,30 @@ class PesertaApiController extends Controller
     public function checkOut(Request $request)
     {
         $mhs = $this->getMahasiswa($request);
+        if (!$mhs) {
+            return response()->json(['success' => false, 'message' => 'Mahasiswa tidak ditemukan'], 404);
+        }
+
+        if ($mhs->isAlumni()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Masa magang Anda telah selesai. Anda berstatus Alumni (Non-Active Student) dan tidak dapat melakukan presensi.',
+            ], 403);
+        }
+
         $today = Carbon::today()->toDateString();
         $now = Carbon::now('Asia/Jakarta');
 
         $attendance = Attendance::where('mahasiswa_id', $mhs->id_mhs)
             ->where('attendance_date', $today)
             ->first();
+
+        if ($attendance && in_array($attendance->check_in_status, ['leave', 'sick'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hari ini Anda tercatat sedang cuti/izin, tidak perlu melakukan check-out.',
+            ], 400);
+        }
 
         if (!$attendance || !$attendance->check_in_at) {
             return response()->json(['success' => false, 'message' => 'Anda belum melakukan check-in hari ini.'], 400);
@@ -341,6 +389,16 @@ class PesertaApiController extends Controller
     public function storeKoreksiAbsensi(Request $request)
     {
         $mhs = $this->getMahasiswa($request);
+        if (!$mhs) {
+            return response()->json(['success' => false, 'message' => 'Mahasiswa tidak ditemukan'], 404);
+        }
+
+        if ($mhs->isAlumni()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Masa magang Anda telah selesai. Pengajuan koreksi absensi telah ditutup untuk Alumni.',
+            ], 403);
+        }
 
         $request->validate([
             'attendance_date' => 'required|date',
@@ -399,6 +457,16 @@ class PesertaApiController extends Controller
     public function storeLogbook(Request $request)
     {
         $mhs = $this->getMahasiswa($request);
+        if (!$mhs) {
+            return response()->json(['success' => false, 'message' => 'Mahasiswa tidak ditemukan'], 404);
+        }
+
+        if ($mhs->isAlumni()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Masa magang Anda telah selesai. Pengisian logbook baru telah ditutup untuk Alumni.',
+            ], 403);
+        }
 
         $request->validate([
             'logbook_date' => 'required|date',
@@ -470,6 +538,16 @@ class PesertaApiController extends Controller
     public function storeLeaveRequest(Request $request)
     {
         $mhs = $this->getMahasiswa($request);
+        if (!$mhs) {
+            return response()->json(['success' => false, 'message' => 'Mahasiswa tidak ditemukan'], 404);
+        }
+
+        if ($mhs->isAlumni()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Masa magang Anda telah selesai. Permohonan cuti/izin dinonaktifkan untuk Alumni.',
+            ], 403);
+        }
 
         $request->validate([
             'type' => 'required|in:izin,sakit,cuti',
@@ -528,6 +606,16 @@ class PesertaApiController extends Controller
     public function storeComplaint(Request $request)
     {
         $mhs = $this->getMahasiswa($request);
+        if (!$mhs) {
+            return response()->json(['success' => false, 'message' => 'Mahasiswa tidak ditemukan'], 404);
+        }
+
+        if ($mhs->isAlumni()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Masa magang Anda telah selesai. Fitur pembuatan tiket aduan dinonaktifkan untuk Alumni.',
+            ], 403);
+        }
 
         $request->validate([
             'title' => 'required|string|max:200',

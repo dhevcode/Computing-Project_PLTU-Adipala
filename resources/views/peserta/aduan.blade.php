@@ -180,15 +180,25 @@
 
 @section('content')
 
+@php
+    $isAlumni = ($mhs && $mhs->isAlumni()) || (Auth::user() && Auth::user()->isAlumni());
+@endphp
+
 <!-- ================= HEADER DASHBOARD ================= -->
 <div class="dashboard-header">
     <div class="header-info">
-        <h2>Aduan Masalah & Kendala</h2>
-        <p>Laporkan kendala teknis, lingkungan kerja, K3, atau administrasi secara rahasia dan aman.</p>
+        <h2>{{ $isAlumni ? 'Arsip Aduan Masalah & Kendala' : 'Aduan Masalah & Kendala' }}</h2>
+        <p>{{ $isAlumni ? 'Arsip seluruh tiket laporan kendala yang pernah diajukan selama masa magang.' : 'Laporkan kendala teknis, lingkungan kerja, K3, atau administrasi secara rahasia dan aman.' }}</p>
     </div>
+    @if(!$isAlumni)
     <button type="button" class="btn-pill" onclick="openAduanModal()">
         <i class="fa-solid fa-plus"></i> Buat Aduan Baru
     </button>
+    @else
+    <span class="badge-label badge-approved" style="padding: 9px 18px; font-size: 13px; font-weight: 700;">
+        <i class="fa-solid fa-user-graduate"></i> Mode Arsip (Read-Only)
+    </span>
+    @endif
 </div>
 
 <!-- ================= DAFTAR ADUAN ================= -->
@@ -278,7 +288,7 @@
                     @endforelse
                 </div>
 
-                @if(!in_array($c->status ?? '', ['closed', 'resolved']))
+                @if(!$isAlumni && !in_array($c->status ?? '', ['closed', 'resolved']))
                     <!-- Form Balas Tanggapan -->
                     <form action="{{ route('peserta.aduan.reply', $c->id_complaint ?? 0) }}" method="POST" class="ad-reply-form">
                         @csrf
@@ -310,6 +320,7 @@
 </div>
 @endif
 
+@if(!$isAlumni)
 <!-- ================= MODAL BUAT ADUAN ================= -->
 <div class="modal-backdrop d-none" id="aduanModal">
     <div class="modal-box" style="max-width: 680px; text-align: left; padding: 0; border-radius: 16px; background: #fff;">
@@ -383,6 +394,8 @@
             </div>
         </form>
     </div>
+</div>
+@endif
 </div>
 
 @endsection

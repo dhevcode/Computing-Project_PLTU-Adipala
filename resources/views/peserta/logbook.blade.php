@@ -152,16 +152,53 @@
 
 @section('content')
 
+@php
+    $isAlumni = $mhs ? $mhs->isAlumni() : false;
+@endphp
+
 <!-- ================= HEADER DASHBOARD ================= -->
 <div class="dashboard-header">
     <div class="header-info">
-        <h2>Pencatatan Logbook Kegiatan</h2>
-        <p>Rekam seluruh progres, aktivitas harian, serta hasil pekerjaan Anda selama masa magang berlangsung.</p>
+        <h2>{{ $isAlumni ? 'Arsip Logbook Kegiatan Magang' : 'Pencatatan Logbook Kegiatan' }}</h2>
+        <p>{{ $isAlumni ? 'Seluruh riwayat catatan tugas dan aktivitas magang Anda tersimpan sebagai arsip resmi.' : 'Rekam seluruh progres, aktivitas harian, serta hasil pekerjaan Anda selama masa magang berlangsung.' }}</p>
     </div>
-    <button type="button" class="btn-pill" onclick="openLogbookModal()">
-        <i class="fa-solid fa-plus"></i> Tulis Logbook Baru
-    </button>
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <a href="{{ route('peserta.logbook.export.pdf') }}" class="btn-pill" style="background: #FEF2F2; color: #DC2626; border-color: #FECACA; text-decoration: none;" target="_blank">
+            <i class="fa-solid fa-file-pdf"></i> Export PDF
+        </a>
+        <a href="{{ route('peserta.logbook.export.excel') }}" class="btn-pill" style="background: #F0FDF4; color: #16A34A; border-color: #BBF7D0; text-decoration: none;">
+            <i class="fa-solid fa-file-excel"></i> Export Excel
+        </a>
+        @if(!$isAlumni)
+            <button type="button" class="btn-pill" onclick="openLogbookModal()">
+                <i class="fa-solid fa-plus"></i> Tulis Logbook Baru
+            </button>
+        @endif
+    </div>
 </div>
+
+@if($isAlumni)
+    <!-- ================= ALUMNI LOGBOOK HERO CARD ================= -->
+    <div class="animate-fade-up" style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 14px; padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #ECFDF5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; border: 1.5px solid #A7F3D0;">
+                <i class="fa-solid fa-box-archive"></i>
+            </div>
+            <div>
+                <div style="font-size: 15px; font-weight: 800; color: var(--text);">Arsip Jurnal Kegiatan Logbook (Mode Read-Only)</div>
+                <div style="font-size: 13px; color: var(--muted); line-height: 1.4;">Masa magang Anda telah selesai. Penambahan dan perubahan logbook telah ditutup. Seluruh catatan aktivitas tersimpan permanen sebagai arsip dan dapat diunduh dalam format PDF atau Excel.</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <a href="{{ route('peserta.logbook.export.pdf') }}" class="btn-custom btn-primary" target="_blank" style="background: #DC2626; border-color: #DC2626; height: 38px;">
+                <i class="fa-solid fa-file-pdf"></i> Unduh PDF
+            </a>
+            <a href="{{ route('peserta.logbook.export.excel') }}" class="btn-custom btn-outline" style="color: #16A34A; border-color: #86EFAC; background: #fff; height: 38px;">
+                <i class="fa-solid fa-file-excel"></i> Unduh Excel
+            </a>
+        </div>
+    </div>
+@endif
 
 <!-- ================= NAVIGASI TABS ================= -->
 <div class="filter-tabs">
@@ -199,7 +236,7 @@
                         {{ $statText }}
                     </span>
 
-                    @if(in_array($item->status ?? '', ['draft', 'revision_required']))
+                    @if(!$isAlumni && in_array($item->status ?? '', ['draft', 'revision_required']))
                         <button type="button" class="btn-custom btn-outline-primary" onclick='editLogbook(@json($item))'>
                             <i class="fa-solid fa-pen"></i> Edit Logbook
                         </button>
@@ -262,6 +299,7 @@
 </div>
 @endif
 
+@if(!$isAlumni)
 <!-- ================= MODAL TAMBAH / EDIT LOGBOOK ================= -->
 <div class="modal-backdrop d-none" id="logbookModal">
     <div class="modal-box" style="max-width: 680px; text-align: left; padding: 0; border-radius: 16px; background: #fff;">
@@ -373,6 +411,7 @@
         </form>
     </div>
 </div>
+@endif
 
 @endsection
 

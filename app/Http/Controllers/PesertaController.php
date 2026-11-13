@@ -20,6 +20,8 @@ use App\Models\DailyEvaluation;
 use App\Models\LeaveRequest;
 use App\Models\CompanyInformation;
 use App\Models\AppNotification;
+use App\Models\EvaluationCriterion;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PesertaController extends Controller
 {
@@ -197,10 +199,34 @@ class PesertaController extends Controller
         ]);
         $policy = AttendancePolicy::first();
 
+        // Status cuti / izin aktif hari ini
+        $activeLeave = LeaveRequest::where('mahasiswa_id', $mhs->id_mhs)
+            ->where('status', 'approved')
+            ->where('start_date', '<=', $today)
+            ->where('end_date', '>=', $today)
+            ->first();
+
         // Status absensi hari ini
         $attendanceToday = Attendance::where('mahasiswa_id', $mhs->id_mhs)
             ->where('attendance_date', $today)
             ->first();
+
+        // Sinkronkan absensi otomatis jika cuti disetujui tapi record belum terbuat
+        if ($activeLeave && !$attendanceToday) {
+            $attendanceStatus = ($activeLeave->leave_type === 'sick_leave') ? 'sick' : 'leave';
+            $attendanceToday = Attendance::firstOrCreate(
+                [
+                    'mahasiswa_id' => $mhs->id_mhs,
+                    'attendance_date' => $today,
+                ],
+                [
+                    'check_in_status' => $attendanceStatus,
+                    'work_status' => $attendanceStatus,
+                    'approval_status' => 'verified',
+                    'notes' => LeaveRequest::getLeaveTypeLabel($activeLeave->leave_type) . ': ' . $activeLeave->reason,
+                ]
+            );
+        }
 
         // Riwayat absensi
         $query = Attendance::where('mahasiswa_id', $mhs->id_mhs);
@@ -232,7 +258,8 @@ class PesertaController extends Controller
             'attendances',
             'corrections',
             'dailyQrToken',
-            'penempatan'
+            'penempatan',
+            'activeLeave'
         ));
     }
 
@@ -241,6 +268,32 @@ class PesertaController extends Controller
         $mhs = $this->getMahasiswa();
         $today = Carbon::today()->toDateString();
         $now = Carbon::now('Asia/Jakarta');
+
+        // 0. Cek apakah masa magang telah selesai (Alumni)
+        if ($mhs && $mhs->isAlumni()) {
+            return back()->with('error', 'Masa magang Anda telah selesai. Anda berstatus Alumni (Non-Active Student) dan tidak dapat melakukan presensi.');
+        }
+
+        // 1. Cek apakah mahasiswa sedang dalam masa cuti / izin yang disetujui
+        $activeLeave = LeaveRequest::where('mahasiswa_id', $mhs->id_mhs)
+            ->where('status', 'approved')
+            ->where('start_date', '<=', $today)
+            ->where('end_date', '>=', $today)
+            ->first();
+
+        $existing = Attendance::where('mahasiswa_id', $mhs->id_mhs)
+            ->where('attendance_date', $today)
+            ->first();
+
+        if ($activeLeave || ($existing && in_array($existing->check_in_status, ['leave', 'sick']))) {
+            $typeLabel = $activeLeave ? LeaveRequest::getLeaveTypeLabel($activeLeave->leave_type) : 'Izin / Cuti';
+            return back()->with('error', "Hari ini Anda tercatat sedang {$typeLabel} yang telah disetujui oleh Pembimbing / Admin. Anda tidak perlu melakukan presensi masuk.");
+        }
+
+        // 2. Cek apakah sudah check-in sebelumnya
+        if ($existing && $existing->check_in_at) {
+            return back()->with('error', 'Anda sudah melakukan check-in untuk hari ini.');
+        }
 
         $request->validate([
             'latitude' => 'required|numeric',
@@ -270,15 +323,6 @@ class PesertaController extends Controller
         $allowedDistance = $radiusMeters + max(0, min(100, (float)($request->accuracy ?? 20)));
         if ($distance > $allowedDistance && !$request->has('bypass_geofence')) {
             return back()->with('error', "Lokasi Anda berada di luar area PLTU Adipala. Jarak Anda: {$distance} meter (Radius diizinkan: {$radiusMeters} meter).");
-        }
-
-        // Cek apakah sudah check-in
-        $existing = Attendance::where('mahasiswa_id', $mhs->id_mhs)
-            ->where('attendance_date', $today)
-            ->first();
-
-        if ($existing && $existing->check_in_at) {
-            return back()->with('error', 'Anda sudah melakukan check-in untuk hari ini.');
         }
 
         // Cek Keterlambatan (Batas jam kerja sesuai work_start_time + toleransi)
@@ -349,9 +393,17 @@ class PesertaController extends Controller
         $today = Carbon::today()->toDateString();
         $now = Carbon::now('Asia/Jakarta');
 
+        if ($mhs && $mhs->isAlumni()) {
+            return back()->with('error', 'Masa magang Anda telah selesai. Anda berstatus Alumni (Non-Active Student) dan tidak dapat melakukan presensi.');
+        }
+
         $attendance = Attendance::where('mahasiswa_id', $mhs->id_mhs)
             ->where('attendance_date', $today)
             ->first();
+
+        if ($attendance && in_array($attendance->check_in_status, ['leave', 'sick'])) {
+            return back()->with('error', 'Hari ini Anda tercatat sedang cuti/izin, tidak perlu melakukan presensi pulang.');
+        }
 
         if (!$attendance || !$attendance->check_in_at) {
             return back()->with('error', 'Anda belum melakukan check-in hari ini, tidak dapat melakukan check-out.');
@@ -423,6 +475,10 @@ class PesertaController extends Controller
     public function storeKoreksiAbsensi(Request $request)
     {
         $mhs = $this->getMahasiswa();
+
+        if ($mhs && $mhs->isAlumni()) {
+            return back()->with('error', 'Masa magang Anda telah selesai. Pengajuan koreksi absensi telah ditutup untuk Alumni.');
+        }
 
         $request->validate([
             'correction_date' => 'required|date|before_or_equal:today',
@@ -544,6 +600,10 @@ class PesertaController extends Controller
     {
         $mhs = $this->getMahasiswa();
 
+        if ($mhs && $mhs->isAlumni()) {
+            return back()->with('error', 'Masa magang Anda telah selesai. Anda berstatus Alumni (Non-Active Student). Pengisian logbook baru telah ditutup.');
+        }
+
         $request->validate([
             'logbook_date' => 'required|date',
             'title' => 'required|string|max:200',
@@ -660,6 +720,10 @@ class PesertaController extends Controller
     {
         $mhs = $this->getMahasiswa();
 
+        if ($mhs && $mhs->isAlumni()) {
+            return back()->with('error', 'Masa magang Anda telah selesai. Fitur pembuatan tiket aduan dinonaktifkan untuk Alumni.');
+        }
+
         $request->validate([
             'category' => 'required|string',
             'title' => 'required|string|max:200',
@@ -706,6 +770,11 @@ class PesertaController extends Controller
     public function replyAduan(Request $request, $id)
     {
         $mhs = $this->getMahasiswa();
+
+        if ($mhs && $mhs->isAlumni()) {
+            return back()->with('error', 'Masa magang Anda telah selesai. Tiket aduan telah diarsipkan.');
+        }
+
         $complaint = Complaint::where('mahasiswa_id', $mhs->id_mhs)->findOrFail($id);
 
         $request->validate([
@@ -761,6 +830,10 @@ class PesertaController extends Controller
     public function storeCuti(Request $request)
     {
         $mhs = $this->getMahasiswa();
+
+        if ($mhs && $mhs->isAlumni()) {
+            return back()->with('error', 'Masa magang Anda telah selesai. Fitur permohonan cuti/izin dinonaktifkan untuk Alumni.');
+        }
 
         $request->validate([
             'leave_type' => 'required|string',
@@ -918,5 +991,172 @@ class PesertaController extends Controller
         ]);
 
         return back()->with('success', 'Data profil dan kontak darurat berhasil diperbarui.');
+    }
+
+    // =========================================================================
+    // 10. FITUR EXPORT REKAPITULASI (EXCEL & PDF)
+    // =========================================================================
+
+    /**
+     * Export rekapitulasi riwayat absensi ke dalam format PDF resmi.
+     */
+    public function exportAbsensiPdf(Request $request)
+    {
+        $mhs = $this->getMahasiswa();
+        if (!$mhs) {
+            abort(404, 'Data mahasiswa tidak ditemukan.');
+        }
+
+        $company = Company::first();
+        $penempatan = $mhs->latestPengajuan()->with(['divisi', 'pembimbing'])->first();
+        $attendances = Attendance::where('mahasiswa_id', $mhs->id_mhs)
+            ->orderBy('attendance_date', 'asc')
+            ->get();
+
+        $stats = [
+            'total' => $attendances->count(),
+            'hadir_tepat' => $attendances->where('check_in_status', 'present')->count(),
+            'terlambat' => $attendances->where('check_in_status', 'late')->count(),
+            'izin' => $attendances->where('check_in_status', 'leave')->count(),
+            'sakit' => $attendances->where('check_in_status', 'sick')->count(),
+            'alpa' => $attendances->whereNotIn('check_in_status', ['present', 'late', 'leave', 'sick'])->count(),
+            'total_jam_kerja' => $attendances->sum('total_work_minutes') / 60,
+        ];
+
+        $pdf = Pdf::loadView('peserta.exports.absensi_pdf', compact('mhs', 'company', 'penempatan', 'attendances', 'stats'))
+            ->setPaper('a4', 'portrait');
+
+        $fileName = 'Rekap_Absensi_' . ($mhs->nim ?: 'Peserta') . '_' . date('Ymd') . '.pdf';
+        return $pdf->download($fileName);
+    }
+
+    /**
+     * Export rekapitulasi riwayat absensi ke dalam format Microsoft Excel (.xls).
+     */
+    public function exportAbsensiExcel(Request $request)
+    {
+        $mhs = $this->getMahasiswa();
+        if (!$mhs) {
+            abort(404, 'Data mahasiswa tidak ditemukan.');
+        }
+
+        $company = Company::first();
+        $penempatan = $mhs->latestPengajuan()->with(['divisi', 'pembimbing'])->first();
+        $attendances = Attendance::where('mahasiswa_id', $mhs->id_mhs)
+            ->orderBy('attendance_date', 'asc')
+            ->get();
+
+        $stats = [
+            'total' => $attendances->count(),
+            'hadir_tepat' => $attendances->where('check_in_status', 'present')->count(),
+            'terlambat' => $attendances->where('check_in_status', 'late')->count(),
+            'izin' => $attendances->where('check_in_status', 'leave')->count(),
+            'sakit' => $attendances->where('check_in_status', 'sick')->count(),
+            'alpa' => $attendances->whereNotIn('check_in_status', ['present', 'late', 'leave', 'sick'])->count(),
+            'total_jam_kerja' => $attendances->sum('total_work_minutes') / 60,
+        ];
+
+        $content = view('peserta.exports.absensi_excel', compact('mhs', 'company', 'penempatan', 'attendances', 'stats'))->render();
+        $fileName = 'Rekap_Absensi_' . ($mhs->nim ?: 'Peserta') . '_' . date('Ymd') . '.xls';
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ]);
+    }
+
+    /**
+     * Export seluruh logbook kegiatan harian ke format PDF resmi.
+     */
+    public function exportLogbookPdf(Request $request)
+    {
+        $mhs = $this->getMahasiswa();
+        if (!$mhs) {
+            abort(404, 'Data mahasiswa tidak ditemukan.');
+        }
+
+        $company = Company::first();
+        $penempatan = $mhs->latestPengajuan()->with(['divisi', 'pembimbing'])->first();
+        $logbooks = DailyLogbook::where('mahasiswa_id', $mhs->id_mhs)
+            ->orderBy('logbook_date', 'asc')
+            ->get();
+
+        $stats = [
+            'total' => $logbooks->count(),
+            'approved' => $logbooks->where('status', 'approved')->count(),
+            'submitted' => $logbooks->where('status', 'submitted')->count(),
+            'revision' => $logbooks->where('status', 'revision_required')->count(),
+            'draft' => $logbooks->where('status', 'draft')->count(),
+        ];
+
+        $pdf = Pdf::loadView('peserta.exports.logbook_pdf', compact('mhs', 'company', 'penempatan', 'logbooks', 'stats'))
+            ->setPaper('a4', 'portrait');
+
+        $fileName = 'Logbook_Magang_' . ($mhs->nim ?: 'Peserta') . '_' . date('Ymd') . '.pdf';
+        return $pdf->download($fileName);
+    }
+
+    /**
+     * Export seluruh logbook kegiatan harian ke format Microsoft Excel (.xls).
+     */
+    public function exportLogbookExcel(Request $request)
+    {
+        $mhs = $this->getMahasiswa();
+        if (!$mhs) {
+            abort(404, 'Data mahasiswa tidak ditemukan.');
+        }
+
+        $company = Company::first();
+        $penempatan = $mhs->latestPengajuan()->with(['divisi', 'pembimbing'])->first();
+        $logbooks = DailyLogbook::where('mahasiswa_id', $mhs->id_mhs)
+            ->orderBy('logbook_date', 'asc')
+            ->get();
+
+        $stats = [
+            'total' => $logbooks->count(),
+            'approved' => $logbooks->where('status', 'approved')->count(),
+            'submitted' => $logbooks->where('status', 'submitted')->count(),
+            'revision' => $logbooks->where('status', 'revision_required')->count(),
+            'draft' => $logbooks->where('status', 'draft')->count(),
+        ];
+
+        $content = view('peserta.exports.logbook_excel', compact('mhs', 'company', 'penempatan', 'logbooks', 'stats'))->render();
+        $fileName = 'Logbook_Magang_' . ($mhs->nim ?: 'Peserta') . '_' . date('Ymd') . '.xls';
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ]);
+    }
+
+    /**
+     * Export lembar Transkrip Penilaian Akhir Magang ke dalam format PDF resmi.
+     */
+    public function exportNilaiPdf(?Request $request = null)
+    {
+        $mhs = $this->getMahasiswa();
+        if (!$mhs) {
+            abort(404, 'Data mahasiswa tidak ditemukan.');
+        }
+
+        $company = Company::first();
+        $penempatan = $mhs->latestPengajuan()->with(['divisi', 'pembimbing'])->first();
+        $evaluation = DailyEvaluation::where('mahasiswa_id', $mhs->id_mhs)
+            ->where('status', 'published')
+            ->with(['details.criterion', 'evaluator'])
+            ->latest('updated_at')
+            ->first();
+
+        $criteria = EvaluationCriterion::where('is_active', true)->get();
+
+        $pdf = Pdf::loadView('peserta.exports.nilai_pdf', compact('mhs', 'company', 'penempatan', 'evaluation', 'criteria'))
+            ->setPaper('a4', 'portrait');
+
+        $fileName = 'Transkrip_Nilai_Magang_' . ($mhs->nim ?: 'Peserta') . '_' . date('Ymd') . '.pdf';
+        return $pdf->download($fileName);
     }
 }

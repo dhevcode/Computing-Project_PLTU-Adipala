@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Logbook Kegiatan Magang - {{ $mhs->nama_lengkap }}</title>
+    <style>
+        @page {
+            margin: 18mm 15mm 20mm 15mm;
+            size: a4 portrait;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            color: #1e293b;
+            line-height: 1.4;
+        }
+        .header-kop {
+            width: 100%;
+            border-bottom: 2.5px solid #0A5F63;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+        }
+        .header-kop td {
+            vertical-align: middle;
+        }
+        .instansi-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #0A5F63;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+        .instansi-sub {
+            font-size: 9.5px;
+            color: #475569;
+            margin-top: 2px;
+        }
+        .doc-title {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 800;
+            color: #0f172a;
+            text-transform: uppercase;
+            margin: 12px 0 16px 0;
+            letter-spacing: 0.8px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 6px;
+        }
+        .info-table {
+            width: 100%;
+            margin-bottom: 14px;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            padding: 3px 4px;
+            font-size: 9.5px;
+            vertical-align: top;
+        }
+        .info-label {
+            width: 22%;
+            font-weight: bold;
+            color: #475569;
+        }
+        .info-colon {
+            width: 2%;
+            text-align: center;
+        }
+        .info-val {
+            width: 76%;
+            color: #0f172a;
+        }
+        .summary-box {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+        .summary-box td {
+            border: 1px solid #cbd5e1;
+            padding: 6px;
+            text-align: center;
+            background: #f8fafc;
+        }
+        .summary-box .num {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0A5F63;
+        }
+        .summary-box .lbl {
+            font-size: 8.5px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .data-table th {
+            background: #0A5F63;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 7px 5px;
+            border: 1px solid #07474a;
+            text-align: center;
+        }
+        .data-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 5px;
+            font-size: 8.5px;
+            vertical-align: top;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .badge {
+            display: inline-block;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-approved { background: #dcfce7; color: #166534; }
+        .badge-submitted { background: #dbeafe; color: #1e40af; }
+        .badge-revision { background: #fef9c3; color: #854d0e; }
+        .badge-draft { background: #f1f5f9; color: #475569; }
+
+        .signature-table {
+            width: 100%;
+            margin-top: 24px;
+            border-collapse: collapse;
+            page-break-inside: avoid;
+        }
+        .signature-table td {
+            width: 50%;
+            text-align: center;
+            vertical-align: top;
+            font-size: 9.5px;
+        }
+        .sign-space {
+            height: 55px;
+        }
+        .sign-name {
+            font-weight: bold;
+            text-decoration: underline;
+            color: #0f172a;
+        }
+        .sign-title {
+            color: #64748b;
+            font-size: 8.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- KOP RESMI -->
+    <table class="header-kop">
+        <tr>
+            <td style="width: 70px;">
+                <img src="{{ public_path('images/logo-pln.png') }}" style="height: 48px;" alt="PLN Logo" onerror="this.style.display='none'">
+            </td>
+            <td>
+                <div class="instansi-title">PT PLN INDONESIA POWER</div>
+                <div class="instansi-sub">
+                    <strong>UBP JAWA TENGAH 2 ADIPALA</strong><br>
+                    Jl. Laut, Karangkandri, Adipala, Kabupaten Cilacap, Jawa Tengah 53271<br>
+                    Email: internship.ubpadp@plnindonesiapower.co.id &bull; Website: plnindonesiapower.co.id
+                </div>
+            </td>
+            <td style="width: 120px; text-align: right; font-size: 8.5px; color: #64748b;">
+                Tgl Cetak: {{ \Carbon\Carbon::now('Asia/Jakarta')->translatedFormat('d M Y') }}<br>
+                Jam: {{ \Carbon\Carbon::now('Asia/Jakarta')->format('H:i') }} WIB
+            </td>
+        </tr>
+    </table>
+
+    <!-- JUDUL DOKUMEN -->
+    <div class="doc-title">
+        LOGBOOK & JURNAL KEGIATAN HARIAN MAHASISWA MAGANG
+    </div>
+
+    <!-- BIODATA MAHASISWA -->
+    <table class="info-table">
+        <tr>
+            <td class="info-label">Nama Lengkap</td>
+            <td class="info-colon">:</td>
+            <td class="info-val"><strong>{{ $mhs->nama_lengkap }}</strong></td>
+            <td class="info-label">Asal Perguruan Tinggi</td>
+            <td class="info-colon">:</td>
+            <td class="info-val">{{ $mhs->universitas->nama_universitas ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td class="info-label">Nomor Induk Mahasiswa (NIM)</td>
+            <td class="info-colon">:</td>
+            <td class="info-val">{{ $mhs->nim }}</td>
+            <td class="info-label">Program Studi / Jurusan</td>
+            <td class="info-colon">:</td>
+            <td class="info-val">{{ $mhs->jurusan->nama_jurusan ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td class="info-label">Divisi / Penempatan Unit</td>
+            <td class="info-colon">:</td>
+            <td class="info-val">{{ optional($penempatan->divisi)->nama_divisi ?? 'Operasional & Pemeliharaan' }}</td>
+            <td class="info-label">Periode Kontrak PKL</td>
+            <td class="info-colon">:</td>
+            <td class="info-val">
+                {{ optional($penempatan)->tanggal_mulai ? \Carbon\Carbon::parse($penempatan->tanggal_mulai)->translatedFormat('d M Y') : '-' }}
+                s/d
+                {{ optional($penempatan)->tanggal_selesai ? \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d M Y') : '-' }}
+            </td>
+        </tr>
+        <tr>
+            <td class="info-label">Pembimbing Lapangan</td>
+            <td class="info-colon">:</td>
+            <td class="info-val">{{ optional($penempatan->pembimbing)->nama_lengkap ?? 'Tim Pembimbing PLTU Adipala' }}</td>
+            <td class="info-label">Status Magang</td>
+            <td class="info-colon">:</td>
+            <td class="info-val"><strong>{{ $mhs->status_magang_label }}</strong></td>
+        </tr>
+    </table>
+
+    <!-- RINGKASAN LOGBOOK -->
+    <table class="summary-box">
+        <tr>
+            <td>
+                <div class="num">{{ $stats['total'] }}</div>
+                <div class="lbl">Total Logbook Diisi</div>
+            </td>
+            <td>
+                <div class="num" style="color: #166534;">{{ $stats['approved'] }}</div>
+                <div class="lbl">Disetujui Pembimbing</div>
+            </td>
+            <td>
+                <div class="num" style="color: #1e40af;">{{ $stats['submitted'] }}</div>
+                <div class="lbl">Menunggu Review</div>
+            </td>
+            <td>
+                <div class="num" style="color: #854d0e;">{{ $stats['revision'] }}</div>
+                <div class="lbl">Perlu Revisi</div>
+            </td>
+            <td>
+                <div class="num" style="color: #475569;">{{ $stats['draft'] }}</div>
+                <div class="lbl">Draft</div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- TABEL LOGBOOK LENGKAP -->
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 25px;">No</th>
+                <th style="width: 70px;">Tanggal & Waktu</th>
+                <th style="width: 140px;">Judul & Uraian Aktivitas</th>
+                <th>Hasil / Capaian Output</th>
+                <th style="width: 110px;">Kendala & Solusi</th>
+                <th style="width: 70px;">Status</th>
+                <th style="width: 100px;">Catatan Pembimbing</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($logbooks as $idx => $row)
+                @php
+                    $status = $row->status ?? 'draft';
+                    $badgeClass = match($status) {
+                        'approved' => 'badge-approved',
+                        'submitted' => 'badge-submitted',
+                        'revision_required' => 'badge-revision',
+                        default => 'badge-draft'
+                    };
+                    $statusLabel = match($status) {
+                        'approved' => 'Disetujui',
+                        'submitted' => 'Review',
+                        'revision_required' => 'Revisi',
+                        default => 'Draft'
+                    };
+                @endphp
+                <tr>
+                    <td class="text-center">{{ $idx + 1 }}</td>
+                    <td>
+                        <strong>{{ $row->logbook_date ? \Carbon\Carbon::parse($row->logbook_date)->translatedFormat('d/m/Y') : '-' }}</strong><br>
+                        <span style="color: #64748b; font-size: 8px;">
+                            {{ substr($row->start_time ?? '00:00', 0, 5) }} - {{ substr($row->end_time ?? '00:00', 0, 5) }} WIB
+                        </span>
+                    </td>
+                    <td>
+                        <strong style="color: #0A5F63;">{{ $row->title }}</strong><br>
+                        <span style="color: #334155;">{{ $row->activity }}</span>
+                    </td>
+                    <td>{{ $row->result ?: '-' }}</td>
+                    <td>
+                        @if($row->obstacle)
+                            <strong style="color: #b45309;">Kendala:</strong> {{ $row->obstacle }}<br>
+                        @endif
+                        @if($row->solution)
+                            <strong style="color: #0A5F63;">Solusi:</strong> {{ $row->solution }}
+                        @endif
+                        @if(!$row->obstacle && !$row->solution)
+                            -
+                        @endif
+                    </td>
+                    <td class="text-center">
+                        <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
+                    </td>
+                    <td>{{ $row->review_note ?: '-' }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" class="text-center" style="padding: 18px; color: #64748b;">
+                        Belum ada catatan logbook kegiatan yang diisi oleh peserta ini.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <!-- LEMBAR PENGESAHAN -->
+    <table class="signature-table">
+        <tr>
+            <td>
+                Mengetahui & Menyetujui,<br>
+                <strong>Pembimbing Lapangan PLTU Adipala</strong>
+                <div class="sign-space"></div>
+                <div class="sign-name">{{ optional($penempatan->pembimbing)->nama_lengkap ?? 'Pembimbing Lapangan' }}</div>
+                <div class="sign-title">PT PLN Indonesia Power UBP Adipala</div>
+            </td>
+            <td>
+                Cilacap, {{ \Carbon\Carbon::now('Asia/Jakarta')->translatedFormat('d F Y') }}<br>
+                <strong>Mahasiswa Magang</strong>
+                <div class="sign-space"></div>
+                <div class="sign-name">{{ $mhs->nama_lengkap }}</div>
+                <div class="sign-title">NIM: {{ $mhs->nim }}</div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
+

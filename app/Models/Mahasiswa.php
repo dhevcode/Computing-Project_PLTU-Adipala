@@ -92,4 +92,47 @@ class Mahasiswa extends Model
             'id_mhs'
         )->latestOfMany('id_sertifikat');
     }
+
+    /**
+     * Cek apakah masa magang mahasiswa telah selesai (berstatus Alumni / Non-Active Student).
+     */
+    public function isAlumni()
+    {
+        $pengajuan = $this->latestPengajuan;
+        if (!$pengajuan) {
+            return false;
+        }
+
+        if ($pengajuan->status === 'Selesai Magang') {
+            return true;
+        }
+
+        if (in_array($pengajuan->status, ['Sedang Magang', 'Akan Magang']) && $pengajuan->tanggal_selesai) {
+            $endDate = \Carbon\Carbon::parse($pengajuan->tanggal_selesai)->endOfDay();
+            if ($endDate->isPast()) {
+                // Auto sync status di database
+                try {
+                    $pengajuan->update(['status' => 'Selesai Magang']);
+                } catch (\Exception $e) {
+                    // ignore if locked
+                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Label status mahasiswa magang saat ini.
+     */
+    public function getStatusMagangLabelAttribute()
+    {
+        if ($this->isAlumni()) {
+            return 'Alumni (Selesai Magang)';
+        }
+
+        $pengajuan = $this->latestPengajuan;
+        return $pengajuan ? $pengajuan->status : 'Belum Terdaftar';
+    }
 }

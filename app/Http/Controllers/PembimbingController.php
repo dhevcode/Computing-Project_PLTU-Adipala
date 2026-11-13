@@ -642,7 +642,7 @@ class PembimbingController extends Controller
     }
 
     // =========================================================================
-    // 7. EVALUASI & PENILAIAN HARIAN / BERKALA
+    // 7. EVALUASI & PENILAIAN AKHIR MAGANG (FINAL EVALUATION)
     // =========================================================================
     public function nilai(Request $request)
     {
@@ -651,9 +651,12 @@ class PembimbingController extends Controller
         $criteria = EvaluationCriterion::where('is_active', true)->get();
         $mahasiswas = Mahasiswa::with(['universitas', 'latestPengajuan.divisi'])
             ->whereIn('id_mhs', $mhsIds)
-            ->get();
+            ->get()
+            ->sortByDesc(function ($m) {
+                return $m->isAlumni() ? 2 : 1;
+            });
 
-        $query = DailyEvaluation::with(['mahasiswa.universitas', 'details.criterion', 'evaluator'])
+        $query = DailyEvaluation::with(['mahasiswa.universitas', 'mahasiswa.latestPengajuan.divisi', 'details.criterion', 'evaluator'])
             ->whereIn('mahasiswa_id', $mhsIds);
 
         if ($request->filled('mahasiswa_id') && $request->mahasiswa_id !== 'all') {
@@ -665,7 +668,15 @@ class PembimbingController extends Controller
             $query->where('status', $request->status);
         }
 
-        $evaluations = $query->orderBy('evaluation_date', 'desc')->paginate(15)->withQueryString();
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('mahasiswa', function ($q) use ($search) {
+                $q->where('nama_lengkap', 'LIKE', "%{$search}%")
+                  ->orWhere('nim', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $evaluations = $query->orderBy('updated_at', 'desc')->paginate(15)->withQueryString();
 
         return view('pembimbing.nilai.index', compact('evaluations', 'mahasiswas', 'criteria'));
     }
@@ -676,7 +687,7 @@ class PembimbingController extends Controller
 
         $request->validate([
             'mahasiswa_id' => 'required|exists:mahasiswa,id_mhs',
-            'evaluation_date' => 'required|date',
+            'evaluation_date' => 'nullable|date',
             'scores' => 'required|array',
             'participant_note' => 'nullable|string',
             'internal_note' => 'nullable|string',
@@ -684,6 +695,8 @@ class PembimbingController extends Controller
         ]);
 
         $this->authorizeMahasiswa((int) $request->mahasiswa_id);
+
+        $evalDate = $request->evaluation_date ? Carbon::parse($request->evaluation_date) : Carbon::today();
 
         $criteria = EvaluationCriterion::where('is_active', true)->get()->keyBy('id_criterion');
         $totalWeight = $criteria->sum('weight') ?: 100;
@@ -698,12 +711,13 @@ class PembimbingController extends Controller
         $finalScore = round($weightedTotal / $totalWeight, 2);
         $status = ($request->action_type === 'publish') ? 'published' : 'draft';
 
+        // Penilaian bersifat final untuk mahasiswa yang telah menyelesaikan magang
         $evaluation = DailyEvaluation::updateOrCreate(
             [
                 'mahasiswa_id' => $request->mahasiswa_id,
-                'evaluation_date' => $request->evaluation_date,
             ],
             [
+                'evaluation_date' => $evalDate,
                 'total_score' => $finalScore,
                 'participant_note' => $request->participant_note,
                 'internal_note' => $request->internal_note,
@@ -727,21 +741,36 @@ class PembimbingController extends Controller
             );
         }
 
-        // Kirim notifikasi jika dipublikasikan
-        $mhs = Mahasiswa::find($request->mahasiswa_id);
+        $mhs = Mahasiswa::with('latestPengajuan')->find($request->mahasiswa_id);
+
+        // Jika nilai final dipublikasikan, update status pengajuan mahasiswa menjadi Selesai Magang jika belum
+        if ($status === 'published' && $mhs && $mhs->latestPengajuan) {
+            if ($mhs->latestPengajuan->status !== 'Selesai Magang') {
+                $mhs->latestPengajuan->update(['status' => 'Selesai Magang']);
+            }
+        }
+
+        // Kirim notifikasi ke peserta jika dipublikasikan
         if ($status === 'published' && $mhs && $mhs->user_id) {
+            $grade = match(true) {
+                $finalScore >= 85 => 'A (Sangat Baik)',
+                $finalScore >= 75 => 'B (Baik)',
+                $finalScore >= 60 => 'C (Cukup)',
+                default => 'D (Kurang)',
+            };
+
             AppNotification::send(
                 $mhs->user_id,
-                'Nilai Evaluasi Dipublikasikan',
-                "Pembimbing Lapangan Anda telah mempublikasikan penilaian untuk tanggal {$request->evaluation_date} dengan Nilai Akhir: {$finalScore}.",
+                'Penilaian Akhir Magang Telah Diterbitkan',
+                "Pembimbing Lapangan Anda telah menerbitkan Penilaian Akhir Magang dengan Nilai Akhir: {$finalScore} [Predikat: {$grade}]. Silakan periksa transkrip nilai Anda di menu Nilai.",
                 'success',
                 route('peserta.nilai')
             );
         }
 
         $msg = ($status === 'published')
-            ? "Penilaian evaluasi berhasil dipublikasikan dengan nilai akhir {$finalScore}."
-            : 'Draft penilaian berhasil disimpan.';
+            ? "Penilaian akhir magang berhasil dipublikasikan dengan skor {$finalScore}."
+            : 'Draft penilaian akhir berhasil disimpan.';
 
         return back()->with('success', $msg);
     }

@@ -46,13 +46,13 @@ class LeaveRequest extends Model
 
     public static function getLeaveTypeLabel($type)
     {
-        return match ($type) {
-            'personal_leave' => 'Cuti Pribadi',
-            'sick_leave' => 'Izin Sakit',
-            'academic_leave' => 'Izin Kegiatan Akademik',
-            'official_permission' => 'Izin Dinas / Resmi',
-            'emergency' => 'Keadaan Darurat',
-            default => 'Lainnya',
+        return match (strtolower(trim((string)$type))) {
+            'personal_leave', 'cuti', 'cuti pribadi' => 'Cuti Pribadi',
+            'sick_leave', 'sakit', 'izin sakit' => 'Izin Sakit',
+            'academic_leave', 'izin', 'akademik', 'izin akademik' => 'Izin Kegiatan Akademik',
+            'official_permission', 'dinas', 'izin dinas' => 'Izin Dinas / Resmi',
+            'emergency', 'darurat', 'keadaan darurat' => 'Keadaan Darurat',
+            default => !empty($type) ? ucwords(str_replace('_', ' ', $type)) : 'Cuti / Izin',
         };
     }
 }

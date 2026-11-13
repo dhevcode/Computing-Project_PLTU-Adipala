@@ -54,6 +54,10 @@
         background: rgba(254,240,138,0.25);
         color: #FEF08A;
     }
+    .status-badge.leave {
+        background: rgba(147, 197, 253, 0.35);
+        color: #EFF6FF;
+    }
     .status-metrics {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -271,7 +275,18 @@
 @endpush
 
 @php
-    // 1. Pengecekan Aman Presensi & Logbook
+    // 1. Pengecekan Aman Presensi, Cuti & Logbook
+    $isAlumni = $mhs ? $mhs->isAlumni() : false;
+    $isOnLeave = (isset($activeLeave) && $activeLeave) || (isset($attendanceToday) && in_array($attendanceToday->check_in_status, ['leave', 'sick']));
+    $leaveTypeLabel = 'Cuti / Izin';
+    if (isset($activeLeave) && $activeLeave) {
+        $leaveTypeLabel = \App\Models\LeaveRequest::getLeaveTypeLabel($activeLeave->leave_type);
+    } elseif (isset($attendanceToday) && $attendanceToday->check_in_status === 'sick') {
+        $leaveTypeLabel = 'Sakit';
+    } elseif (isset($attendanceToday) && $attendanceToday->check_in_status === 'leave') {
+        $leaveTypeLabel = 'Cuti / Izin';
+    }
+
     $hasAttendance = isset($attendanceToday) && !is_null($attendanceToday);
     $isLate = $hasAttendance && isset($attendanceToday->late_minutes) && $attendanceToday->late_minutes > 0;
 
@@ -311,69 +326,136 @@
 @section('content')
 
 <!-- WIDGET STATUS HARI INI -->
-<div class="status-widget animate-fade-up">
-    <div class="status-top">
-        <div>
-            <h2 style="font-size: 20px; font-weight: 800; margin: 0 0 6px 0;">Kegiatan Hari Ini</h2>
-            <div style="font-size: 14px; color: rgba(255,255,255,0.85);">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</div>
+@if($isAlumni)
+    <div class="status-widget animate-fade-up" style="background: linear-gradient(135deg, #0A5F63 0%, #064043 100%);">
+        <div class="status-top">
+            <div>
+                <h2 style="font-size: 20px; font-weight: 800; margin: 0 0 6px 0;">Masa Magang Selesai (Alumni)</h2>
+                <div style="font-size: 14px; color: rgba(255,255,255,0.85);">
+                    Periode: {{ optional($penempatan)->tanggal_mulai ? \Carbon\Carbon::parse($penempatan->tanggal_mulai)->format('d/m/Y') : '-' }} s/d {{ optional($penempatan)->tanggal_selesai ? \Carbon\Carbon::parse($penempatan->tanggal_selesai)->format('d/m/Y') : '-' }} &bull; {{ optional($penempatan->divisi)->nama_divisi ?? 'Operasional & Pemeliharaan' }}
+                </div>
+            </div>
+
+            <div class="status-badge" style="background: rgba(16, 185, 129, 0.3); color: #D1FAE5; border: 1px solid rgba(255,255,255,0.3);">
+                <i class="fa-solid fa-graduation-cap"></i> ALUMNI / NON-ACTIVE
+            </div>
         </div>
 
-        <div class="status-badge {{ $isLate ? 'late' : '' }}">
-            <i class="fa-solid {{ $hasAttendance ? ($isLate ? 'fa-clock' : 'fa-circle-check') : 'fa-hourglass-half' }}"></i>
-            {{ $hasAttendance ? ($isLate ? 'Terlambat Hadir' : 'Sudah Hadir') : 'Belum Presensi' }}
+        <div class="status-metrics">
+            <!-- Metric Presensi Selesai -->
+            <div class="metric-box">
+                <div class="metric-label">Arsip Presensi</div>
+                <div class="metric-val">{{ $totalHadir ?? 0 }} Hari Hadir</div>
+                <div class="metric-sub">
+                    <a href="{{ route('peserta.absensi') }}" style="color: #ffffff; font-weight: 600; text-decoration: underline;">
+                        <i class="fa-solid fa-folder-open"></i> Lihat & Unduh Rekap
+                    </a>
+                </div>
+            </div>
+
+            <!-- Metric Logbook Selesai -->
+            <div class="metric-box">
+                <div class="metric-label">Arsip Logbook</div>
+                <div class="metric-val">{{ $approvedLog ?? 0 }} / {{ $totalLog ?? 0 }} Disetujui</div>
+                <div class="metric-sub">
+                    <a href="{{ route('peserta.logbook') }}" style="color: #ffffff; font-weight: 600; text-decoration: underline;">
+                        <i class="fa-solid fa-book"></i> Lihat & Unduh Jurnal
+                    </a>
+                </div>
+            </div>
+
+            <!-- Metric Nilai Akhir -->
+            <div class="metric-box">
+                <div class="metric-label">Penilaian Akhir Magang</div>
+                <div class="metric-val">
+                    @if($latestEvaluation)
+                        {{ $latestEvaluation->total_score }} <small style="font-size: 13px; opacity: 0.85;">(Grade {{ $latestEvaluation->grade }})</small>
+                    @else
+                        Belum Diterbitkan
+                    @endif
+                </div>
+                <div class="metric-sub">
+                    <a href="{{ route('peserta.nilai') }}" style="color: #ffffff; font-weight: 600; text-decoration: underline;">
+                        <i class="fa-solid fa-award"></i> Transkrip Nilai
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="status-metrics">
-        <!-- Metric Presensi -->
-        <div class="metric-box">
-            <div class="metric-label">Check-in Masuk</div>
-            <div class="metric-val">
-                {{ $hasAttendance && $attendanceToday->check_in_at ? $attendanceToday->check_in_at->format('H:i') . ' WIB' : '--:-- WIB' }}
+@else
+    <div class="status-widget animate-fade-up">
+        <div class="status-top">
+            <div>
+                <h2 style="font-size: 20px; font-weight: 800; margin: 0 0 6px 0;">Kegiatan Hari Ini</h2>
+                <div style="font-size: 14px; color: rgba(255,255,255,0.85);">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</div>
             </div>
-            <div class="metric-sub">
-                @if($hasAttendance && $attendanceToday->check_in_at)
-                    {!! $isLate ? '<i class="fa-solid fa-triangle-exclamation"></i> Telat '.$attendanceToday->late_minutes.' menit' : '<i class="fa-solid fa-check"></i> Tepat Waktu' !!}
+
+            <div class="status-badge {{ $isOnLeave ? 'leave' : ($isLate ? 'late' : '') }}">
+                @if($isOnLeave)
+                    <i class="fa-solid fa-umbrella-beach"></i> Sedang {{ $leaveTypeLabel }}
                 @else
-                    Toleransi: {{ $toleranceTimeStr }}
+                    <i class="fa-solid {{ $hasAttendance ? ($isLate ? 'fa-clock' : 'fa-circle-check') : 'fa-hourglass-half' }}"></i>
+                    {{ $hasAttendance ? ($isLate ? 'Terlambat Hadir' : 'Sudah Hadir') : 'Belum Presensi' }}
                 @endif
             </div>
         </div>
 
-        <!-- Metric Logbook -->
-        <div class="metric-box">
-            <div class="metric-label">Status Logbook</div>
-            <div class="metric-val">
-                {{ isset($logbookToday) && $logbookToday ? 'Disimpan' : 'Kosong' }}
+        <div class="status-metrics">
+            <!-- Metric Presensi -->
+            <div class="metric-box">
+                <div class="metric-label">{{ $isOnLeave ? 'Status Presensi' : 'Check-in Masuk' }}</div>
+                <div class="metric-val">
+                    @if($isOnLeave)
+                        <span style="font-size: 18px;">{{ $leaveTypeLabel }}</span>
+                    @else
+                        {{ $hasAttendance && $attendanceToday->check_in_at ? $attendanceToday->check_in_at->format('H:i') . ' WIB' : '--:-- WIB' }}
+                    @endif
+                </div>
+                <div class="metric-sub">
+                    @if($isOnLeave)
+                        <i class="fa-solid fa-circle-check"></i> Disetujui Pembimbing
+                    @elseif($hasAttendance && $attendanceToday->check_in_at)
+                        {!! $isLate ? '<i class="fa-solid fa-triangle-exclamation"></i> Telat '.$attendanceToday->late_minutes.' menit' : '<i class="fa-solid fa-check"></i> Tepat Waktu' !!}
+                    @else
+                        Toleransi: {{ $toleranceTimeStr }}
+                    @endif
+                </div>
             </div>
-            <div class="metric-sub">
-                @if(isset($logbookToday) && $logbookToday)
-                    Status: {{ strtoupper($logbookToday->status ?? 'DRAFT') }}
-                @else
-                    Wajib diisi sebelum jam pulang
-                @endif
-            </div>
-        </div>
 
-        <!-- Metric Pembimbing -->
-        <div class="metric-box">
-            <div class="metric-label">Pembimbing Lapangan</div>
-            <div class="metric-val" style="font-size: 16px; margin-bottom: 2px;">
-                {{ $penempatan->nama_pembimbing ?? 'Pembimbing Lapangan' }}
+            <!-- Metric Logbook -->
+            <div class="metric-box">
+                <div class="metric-label">Status Logbook</div>
+                <div class="metric-val">
+                    {{ isset($logbookToday) && $logbookToday ? 'Disimpan' : 'Kosong' }}
+                </div>
+                <div class="metric-sub">
+                    @if(isset($logbookToday) && $logbookToday)
+                        Status: {{ strtoupper($logbookToday->status ?? 'DRAFT') }}
+                    @else
+                        Wajib diisi sebelum jam pulang
+                    @endif
+                </div>
             </div>
-            <div class="metric-sub">
-                <i class="fa-solid fa-building-user"></i> {{ $penempatan->divisi->nama_divisi ?? '-' }}
+
+            <!-- Metric Pembimbing -->
+            <div class="metric-box">
+                <div class="metric-label">Pembimbing Lapangan</div>
+                <div class="metric-val" style="font-size: 16px; margin-bottom: 2px;">
+                    {{ $penempatan->nama_pembimbing ?? 'Pembimbing Lapangan' }}
+                </div>
+                <div class="metric-sub">
+                    <i class="fa-solid fa-building-user"></i> {{ $penempatan->divisi->nama_divisi ?? '-' }}
+                </div>
             </div>
         </div>
     </div>
-</div>
+@endif
 
 <!-- STATISTIK GRID KARTU -->
 <div class="stats-grid animate-fade-up delay-1">
     <a href="{{ route('peserta.absensi') }}" class="stat-card">
         <div class="stat-info">
             <h4>Total Kehadiran</h4>
-            <!-- Menghapus padding nol, langsung menampilkan angka murni (0, 1, 5, 12, dst) -->
             <div class="stat-value">{{ $totalHadir ?? 0 }}</div>
         </div>
         <div class="stat-icon primary"><i class="fa-solid fa-calendar-check"></i></div>
@@ -387,21 +469,39 @@
         <div class="stat-icon info"><i class="fa-solid fa-book-open"></i></div>
     </a>
 
-    <a href="{{ route('peserta.aduan') }}" class="stat-card">
-        <div class="stat-info">
-            <h4>Aduan Diproses</h4>
-            <div class="stat-value">{{ $totalAduanAktif ?? 0 }}</div>
-        </div>
-        <div class="stat-icon {{ ($totalAduanAktif ?? 0) > 0 ? 'danger' : 'warning' }}"><i class="fa-solid fa-circle-exclamation"></i></div>
-    </a>
+    @if($isAlumni)
+        <a href="{{ route('peserta.nilai') }}" class="stat-card">
+            <div class="stat-info">
+                <h4>Nilai Akhir Magang</h4>
+                <div class="stat-value">{{ $latestEvaluation ? $latestEvaluation->total_score : '-' }}</div>
+            </div>
+            <div class="stat-icon purple"><i class="fa-solid fa-award"></i></div>
+        </a>
 
-    <a href="{{ route('peserta.nilai') }}" class="stat-card">
-        <div class="stat-info">
-            <h4>Rata-rata Nilai</h4>
-            <div class="stat-value">{{ ($rataRataNilai ?? 0) > 0 ? $rataRataNilai : '-' }}</div>
-        </div>
-        <div class="stat-icon purple"><i class="fa-solid fa-star"></i></div>
-    </a>
+        <a href="{{ route('peserta.profil') }}" class="stat-card">
+            <div class="stat-info">
+                <h4>Status Kelulusan</h4>
+                <div class="stat-value" style="font-size: 18px; color: #059669;">ALUMNI</div>
+            </div>
+            <div class="stat-icon success"><i class="fa-solid fa-user-graduate"></i></div>
+        </a>
+    @else
+        <a href="{{ route('peserta.aduan') }}" class="stat-card">
+            <div class="stat-info">
+                <h4>Aduan Diproses</h4>
+                <div class="stat-value">{{ $totalAduanAktif ?? 0 }}</div>
+            </div>
+            <div class="stat-icon {{ ($totalAduanAktif ?? 0) > 0 ? 'danger' : 'warning' }}"><i class="fa-solid fa-circle-exclamation"></i></div>
+        </a>
+
+        <a href="{{ route('peserta.nilai') }}" class="stat-card">
+            <div class="stat-info">
+                <h4>Nilai Akhir</h4>
+                <div class="stat-value">{{ ($rataRataNilai ?? 0) > 0 ? $rataRataNilai : '-' }}</div>
+            </div>
+            <div class="stat-icon purple"><i class="fa-solid fa-star"></i></div>
+        </a>
+    @endif
 </div>
 
 <!-- BENTO GRID -->
