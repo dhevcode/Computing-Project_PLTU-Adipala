@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Mail\SertifikatMail;
 use App\Mail\SuratBalasanMail;
 use App\Models\AppNotification;
+use App\Models\Attendance;
 use App\Models\AttendancePolicy;
 use App\Models\ChatbotFaq;
 use App\Models\ChatbotLog;
 use App\Models\Company;
 use App\Models\CompanyInformation;
+use App\Models\DailyEvaluation;
+use App\Models\DailyLogbook;
 use App\Models\Divisi;
 use App\Models\EvaluationCriterion;
 use App\Models\Jurusan;
@@ -24,6 +27,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use App\Services\SertifikatService;
 use Throwable;
 
 /**
@@ -62,7 +67,7 @@ class AdminApiController extends PembimbingApiController
             'cuti' => ["Pengajuan Cuti / Izin {$v['label']}", "Pengajuan {$v['jenis']} ({$v['periode']}) telah {$v['label']}. " . (!empty($v['catatan']) ? "Alasan: {$v['catatan']}" : '')],
             'catatan_cuti' => [': '],
             'aduan' => ['Aduan Mendapat Tanggapan', "Aduan #{$v['nomor']} ({$v['judul']}) telah ditanggapi oleh admin/petugas. Status: {$v['status']}"],
-            'nilai' => ['Nilai Harian Telah Dipublikasikan', "Penilaian untuk tanggal {$v['tanggal']} telah dipublikasikan dengan Skor: {$v['nilai']}. Silakan periksa di menu Nilai."],
+            'nilai' => ['Penilaian Akhir Magang Telah Diterbitkan', "Selamat! Penilaian akhir magang Anda telah diterbitkan dengan Skor Akhir: {$v['nilai']} [Predikat: {$v['grade']}]. Silakan periksa transkrip nilai Anda di portal."],
         };
     }
 
@@ -447,16 +452,31 @@ class AdminApiController extends PembimbingApiController
     }
 
     /** DELETE /api/admin/mahasiswa/{id} */
+    /**
+     * Arsip magang tidak boleh hilang (masukan PLTU, meet 9 Nov): peserta yang sedang magang / alumni,
+     * atau yang sudah punya riwayat presensi, logbook, maupun nilai, tidak dapat dihapus — cukup diedit
+     * atau dibiarkan berstatus Alumni. Hapus hanya untuk pengajuan yang keliru/ganda dan belum berjalan.
+     */
+    protected function alasanTidakBolehDihapus(?Mahasiswa $mahasiswa): ?string
+    {
+        return \App\Services\ArsipPesertaService::alasanTidakBolehDihapus($mahasiswa);
+    }
+
     public function destroyMahasiswa(Request $request, $id)
     {
         $pengajuan = PengajuanMagang::findOrFail($id);
         $mahasiswa = $pengajuan->mahasiswa;
+
+        if ($alasan = $this->alasanTidakBolehDihapus($mahasiswa)) {
+            return $this->fail($alasan, 409);
+        }
 
         if ($pengajuan->surat_permohonan && file_exists(public_path('uploads/surat_permohonan/' . $pengajuan->surat_permohonan))) {
             @unlink(public_path('uploads/surat_permohonan/' . $pengajuan->surat_permohonan));
         }
         $pengajuan->delete();
         if ($mahasiswa && $mahasiswa->pengajuanMagang()->count() === 0) {
+            \App\Services\ArsipPesertaService::hapusAkun($mahasiswa); // akun portal ikut dihapus
             $mahasiswa->delete();
         }
 
@@ -569,7 +589,7 @@ class AdminApiController extends PembimbingApiController
     /** POST /api/admin/dokumen/{id}/upload {surat_balasan: PDF} — simpan & kirim email (dibatalkan jika email gagal, seperti web). */
     public function uploadSuratBalasan(Request $request, $id)
     {
-        $request->validate(['surat_balasan' => 'required|file|mimes:pdf|max:4096']);
+        $request->validate(['surat_balasan' => 'required|file|mimes:pdf|max:4096', 'sertakan_akun' => 'nullable|boolean']);
 
         $pengajuan = PengajuanMagang::with('mahasiswa')->findOrFail($id);
         if (!$pengajuan->mahasiswa || !$pengajuan->mahasiswa->email) {
@@ -584,8 +604,13 @@ class AdminApiController extends PembimbingApiController
         $oldPath = $pengajuan->surat_balasan;
         $pengajuan->update(['surat_balasan' => $path]);
 
+        // Informasi akun portal di email (sama dengan web): dibuat otomatis bila diterima & belum punya akun
+        $akun = $request->boolean('sertakan_akun', true)
+            ? \App\Services\AkunPesertaService::untukSuratBalasan($pengajuan, $request->user()->id_users)
+            : null;
+
         try {
-            Mail::to($pengajuan->mahasiswa->email)->send(new SuratBalasanMail($pengajuan, $path));
+            Mail::to($pengajuan->mahasiswa->email)->send(new SuratBalasanMail($pengajuan, $path, $akun));
             if ($oldPath && Storage::disk('public')->exists($oldPath)) {
                 Storage::disk('public')->delete($oldPath);
             }
@@ -599,8 +624,11 @@ class AdminApiController extends PembimbingApiController
         }
 
         return $this->ok(
-            $this->formatPengajuan($pengajuan->fresh(['mahasiswa.universitas', 'mahasiswa.jurusan', 'divisi', 'pembimbing'])),
+            $this->formatPengajuan($pengajuan->fresh(['mahasiswa.universitas', 'mahasiswa.jurusan', 'divisi', 'pembimbing'])) + ['akun' => $akun],
             'Surat balasan berhasil diupload dan dikirim ke email mahasiswa.'
+                . ($akun ? ($akun['baru']
+                    ? " Akun portal dibuat (Username: {$akun['username']}, Password: {$akun['password']}) dan disertakan di email."
+                    : " Username akun portal ({$akun['username']}) disertakan di email.") : '')
         );
     }
 
@@ -631,7 +659,9 @@ class AdminApiController extends PembimbingApiController
     public function sertifikat(Request $request)
     {
         $query = Mahasiswa::with(['sertifikat', 'pengajuanMagang.divisi', 'pengajuanMagang.pembimbing', 'universitas', 'jurusan'])
-            ->whereHas('pengajuanMagang', fn ($q) => $q->whereDate('tanggal_selesai', '<=', Carbon::today()));
+            // sama dengan web: periode selesai, berstatus Selesai Magang, atau sudah punya sertifikat
+            ->where(fn ($w) => $w->whereHas('pengajuanMagang', fn ($q) => $q->whereDate('tanggal_selesai', '<=', Carbon::today())->orWhere('status', 'Selesai Magang'))
+                ->orWhereHas('sertifikat'));
 
         if ($request->filled('search')) {
             $search = trim($request->search);
@@ -755,6 +785,9 @@ class AdminApiController extends PembimbingApiController
                 'phone' => $company->phone,
                 'email' => $company->email,
                 'website' => $company->website,
+                'instagram_url' => $company->instagram_url,
+                'youtube_url' => $company->youtube_url,
+                'facebook_url' => $company->facebook_url,
                 'latitude' => (float) $company->latitude,
                 'longitude' => (float) $company->longitude,
                 'attendance_radius_meters' => (int) $company->attendance_radius_meters,
@@ -845,6 +878,12 @@ class AdminApiController extends PembimbingApiController
             'attendance_radius_meters' => 'required|integer|min:10',
             'work_start_time' => 'required',
             'work_end_time' => 'required',
+            'website' => 'nullable|url|max:255',
+            'instagram_url' => 'nullable|url|max:255',
+            'youtube_url' => 'nullable|url|max:255',
+            'facebook_url' => 'nullable|url|max:255',
+        ], [
+            'url' => 'Alamat :attribute harus berupa URL lengkap (diawali https://).',
         ]);
 
         $company = Company::first();
@@ -856,6 +895,7 @@ class AdminApiController extends PembimbingApiController
             'name', 'industry', 'address', 'latitude', 'longitude',
             'attendance_radius_meters', 'work_start_time', 'work_end_time',
             'phone', 'email', 'website', 'description',
+            'instagram_url', 'youtube_url', 'facebook_url',
         ]));
 
         $policy = AttendancePolicy::firstOrCreate(['company_id' => $company->id_company]);
@@ -1063,5 +1103,72 @@ class AdminApiController extends PembimbingApiController
         $user->save();
 
         return $this->ok(null, 'Password berhasil diubah.');
+    }
+    // =========================================================================
+    // SERTIFIKAT DARI PENILAIAN AKHIR (template 2 halaman: sertifikat + daftar nilai)
+    // =========================================================================
+
+    /** GET /api/admin/nilai/{mahasiswa}/sertifikat → isian awal form, syarat, sertifikat terakhir */
+    public function sertifikatForm(Request $request, $mahasiswaId, SertifikatService $service)
+    {
+        $mhs = Mahasiswa::with('latestPengajuan')->findOrFail($mahasiswaId);
+        $lama = $service->sertifikatTerakhir($mhs);
+
+        return $this->ok([
+            'mahasiswa' => ['id' => $mhs->id_mhs, 'nama_lengkap' => $mhs->nama_lengkap, 'nim' => $mhs->nim],
+            'isian' => $service->isianAwal($mhs),
+            'alasan_belum_bisa' => $service->alasanBelumBisa($mhs),
+            'sertifikat' => $lama ? [
+                'nomor' => $lama->nomor_sertifikat,
+                'tanggal_terbit' => static::date($lama->tanggal_terbit),
+                'sumber' => $lama->sumber,
+                'url' => static::fileUrl($lama->file_sertifikat),
+            ] : null,
+        ]);
+    }
+
+    /** POST /api/admin/nilai/{mahasiswa}/sertifikat/pratinjau → URL bertanda tangan (10 menit) untuk melihat PDF pratinjau */
+    public function sertifikatPratinjau(Request $request, $mahasiswaId, SertifikatService $service)
+    {
+        $isian = $request->validate(SertifikatService::aturanValidasi(), SertifikatService::pesanValidasi());
+        $mhs = Mahasiswa::with('latestPengajuan')->findOrFail($mahasiswaId);
+        if (!$service->penilaianAkhir($mhs)) {
+            return $this->fail('Penilaian akhir magang belum dipublikasikan.', 409);
+        }
+
+        return $this->ok([
+            'url' => URL::temporarySignedRoute('api.sertifikat.pratinjau', now()->addMinutes(10), ['mahasiswa' => $mhs->id_mhs] + $isian),
+        ]);
+    }
+
+    /** GET /api/sertifikat/pratinjau/{mahasiswa}?…&signature= (tanpa token, dilindungi tanda tangan URL) */
+    public function sertifikatPratinjauUnduh(Request $request, $mahasiswa, SertifikatService $service)
+    {
+        $isian = $request->only(array_keys(SertifikatService::aturanValidasi()));
+        $mhs = Mahasiswa::with('latestPengajuan')->findOrFail($mahasiswa);
+        abort_unless($service->penilaianAkhir($mhs), 404);
+
+        return $service->pdf($mhs, $isian, true)->stream('Pratinjau_' . SertifikatService::namaFile($mhs));
+    }
+
+    /** POST /api/admin/nilai/{mahasiswa}/sertifikat → terbitkan, simpan ke menu Sertifikat, kirim email peserta */
+    public function sertifikatTerbitkan(Request $request, $mahasiswaId, SertifikatService $service)
+    {
+        $isian = $request->validate(SertifikatService::aturanValidasi(), SertifikatService::pesanValidasi());
+        $mhs = Mahasiswa::with('latestPengajuan')->findOrFail($mahasiswaId);
+
+        if ($alasan = $service->alasanBelumBisa($mhs)) {
+            return $this->fail('Sertifikat belum dapat diterbitkan: ' . $alasan, 409);
+        }
+
+        [$sertifikat, $terkirim] = $service->terbitkan($mhs, $isian, $request->user()->id_users);
+
+        return $this->ok([
+            'nomor' => $sertifikat->nomor_sertifikat,
+            'tanggal_terbit' => static::date($sertifikat->tanggal_terbit),
+            'url' => static::fileUrl($sertifikat->file_sertifikat),
+            'email_terkirim' => $terkirim,
+        ], "Sertifikat {$sertifikat->nomor_sertifikat} untuk {$mhs->nama_lengkap} berhasil diterbitkan"
+            . ($terkirim ? ' dan dikirim ke email peserta.' : '. Email tidak terkirim — periksa alamat email peserta.'), [], 201);
     }
 }

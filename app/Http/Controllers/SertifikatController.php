@@ -43,12 +43,16 @@ class SertifikatController extends Controller
 |
 */
 
-$query->whereHas('pengajuanMagang', function ($q) {
-    $q->whereDate(
-        'tanggal_selesai',
-        '<=',
-        Carbon::today()
-    );
+// Juga peserta yang sudah berstatus Selesai Magang (penilaian akhir terbit lebih awal)
+// atau yang sudah memiliki sertifikat (diterbitkan dari Penilaian Akhir).
+$query->where(function ($w) {
+    $w->whereHas('pengajuanMagang', function ($q) {
+        $q->whereDate(
+            'tanggal_selesai',
+            '<=',
+            Carbon::today()
+        )->orWhere('status', 'Selesai Magang');
+    })->orWhereHas('sertifikat');
 });
 
         /*

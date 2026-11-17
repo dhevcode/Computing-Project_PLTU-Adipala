@@ -324,6 +324,11 @@ public function uploadSuratBalasan(Request $request, $id)
         'surat_balasan' => $path,
     ]);
 
+    // Informasi akun portal di email (masukan PLTU): dibuat otomatis bila peserta diterima & belum punya akun
+    $akun = $request->boolean('sertakan_akun', true)
+        ? \App\Services\AkunPesertaService::untukSuratBalasan($pengajuan, auth()->id())
+        : null;
+
     /*
     |--------------------------------------------------------------------------
     | KIRIM EMAIL
@@ -336,7 +341,8 @@ public function uploadSuratBalasan(Request $request, $id)
             ->send(
                 new SuratBalasanMail(
                     $pengajuan,
-                    $path
+                    $path,
+                    $akun
                 )
             );
 
@@ -358,6 +364,9 @@ public function uploadSuratBalasan(Request $request, $id)
             ->with(
                 'success',
                 'Surat balasan berhasil diupload dan dikirim ke email mahasiswa.'
+                . ($akun ? ($akun['baru']
+                    ? " Akun portal dibuat (Username: {$akun['username']}, Password: {$akun['password']}) dan disertakan di email."
+                    : " Username akun portal ({$akun['username']}) disertakan di email.") : '')
             );
 
     } catch (Throwable $e) {

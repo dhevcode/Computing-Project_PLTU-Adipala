@@ -251,6 +251,13 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
         ->name('admin.nilai');
     Route::post('/admin/nilai/store', [AdminNilaiController::class, 'store'])
         ->name('admin.nilai.store');
+    // Sertifikat dari Penilaian Akhir (template 2 halaman: sertifikat + daftar nilai)
+    Route::post('/admin/nilai/{mahasiswa}/sertifikat/pratinjau', [AdminNilaiController::class, 'pratinjauSertifikat'])
+        ->whereNumber('mahasiswa')
+        ->name('admin.nilai.sertifikat.pratinjau');
+    Route::post('/admin/nilai/{mahasiswa}/sertifikat', [AdminNilaiController::class, 'terbitkanSertifikat'])
+        ->whereNumber('mahasiswa')
+        ->name('admin.nilai.sertifikat.terbitkan');
 
     // 6. Informasi & Pengumuman Perusahaan
     Route::get('/admin/pengumuman', [AdminPengumumanController::class, 'index'])

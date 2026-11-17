@@ -1,7 +1,7 @@
 @extends('peserta.layouts.app')
 
-@section('title', 'Presensi & Koreksi')
-@section('page_title', 'Presensi & Geofencing')
+@section('title', 'Presensi (Kehadiran)')
+@section('page_title', 'Presensi (Kehadiran)')
 @section('page_subtitle', 'Sistem absensi berbasis verifikasi geospasial GPS dan stempel waktu live PLTU Adipala.')
 
 @push('styles')

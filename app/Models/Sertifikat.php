@@ -25,6 +25,13 @@ class Sertifikat extends Model
         'tanggal_terbit',
         'uploaded_by',
         'uploaded_at',
+        // Penerbitan otomatis dari Penilaian Akhir
+        'nomor_sertifikat',
+        'kota_terbit',
+        'penandatangan_jabatan',
+        'penandatangan_nama',
+        'penandatangan_identitas',
+        'sumber',
     ];
 
     protected $casts = [

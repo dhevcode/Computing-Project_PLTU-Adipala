@@ -4,8 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AdminApiController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatbotApiController;
+use App\Http\Controllers\Api\NotifikasiApiController;
 use App\Http\Controllers\Api\PembimbingApiController;
+use App\Http\Controllers\Api\PendaftaranApiController;
 use App\Http\Controllers\Api\PesertaApiController;
+use App\Http\Controllers\Api\PesertaExportApiController;
 use App\Http\Controllers\Api\SuperAdminApiController;
 
 /*
@@ -18,17 +21,38 @@ use App\Http\Controllers\Api\SuperAdminApiController;
 */
 
 // Auth Routes (Publik)
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1,login');
 
 // Chatbot FAQ "Tanya Kami" (publik; token opsional untuk FAQ khusus peserta)
 Route::get('/chatbot/questions', [ChatbotApiController::class, 'questions']);
-Route::post('/chatbot/answer', [ChatbotApiController::class, 'answer'])->middleware('throttle:60,1');
+Route::post('/chatbot/answer', [ChatbotApiController::class, 'answer'])->middleware('throttle:60,1,chatbot');
+
+// Pengajuan magang baru oleh calon peserta (publik, tanpa akun) — sama dengan formulir web /pengajuan-magang
+Route::get('/pendaftaran/referensi', [PendaftaranApiController::class, 'references']);
+Route::post('/pendaftaran', [PendaftaranApiController::class, 'store'])->middleware('throttle:5,1,pendaftaran');
+
+// Pratinjau PDF sertifikat lewat URL bertanda tangan (dibuat oleh POST /admin/nilai/{mahasiswa}/sertifikat/pratinjau)
+Route::get('/sertifikat/pratinjau/{mahasiswa}', [AdminApiController::class, 'sertifikatPratinjauUnduh'])
+    ->whereNumber('mahasiswa')
+    ->middleware(['signed', 'throttle:30,1,sertifikat'])
+    ->name('api.sertifikat.pratinjau');
+
+// Unduh file export peserta lewat URL bertanda tangan (dibuat oleh GET /peserta/export/{jenis}; tanpa token)
+Route::get('/peserta/export/{jenis}/unduh/{mahasiswa}', [PesertaExportApiController::class, 'unduh'])
+    ->whereNumber('mahasiswa')
+    ->middleware(['signed', 'throttle:30,1,export'])
+    ->name('api.peserta.export.unduh');
 
 // Endpoint dengan autentikasi Bearer Token (Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
     // Auth & User Profile
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Notifikasi sistem untuk semua role (lonceng di header mobile)
+    Route::get('/notifikasi', [NotifikasiApiController::class, 'index']);
+    Route::post('/notifikasi/read-all', [NotifikasiApiController::class, 'readAll']);
+    Route::post('/notifikasi/{id}/read', [NotifikasiApiController::class, 'read'])->whereNumber('id');
 
     // Portal Peserta API (role sama dengan route web peserta)
     Route::prefix('peserta')->middleware('role:Peserta,Mahasiswa')->group(function () {
@@ -63,6 +87,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Nilai Magang
         Route::get('/nilai', [PesertaApiController::class, 'evaluations']);
+        Route::get('/sertifikat', [PesertaApiController::class, 'certificate']);
+
+        // Export rekap (absensi-pdf|absensi-excel|logbook-pdf|logbook-excel|nilai-pdf) → URL unduh bertanda tangan 10 menit
+        Route::get('/export/{jenis}', [PesertaExportApiController::class, 'tautan']);
 
         // Info Perusahaan
         Route::get('/informasi', [PesertaApiController::class, 'companyInformation']);
@@ -152,6 +180,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/aduan/{id}/reply', [AdminApiController::class, 'replyComplaint'])->whereNumber('id');
         Route::get('/nilai', [AdminApiController::class, 'evaluations']);
         Route::post('/nilai/store', [AdminApiController::class, 'storeEvaluation']);
+        // Sertifikat dari Penilaian Akhir (template 2 halaman)
+        Route::get('/nilai/{mahasiswa}/sertifikat', [AdminApiController::class, 'sertifikatForm'])->whereNumber('mahasiswa');
+        Route::post('/nilai/{mahasiswa}/sertifikat/pratinjau', [AdminApiController::class, 'sertifikatPratinjau'])->whereNumber('mahasiswa');
+        Route::post('/nilai/{mahasiswa}/sertifikat', [AdminApiController::class, 'sertifikatTerbitkan'])->whereNumber('mahasiswa');
 
         // Pengumuman & profil perusahaan
         Route::get('/pengumuman', [AdminApiController::class, 'pengumuman']);

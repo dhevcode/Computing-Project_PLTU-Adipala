@@ -143,6 +143,34 @@
 
                             </table>
 
+                            @if(!empty($akun))
+                            <!-- Informasi Akun Portal Peserta Magang -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="margin: 0 0 25px 0; background-color: #ecfdf5; border-left: 4px solid #059669;">
+                                <tr>
+                                    <td style="padding: 18px 20px;">
+                                        <div style="font-size: 15px; font-weight: bold; color: #065f46; margin-bottom: 10px;">
+                                            Akun Portal Peserta Magang (SINCOS)
+                                        </div>
+                                        <div style="font-size: 14px; color: #1f2937; line-height: 1.8;">
+                                            Username / NIM: <strong>{{ $akun['username'] }}</strong><br>
+                                            @if(!empty($akun['password']))
+                                                Password: <strong style="font-family: monospace; font-size: 15px;">{{ $akun['password'] }}</strong><br>
+                                            @else
+                                                Password: gunakan password akun Anda yang sudah ada.<br>
+                                            @endif
+                                            Alamat login: <a href="{{ url('/login') }}" style="color: #0b5cab;">{{ url('/login') }}</a>
+                                        </div>
+                                        <div style="font-size: 12.5px; color: #555555; margin-top: 10px; line-height: 1.6;">
+                                            Akun ini dapat dipakai di website maupun aplikasi SINCOS Mobile untuk presensi, logbook harian,
+                                            dan melihat nilai selama magang.
+                                            @if(!empty($akun['password'])) Demi keamanan, segera ganti password setelah login pertama melalui menu Profil. @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            @endif
+
                             <p style="
                                 margin: 0 0 18px 0;
                                 font-size: 15px;

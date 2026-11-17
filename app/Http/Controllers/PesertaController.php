@@ -20,6 +20,7 @@ use App\Models\DailyEvaluation;
 use App\Models\LeaveRequest;
 use App\Models\CompanyInformation;
 use App\Models\AppNotification;
+use App\Services\NotifikasiPembimbingService;
 use App\Models\EvaluationCriterion;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -333,7 +334,7 @@ class PesertaController extends Controller
         $deadlineTime = $standardStartTime->copy()->addMinutes($toleranceMinutes);
 
         $isLate = $now->greaterThan($deadlineTime);
-        $lateMinutes = $isLate ? max(0, (int) $now->diffInMinutes($standardStartTime)) : 0;
+        $lateMinutes = $isLate ? max(0, (int) $standardStartTime->diffInMinutes($now) /* Carbon 3: selisih bertanda */) : 0;
         $checkInStatus = $isLate ? 'late' : 'present';
 
         // Simpan selfie wajib presensi
@@ -414,7 +415,7 @@ class PesertaController extends Controller
         }
 
         $checkInTime = Carbon::parse($attendance->check_in_at);
-        $totalMinutes = max(0, (int) $now->diffInMinutes($checkInTime));
+        $totalMinutes = max(0, (int) $checkInTime->diffInMinutes($now) /* Carbon 3: selisih bertanda */);
 
         $distance = null;
         if ($request->filled('latitude') && $request->filled('longitude')) {
@@ -522,6 +523,15 @@ class PesertaController extends Controller
             "Pengajuan koreksi absensi tanggal {$request->correction_date} telah dikirim dan menunggu tinjauan pembimbing.",
             'info',
             route('peserta.absensi')
+        );
+
+        // Beri tahu pembimbing lapangan peserta ini
+        NotifikasiPembimbingService::kirim(
+            $mhs,
+            'Koreksi Absensi Baru',
+            NotifikasiPembimbingService::namaPeserta($mhs) . " mengajukan koreksi absensi tanggal {$request->correction_date}.",
+            'pembimbing.absensi',
+            'warning'
         );
 
         return back()->with('success', 'Pengajuan koreksi absensi berhasil dikirim dan sedang menunggu tinjauan pembimbing.');
@@ -680,6 +690,17 @@ class PesertaController extends Controller
             route('peserta.logbook')
         );
 
+        if ($status === 'submitted') {
+            // Beri tahu pembimbing lapangan peserta ini
+            NotifikasiPembimbingService::kirim(
+                $mhs,
+                'Logbook Baru Menunggu Review',
+                NotifikasiPembimbingService::namaPeserta($mhs) . " mengirim logbook tanggal {$request->logbook_date} untuk ditinjau.",
+                'pembimbing.logbook',
+                'info'
+            );
+        }
+
         return back()->with('success', $msg);
     }
 
@@ -764,6 +785,15 @@ class PesertaController extends Controller
             route('peserta.aduan')
         );
 
+        // Beri tahu pembimbing lapangan peserta ini
+        NotifikasiPembimbingService::kirim(
+            $mhs,
+            'Aduan Baru dari Peserta',
+            NotifikasiPembimbingService::namaPeserta($mhs) . " membuat aduan {$complaintNumber}: {$request->title}",
+            'pembimbing.aduan',
+            'danger'
+        );
+
         return back()->with('success', "Aduan Anda telah berhasil dikirim dengan Nomor Aduan: {$complaintNumber}. Petugas akan segera menindaklanjuti.");
     }
 
@@ -788,6 +818,15 @@ class PesertaController extends Controller
             'is_internal_note' => false,
         ]);
 
+        // Beri tahu pembimbing lapangan peserta ini
+        NotifikasiPembimbingService::kirim(
+            $mhs,
+            'Tanggapan Aduan dari Peserta',
+            NotifikasiPembimbingService::namaPeserta($mhs) . " menanggapi aduan {$complaint->complaint_number}.",
+            'pembimbing.aduan',
+            'info'
+        );
+
         return back()->with('success', 'Tanggapan berhasil dikirim.');
     }
 
@@ -809,7 +848,13 @@ class PesertaController extends Controller
         $highestScore = $evaluations->count() > 0 ? $evaluations->max('total_score') : 0;
         $lowestScore = $evaluations->count() > 0 ? $evaluations->min('total_score') : 0;
 
-        return view('peserta.nilai', compact('user', 'mhs', 'evaluations', 'averageScore', 'highestScore', 'lowestScore'));
+        // Sertifikat magang yang sudah diterbitkan admin (dari Penilaian Akhir / unggah manual)
+        $sertifikat = \App\Models\Sertifikat::where('mahasiswa_id', $mhs->id_mhs)
+            ->where('status', 'Diterbitkan')
+            ->latest('id_sertifikat')
+            ->first();
+
+        return view('peserta.nilai', compact('user', 'mhs', 'evaluations', 'averageScore', 'highestScore', 'lowestScore', 'sertifikat'));
     }
 
     // =========================================================================
@@ -870,6 +915,15 @@ class PesertaController extends Controller
             "Pengajuan " . LeaveRequest::getLeaveTypeLabel($request->leave_type) . " ({$request->start_date} s/d {$request->end_date}) telah diajukan.",
             'info',
             route('peserta.cuti')
+        );
+
+        // Beri tahu pembimbing lapangan peserta ini
+        NotifikasiPembimbingService::kirim(
+            $mhs,
+            'Pengajuan Ketidakhadiran Baru',
+            NotifikasiPembimbingService::namaPeserta($mhs) . ' mengajukan ' . LeaveRequest::getLeaveTypeLabel($request->leave_type) . " ({$request->start_date} s/d {$request->end_date}).",
+            'pembimbing.cuti',
+            'warning'
         );
 
         return back()->with('success', 'Pengajuan cuti/izin berhasil diajukan dan sedang menunggu persetujuan pembimbing.');

@@ -1,7 +1,7 @@
 @extends('pembimbing.layouts.app')
 
 @section('title', 'Monitoring Presensi Bimbingan')
-@section('page_title', 'Monitoring Presensi & Validasi')
+@section('page_title', 'Monitoring Presensi (Kehadiran)')
 @section('page_subtitle', 'Pantau kehadiran harian dan setujui permohonan koreksi absensi anak bimbingan Anda.')
 
 @push('styles')

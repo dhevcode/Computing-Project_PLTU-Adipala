@@ -18,7 +18,7 @@
             </a>
             <a href="{{ route('peserta.absensi') }}" class="nav-link {{ request()->routeIs('peserta.absensi*') ? 'active' : '' }}">
                 <i class="fa-solid fa-location-dot"></i>
-                <span>{{ $isAlumni ? 'Arsip Presensi' : 'Presensi & Koreksi' }}</span>
+                <span>{{ $isAlumni ? 'Arsip Presensi' : 'Presensi (Kehadiran)' }}</span>
             </a>
             <a href="{{ route('peserta.logbook') }}" class="nav-link {{ request()->routeIs('peserta.logbook*') ? 'active' : '' }}">
                 <i class="fa-solid fa-book-open"></i>
@@ -31,7 +31,7 @@
             @if(!$isAlumni)
                 <a href="{{ route('peserta.cuti') }}" class="nav-link {{ request()->routeIs('peserta.cuti*') ? 'active' : '' }}">
                     <i class="fa-solid fa-calendar-check"></i>
-                    <span>Cuti & Izin</span>
+                    <span>Ketidakhadiran</span>
                 </a>
             @endif
         </div>
@@ -46,7 +46,7 @@
             @else
                 <a href="{{ route('peserta.cuti') }}" class="nav-link {{ request()->routeIs('peserta.cuti*') ? 'active' : '' }}">
                     <i class="fa-solid fa-clock-rotate-left"></i>
-                    <span>Riwayat Izin / Cuti</span>
+                    <span>Riwayat Ketidakhadiran</span>
                 </a>
             @endif
         </div>

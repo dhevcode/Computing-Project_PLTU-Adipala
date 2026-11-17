@@ -18,15 +18,20 @@ class SuratBalasanMail extends Mailable
     public $pengajuan;
     public $filePath;
 
+    /** Informasi akun portal peserta (username, password|null, baru) — null bila tidak disertakan. */
+    public ?array $akun;
+
     /**
      * Create a new message instance.
      */
     public function __construct(
         PengajuanMagang $pengajuan,
-        string $filePath
+        string $filePath,
+        ?array $akun = null
     ) {
         $this->pengajuan = $pengajuan;
         $this->filePath = $filePath;
+        $this->akun = $akun;
     }
 
     /**

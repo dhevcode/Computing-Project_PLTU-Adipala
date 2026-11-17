@@ -318,11 +318,24 @@
         <h2>Transkrip Penilaian Akhir Magang</h2>
         <p>Hasil evaluasi performa keseluruhan mahasiswa magang di akhir masa kontrak PKL PLTU Adipala.</p>
     </div>
-    @if(($evaluations ?? collect())->count() > 0)
-        <div>
-            <a href="{{ route('peserta.nilai.export.pdf') }}" class="btn-pill" style="background: #FEF2F2; color: #DC2626; border-color: #FECACA;" target="_blank">
-                <i class="fa-solid fa-file-pdf"></i> Unduh Transkrip Nilai (PDF)
-            </a>
+    @if(($evaluations ?? collect())->count() > 0 || !empty($sertifikat))
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            @if(empty($sertifikat) && $mhs && $mhs->isAlumni())
+                <span class="btn-pill" style="background: #FFFBEB; color: #92400E; border-color: #FDE68A; cursor: default;" title="Anda akan menerima notifikasi & email saat sertifikat diterbitkan.">
+                    <i class="fa-solid fa-hourglass-half"></i> Sertifikat sedang diproses admin
+                </span>
+            @endif
+            @if(!empty($sertifikat) && $sertifikat->file_sertifikat)
+                <a href="{{ asset($sertifikat->file_sertifikat) }}" class="btn-pill" style="background: #ECFDF5; color: #047857; border-color: #A7F3D0;" target="_blank"
+                   title="{{ $sertifikat->nomor_sertifikat ? 'No. ' . $sertifikat->nomor_sertifikat : 'Sertifikat Magang' }}">
+                    <i class="fa-solid fa-certificate"></i> Unduh Sertifikat Magang
+                </a>
+            @endif
+            @if(($evaluations ?? collect())->count() > 0)
+                <a href="{{ route('peserta.nilai.export.pdf') }}" class="btn-pill" style="background: #FEF2F2; color: #DC2626; border-color: #FECACA;" target="_blank">
+                    <i class="fa-solid fa-file-pdf"></i> Unduh Transkrip Nilai (PDF)
+                </a>
+            @endif
         </div>
     @endif
 </div>

@@ -74,6 +74,13 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-error animate-fade-up" style="background: #FEF2F2; color: #991B1B; border-color: #FECACA;">
+            <i class="fa-solid fa-circle-xmark"></i>
+            <span>{{ session('error') }}</span>
+        </div>
+    @endif
+
     <form method="GET" action="{{ route('admin.data') }}" class="filter-section animate-fade-up delay-1">
         <div class="filter-header">
             <i class="fa-solid fa-filter"></i>
@@ -250,13 +257,16 @@
                                     </a>
                                 @endif
 
-                                <form action="{{ route('admin.destroy', $row->id_pengajuan) }}" method="POST" data-confirm="Hapus data pendaftaran {{ $row->mahasiswa->nama_lengkap ?? '' }}?" data-confirm-title="Hapus Data">
+                                {{-- Hapus hanya untuk pengajuan yang belum berjalan; arsip peserta aktif/alumni dilindungi --}}
+                                @if(!in_array($row->status, ['Sedang Magang', 'Selesai Magang']))
+                                <form action="{{ route('admin.destroy', $row->id_pengajuan) }}" method="POST" data-confirm="Hapus data pendaftaran {{ $row->mahasiswa->nama_lengkap ?? '' }}? Data yang dihapus tidak dapat dikembalikan." data-confirm-title="Hapus Data">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-action btn-delete" title="Hapus Data">
                                         <i class="fa-regular fa-trash-can"></i>
                                     </button>
                                 </form>
+                                @endif
                             </div>
                         </td>
                     </tr>

@@ -209,6 +209,15 @@
             <li><i class="fa-solid fa-phone"></i> <span>{{ $company->phone ?? '-' }}</span></li>
             <li><i class="fa-solid fa-envelope"></i> <span>{{ $company->email ?? '-' }}</span></li>
             <li><i class="fa-solid fa-globe"></i> <a href="{{ $company->website ?? '#' }}" target="_blank">{{ $company->website ?? 'Website Belum Tersedia' }}</a></li>
+            @if($company->instagram_url)
+                <li><i class="fa-brands fa-instagram"></i> <a href="{{ $company->instagram_url }}" target="_blank" rel="noopener">Instagram</a></li>
+            @endif
+            @if($company->youtube_url)
+                <li><i class="fa-brands fa-youtube"></i> <a href="{{ $company->youtube_url }}" target="_blank" rel="noopener">YouTube</a></li>
+            @endif
+            @if($company->facebook_url)
+                <li><i class="fa-brands fa-facebook"></i> <a href="{{ $company->facebook_url }}" target="_blank" rel="noopener">Facebook</a></li>
+            @endif
         </ul>
     </section>
 

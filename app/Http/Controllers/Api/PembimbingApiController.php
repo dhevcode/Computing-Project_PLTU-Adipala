@@ -104,7 +104,7 @@ class PembimbingApiController extends ApiController
             'cuti' => ["Pengajuan Cuti / Izin {$v['label']}", "Pengajuan {$v['jenis']} ({$v['periode']}) telah {$v['label']} oleh Pembimbing Lapangan. " . $catatan],
             'catatan_cuti' => [' (Disetujui Pembimbing): '],
             'aduan' => ['Aduan Ditanggapi Pembimbing', "Aduan #{$v['nomor']} ({$v['judul']}) telah ditanggapi oleh Pembimbing Lapangan Anda. Status: {$v['status']}"],
-            'nilai' => ['Nilai Evaluasi Dipublikasikan', "Pembimbing Lapangan Anda telah mempublikasikan penilaian untuk tanggal {$v['tanggal']} dengan Nilai Akhir: {$v['nilai']}."],
+            'nilai' => ['Penilaian Akhir Magang Telah Diterbitkan', "Pembimbing Lapangan Anda telah menerbitkan Penilaian Akhir Magang dengan Nilai Akhir: {$v['nilai']} [Predikat: {$v['grade']}]. Silakan periksa transkrip nilai Anda di menu Nilai."],
         };
     }
 
@@ -606,22 +606,35 @@ class PembimbingApiController extends ApiController
 
         $this->filterMahasiswa($request, $query);
         $this->filterStatus($request, $query);
+        $this->filterCariMahasiswa($request, $query);
 
+        // Penilaian akhir terbaru diperbarui di atas (sama dengan web)
         return $this->paginated(
-            $query->orderBy('evaluation_date', 'desc')->paginate($this->perPage($request, 15)),
+            $query->orderBy('updated_at', 'desc')->paginate($this->perPage($request, 15)),
             fn ($e) => $this->withMhs($this->formatEvaluation($e, true), $e)
         );
     }
 
+    /** Predikat nilai akhir (sama dengan web: A ≥85, B ≥75, C ≥60, D). */
+    protected static function predikat(float $nilai): string
+    {
+        return match (true) {
+            $nilai >= 85 => 'A (Sangat Baik)',
+            $nilai >= 75 => 'B (Baik)',
+            $nilai >= 60 => 'C (Cukup)',
+            default => 'D (Kurang)',
+        };
+    }
+
     /**
-     * POST /api/pembimbing/nilai/store
-     * {mahasiswa_id, evaluation_date, scores: {criterion_id: nilai}, detail_notes?, participant_note, internal_note, action_type: draft|publish}
+     * POST /api/pembimbing/nilai/store — Penilaian Akhir Magang (1 penilaian final per mahasiswa, sama dengan web)
+     * {mahasiswa_id, evaluation_date?, scores: {criterion_id: nilai}, detail_notes?, participant_note, internal_note, action_type: draft|publish}
      */
     public function storeEvaluation(Request $request)
     {
         $request->validate([
             'mahasiswa_id' => 'required|exists:mahasiswa,id_mhs',
-            'evaluation_date' => 'required|date',
+            'evaluation_date' => 'nullable|date',
             'scores' => 'required|array',
             'scores.*' => 'numeric|min:0|max:100',
             'detail_notes' => 'nullable|array',
@@ -642,9 +655,13 @@ class PembimbingApiController extends ApiController
         $finalScore = round($weightedTotal / $totalWeight, 2);
         $status = $request->action_type === 'publish' ? 'published' : 'draft';
 
+        $evalDate = $request->evaluation_date ? Carbon::parse($request->evaluation_date) : Carbon::today();
+
+        // Penilaian bersifat final: satu penilaian akhir per mahasiswa
         $evaluation = DailyEvaluation::updateOrCreate(
-            ['mahasiswa_id' => $request->mahasiswa_id, 'evaluation_date' => $request->evaluation_date],
+            ['mahasiswa_id' => $request->mahasiswa_id],
             [
+                'evaluation_date' => $evalDate,
                 'total_score' => $finalScore,
                 'participant_note' => $request->participant_note,
                 'internal_note' => $request->internal_note,
@@ -661,15 +678,16 @@ class PembimbingApiController extends ApiController
             );
         }
 
-        $mhs = Mahasiswa::find($request->mahasiswa_id);
+        $mhs = Mahasiswa::with('latestPengajuan')->find($request->mahasiswa_id);
+
+        // Nilai final dipublikasikan → status magang menjadi Selesai Magang (sama dengan web)
+        if ($status === 'published' && $mhs && $mhs->latestPengajuan && $mhs->latestPengajuan->status !== 'Selesai Magang') {
+            $mhs->latestPengajuan->update(['status' => 'Selesai Magang']);
+        }
+
         if ($status === 'published' && $mhs && $mhs->user_id) {
-            AppNotification::send(
-                $mhs->user_id,
-                $this->teks('nilai', ['tanggal' => $request->evaluation_date, 'nilai' => $finalScore])[0],
-                $this->teks('nilai', ['tanggal' => $request->evaluation_date, 'nilai' => $finalScore])[1],
-                'success',
-                route('peserta.nilai')
-            );
+            $teks = $this->teks('nilai', ['nilai' => $finalScore, 'grade' => static::predikat($finalScore)]);
+            AppNotification::send($mhs->user_id, $teks[0], $teks[1], 'success', route('peserta.nilai'));
         }
 
         $evaluation = $evaluation->fresh(['mahasiswa.universitas', 'details.criterion', 'evaluator']);
@@ -677,8 +695,8 @@ class PembimbingApiController extends ApiController
         return $this->ok(
             $this->withMhs($this->formatEvaluation($evaluation, true), $evaluation),
             $status === 'published'
-                ? "Penilaian evaluasi berhasil dipublikasikan dengan nilai akhir {$finalScore}."
-                : 'Draft penilaian berhasil disimpan.'
+                ? "Penilaian akhir magang berhasil dipublikasikan dengan skor {$finalScore}."
+                : 'Draft penilaian akhir berhasil disimpan.'
         );
     }
 

@@ -14,6 +14,7 @@ use App\Models\DailyEvaluation;
 use App\Models\DailyLogbook;
 use App\Models\LeaveRequest;
 use App\Models\Mahasiswa;
+use App\Services\NotifikasiPembimbingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -228,11 +229,39 @@ class PesertaApiController extends ApiController
         $today = Carbon::today()->toDateString();
         $attendance = Attendance::where('mahasiswa_id', $mhs->id_mhs)->where('attendance_date', $today)->first();
 
+        // Cuti / izin disetujui yang berlaku hari ini (sama dengan halaman absensi web)
+        $activeLeave = LeaveRequest::where('mahasiswa_id', $mhs->id_mhs)
+            ->where('status', 'approved')
+            ->where('start_date', '<=', $today)
+            ->where('end_date', '>=', $today)
+            ->first();
+
+        // Sinkron otomatis: cuti disetujui tetapi presensi hari ini belum tercatat (sama dengan web)
+        if ($activeLeave && !$attendance) {
+            $statusCuti = $activeLeave->leave_type === 'sick_leave' ? 'sick' : 'leave';
+            $attendance = Attendance::firstOrCreate(
+                ['mahasiswa_id' => $mhs->id_mhs, 'attendance_date' => $today],
+                [
+                    'check_in_status' => $statusCuti,
+                    'work_status' => $statusCuti,
+                    'approval_status' => 'verified',
+                    'notes' => LeaveRequest::getLeaveTypeLabel($activeLeave->leave_type) . ': ' . $activeLeave->reason,
+                ]
+            );
+        }
+
+        $isAlumni = $mhs->isAlumni();
+        $sedangCuti = $activeLeave || ($attendance && in_array($attendance->check_in_status, ['leave', 'sick']));
+
         return $this->ok([
             'today' => $today,
             'attendance' => $this->formatAttendance($attendance),
-            'can_check_in' => !$attendance || !$attendance->check_in_at,
-            'can_check_out' => $attendance && $attendance->check_in_at && !$attendance->check_out_at,
+            'can_check_in' => !$isAlumni && !$sedangCuti && (!$attendance || !$attendance->check_in_at),
+            'can_check_out' => !$isAlumni && !$sedangCuti && $attendance && $attendance->check_in_at && !$attendance->check_out_at,
+            'is_alumni' => $isAlumni,
+            'status_magang_label' => $mhs->status_magang_label,
+            'on_leave' => (bool) $sedangCuti,
+            'active_leave' => $activeLeave ? $this->formatLeave($activeLeave) : null,
             'company' => $this->companyConfig(),
         ]);
     }
@@ -505,6 +534,15 @@ class PesertaApiController extends ApiController
             route('peserta.absensi')
         );
 
+        // Beri tahu pembimbing lapangan peserta ini
+        NotifikasiPembimbingService::kirim(
+            $mhs,
+            'Koreksi Absensi Baru',
+            NotifikasiPembimbingService::namaPeserta($mhs) . " mengajukan koreksi absensi tanggal {$request->correction_date}.",
+            'pembimbing.absensi',
+            'warning'
+        );
+
         return $this->ok(
             $this->formatCorrection($correction),
             'Pengajuan koreksi absensi berhasil dikirim dan sedang menunggu tinjauan pembimbing.',
@@ -663,6 +701,17 @@ class PesertaApiController extends ApiController
             route('peserta.logbook')
         );
 
+        if ($status === 'submitted') {
+            // Beri tahu pembimbing lapangan peserta ini
+            NotifikasiPembimbingService::kirim(
+                $mhs,
+                'Logbook Baru Menunggu Review',
+                NotifikasiPembimbingService::namaPeserta($mhs) . " mengirim logbook tanggal {$request->logbook_date} untuk ditinjau.",
+                'pembimbing.logbook',
+                'info'
+            );
+        }
+
         return $this->ok(
             $this->formatLogbook($logbook->fresh(['reviewer'])),
             $status === 'submitted' ? 'Logbook berhasil dikirim kepada pembimbing untuk ditinjau.' : 'Draft logbook berhasil disimpan.'
@@ -727,6 +776,15 @@ class PesertaApiController extends ApiController
             'Pengajuan ' . LeaveRequest::getLeaveTypeLabel($request->leave_type) . " ({$request->start_date} s/d {$request->end_date}) telah diajukan.",
             'info',
             route('peserta.cuti')
+        );
+
+        // Beri tahu pembimbing lapangan peserta ini
+        NotifikasiPembimbingService::kirim(
+            $mhs,
+            'Pengajuan Ketidakhadiran Baru',
+            NotifikasiPembimbingService::namaPeserta($mhs) . ' mengajukan ' . LeaveRequest::getLeaveTypeLabel($request->leave_type) . " ({$request->start_date} s/d {$request->end_date}).",
+            'pembimbing.cuti',
+            'warning'
         );
 
         return $this->ok(
@@ -830,6 +888,15 @@ class PesertaApiController extends ApiController
             route('peserta.aduan')
         );
 
+        // Beri tahu pembimbing lapangan peserta ini
+        NotifikasiPembimbingService::kirim(
+            $mhs,
+            'Aduan Baru dari Peserta',
+            NotifikasiPembimbingService::namaPeserta($mhs) . " membuat aduan {$complaintNumber}: {$request->title}",
+            'pembimbing.aduan',
+            'danger'
+        );
+
         return $this->ok(
             $this->formatComplaint($complaint->load('responses.user'), $request->user()->id_users),
             "Aduan Anda telah berhasil dikirim dengan Nomor Aduan: {$complaintNumber}. Petugas akan segera menindaklanjuti.",
@@ -842,6 +909,11 @@ class PesertaApiController extends ApiController
     public function replyComplaint(Request $request, $id)
     {
         $mhs = $this->mahasiswa($request);
+
+        if ($mhs->isAlumni()) {
+            return $this->fail('Masa magang Anda telah selesai. Tiket aduan telah diarsipkan.', 403);
+        }
+
         $complaint = Complaint::where('mahasiswa_id', $mhs->id_mhs)->findOrFail($id);
 
         $request->validate(['message' => 'required|string|min:3']);
@@ -857,6 +929,15 @@ class PesertaApiController extends ApiController
             'message' => $request->message,
             'is_internal_note' => false,
         ]);
+
+        // Beri tahu pembimbing lapangan peserta ini
+        NotifikasiPembimbingService::kirim(
+            $mhs,
+            'Tanggapan Aduan dari Peserta',
+            NotifikasiPembimbingService::namaPeserta($mhs) . " menanggapi aduan {$complaint->complaint_number}.",
+            'pembimbing.aduan',
+            'info'
+        );
 
         return $this->ok(
             $this->formatComplaint($complaint->load('responses.user'), $request->user()->id_users),
@@ -892,6 +973,24 @@ class PesertaApiController extends ApiController
         );
     }
 
+    /** GET /api/peserta/sertifikat → sertifikat magang yang sudah diterbitkan (null bila belum) */
+    public function certificate(Request $request)
+    {
+        $mhs = $this->mahasiswa($request);
+        $s = \App\Models\Sertifikat::where('mahasiswa_id', $mhs->id_mhs)
+            ->where('status', 'Diterbitkan')
+            ->latest('id_sertifikat')
+            ->first();
+
+        return $this->ok($s && $s->file_sertifikat ? [
+            'nomor' => $s->nomor_sertifikat,
+            'tanggal_terbit' => static::date($s->tanggal_terbit),
+            'penandatangan' => $s->penandatangan_nama,
+            'penandatangan_jabatan' => $s->penandatangan_jabatan,
+            'url' => static::fileUrl($s->file_sertifikat),
+        ] : null);
+    }
+
     /** GET /api/peserta/informasi */
     public function companyInformation(Request $request)
     {
@@ -906,6 +1005,9 @@ class PesertaApiController extends ApiController
                 'phone' => $company->phone,
                 'email' => $company->email,
                 'website' => $company->website,
+                'instagram_url' => $company->instagram_url,
+                'youtube_url' => $company->youtube_url,
+                'facebook_url' => $company->facebook_url,
                 'logo_url' => static::fileUrl($company->logo_path),
             ]),
             'penempatan' => $this->formatPenempatan($mhs->latestPengajuan()->with('divisi')->first()),

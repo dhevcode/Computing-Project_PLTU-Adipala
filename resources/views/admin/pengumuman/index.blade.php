@@ -181,6 +181,24 @@
                     <label>Alamat Lengkap Perusahaan</label>
                     <input type="text" name="address" value="{{ $company->address ?? 'Jl. Laut, Desa Bunton, Kec. Adipala, Kab. Cilacap, Jawa Tengah' }}" required class="input-box">
                 </div>
+
+                {{-- Website & media sosial (tampil di Info Perusahaan peserta) --}}
+                <div class="form-group">
+                    <label><i class="fa-solid fa-globe"></i> Website</label>
+                    <input type="url" name="website" value="{{ old('website', $company->website ?? '') }}" placeholder="https://plnindonesiapower.co.id" class="input-box">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-brands fa-instagram"></i> Instagram</label>
+                    <input type="url" name="instagram_url" value="{{ old('instagram_url', $company->instagram_url ?? '') }}" placeholder="https://instagram.com/..." class="input-box">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-brands fa-youtube"></i> YouTube</label>
+                    <input type="url" name="youtube_url" value="{{ old('youtube_url', $company->youtube_url ?? '') }}" placeholder="https://youtube.com/@..." class="input-box">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-brands fa-facebook"></i> Facebook</label>
+                    <input type="url" name="facebook_url" value="{{ old('facebook_url', $company->facebook_url ?? '') }}" placeholder="https://facebook.com/..." class="input-box">
+                </div>
             </div>
 
             <div style="text-align: right;">

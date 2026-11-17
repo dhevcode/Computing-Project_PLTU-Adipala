@@ -411,6 +411,15 @@
                     <input type="file" id="suratBalasan" name="surat_balasan" accept=".pdf,application/pdf" hidden required>
                     <div id="selectedFile" class="selected-file"></div>
                 </div>
+
+                <label style="display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; font-size: 13px; color: #334155; cursor: pointer; line-height: 1.5;">
+                    <input type="hidden" name="sertakan_akun" value="0">
+                    <input type="checkbox" name="sertakan_akun" value="1" checked style="margin-top: 3px; width: 16px; height: 16px;">
+                    <span>
+                        <strong>Sertakan akun login portal di email</strong><br>
+                        <small style="color: #64748B;">Untuk peserta yang diterima: bila belum punya akun, akun dibuat otomatis (username = NIM, password acak) dan dikirim bersama surat balasan. Bila sudah punya akun, hanya username yang dikirim (password tidak diubah).</small>
+                    </span>
+                </label>
             </div>
 
             <div class="modal-footer">

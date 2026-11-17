@@ -261,6 +261,18 @@
                                 <button type="button" class="btn-sm btn-outline" style="font-size: 11.5px; padding: 6px 12px;" onclick='editNilaiModal(@json($item), @json($item->details))'>
                                     <i class="fa-solid fa-pen-to-square"></i> Edit
                                 </button>
+                                @if(isset($sertifikatInfo[$item->mahasiswa_id]))
+                                    @php $sInfo = $sertifikatInfo[$item->mahasiswa_id]; @endphp
+                                    <button type="button" class="btn-sm btn-primary" style="font-size: 11.5px; padding: 6px 12px; margin-top: 6px;"
+                                        onclick='bukaSertifikatModal(@json($item->mahasiswa_id), @json($item->mahasiswa->nama_lengkap), @json($sInfo))'>
+                                        <i class="fa-solid fa-certificate"></i> {{ $sInfo['nomor'] ? 'Terbitkan Ulang' : 'Sertifikat' }}
+                                    </button>
+                                    @if($sInfo['url'])
+                                        <a href="{{ $sInfo['url'] }}" target="_blank" style="display: block; font-size: 11px; margin-top: 4px; color: var(--primary-dark);">
+                                            <i class="fa-solid fa-file-pdf"></i> Lihat sertifikat{{ $sInfo['tanggal'] ? ' (' . $sInfo['tanggal'] . ')' : '' }}
+                                        </a>
+                                    @endif
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -285,6 +297,71 @@
     </div>
 
 @endsection
+
+<!-- ================= MODAL TERBITKAN SERTIFIKAT ================= -->
+<div class="modal-overlay" id="sertifikatModal">
+    <div class="custom-modal">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-certificate" style="color: var(--primary);"></i> <span id="sertifikatModalJudul">Terbitkan Sertifikat</span></h3>
+            <button type="button" class="modal-close" onclick="tutupSertifikatModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form method="POST" id="sertifikatForm">
+            @csrf
+            <div class="modal-body">
+                <div id="sertifikatAlasan" class="alert alert-error" style="display: none; background: #FEF2F2; color: #991B1B; border-color: #FECACA; margin-bottom: 16px;"></div>
+                <p style="font-size: 12.5px; color: var(--muted); margin: 0 0 16px; line-height: 1.5;">
+                    Sertifikat (halaman 1) dan daftar nilai per aspek (halaman 2) dibuat otomatis dari Penilaian Akhir.
+                    Lengkapi data penerbitan berikut, lihat pratinjau, lalu terbitkan &mdash; PDF tersimpan di menu Sertifikat dan dikirim ke email peserta.
+                </p>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label>Nomor Sertifikat <span style="color: var(--error-text);">*</span></label>
+                    <input type="text" name="nomor_sertifikat" id="sertifNomor" required maxlength="100" class="sertif-input">
+                </div>
+                <div class="sertif-grid">
+                    <div class="form-group">
+                        <label>Kota Penerbitan <span style="color: var(--error-text);">*</span></label>
+                        <input type="text" name="kota_terbit" id="sertifKota" required maxlength="100" class="sertif-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Terbit <span style="color: var(--error-text);">*</span></label>
+                        <input type="date" name="tanggal_terbit" id="sertifTanggal" required class="sertif-input">
+                    </div>
+                </div>
+                <div style="margin: 18px 0 10px; border-bottom: 2px solid var(--page); padding-bottom: 6px;">
+                    <h4 style="font-size: 13px; font-weight: 700; color: var(--primary-dark); text-transform: uppercase; margin: 0;">Penandatangan</h4>
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label>Jabatan <span style="color: var(--error-text);">*</span></label>
+                    <input type="text" name="penandatangan_jabatan" id="sertifJabatan" required maxlength="150" placeholder="Contoh: General Manager" class="sertif-input">
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label>Nama Lengkap <span style="color: var(--error-text);">*</span></label>
+                    <input type="text" name="penandatangan_nama" id="sertifNama" required maxlength="150" placeholder="Nama penandatangan beserta gelar" class="sertif-input">
+                </div>
+                <div class="form-group">
+                    <label>NIP / Identitas (opsional)</label>
+                    <input type="text" name="penandatangan_identitas" id="sertifNip" maxlength="150" placeholder="Contoh: NIP. 1234567890" class="sertif-input">
+                </div>
+                <p style="font-size: 11.5px; color: var(--muted); margin: 10px 0 0;">Data penandatangan terakhir otomatis terisi pada penerbitan berikutnya.</p>
+            </div>
+            <div class="modal-footer" style="flex-wrap: wrap;">
+                <button type="button" class="btn-sm btn-outline" onclick="tutupSertifikatModal()" style="margin-right: auto;">Batal</button>
+                <button type="button" class="btn-sm btn-outline" onclick="pratinjauSertifikat()">
+                    <i class="fa-solid fa-eye"></i> Pratinjau PDF
+                </button>
+                <button type="button" class="btn-sm btn-primary" id="sertifTombolTerbit" onclick="terbitkanSertifikat()">
+                    <i class="fa-solid fa-paper-plane"></i> Terbitkan &amp; Kirim
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+    .sertif-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; color: var(--text); background: #fff; outline: none; font-family: inherit; }
+    .sertif-input:focus { border-color: var(--primary); }
+    .sertif-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    @media (max-width: 600px) { .sertif-grid { grid-template-columns: 1fr; } }
+</style>
 
 <!-- ================= MODAL INPUT NILAI BARU ================= -->
 <div class="modal-overlay" id="inputNilaiModal">
@@ -437,11 +514,11 @@
 
         // 3. MODAL OVERLAY ESC KEY & CLICK BG
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') closeInputNilaiModal();
+            if (e.key === 'Escape') { closeInputNilaiModal(); tutupSertifikatModal(); }
         });
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', e => {
-                if(e.target === overlay) closeInputNilaiModal();
+                if(e.target === overlay) { closeInputNilaiModal(); tutupSertifikatModal(); }
             });
         });
     });
@@ -498,6 +575,66 @@
         const m = document.getElementById('inputNilaiModal');
         m.style.display = 'flex';
         setTimeout(() => m.classList.add('active'), 10);
+    }
+
+    // ================= SERTIFIKAT DARI PENILAIAN AKHIR =================
+    const ruteSertifikat = {
+        pratinjau: @json(route('admin.nilai.sertifikat.pratinjau', ['mahasiswa' => 999999999])),
+        terbitkan: @json(route('admin.nilai.sertifikat.terbitkan', ['mahasiswa' => 999999999])),
+    };
+    let sertifikatMahasiswaId = null;
+
+    window.bukaSertifikatModal = function(mahasiswaId, nama, info) {
+        sertifikatMahasiswaId = mahasiswaId;
+        const isian = info.isian || {};
+        document.getElementById('sertifikatModalJudul').textContent = 'Sertifikat: ' + nama;
+        document.getElementById('sertifNomor').value = isian.nomor_sertifikat || '';
+        document.getElementById('sertifKota').value = isian.kota_terbit || 'Cilacap';
+        document.getElementById('sertifTanggal').value = isian.tanggal_terbit || '';
+        document.getElementById('sertifJabatan').value = isian.penandatangan_jabatan || '';
+        document.getElementById('sertifNama').value = isian.penandatangan_nama || '';
+        document.getElementById('sertifNip').value = isian.penandatangan_identitas || '';
+
+        const alasan = document.getElementById('sertifikatAlasan');
+        const tombol = document.getElementById('sertifTombolTerbit');
+        if (info.alasan) {
+            alasan.textContent = 'Belum dapat diterbitkan: ' + info.alasan + ' Pratinjau tetap dapat dilihat.';
+            alasan.style.display = 'block';
+            tombol.disabled = true;
+            tombol.style.opacity = 0.5;
+        } else {
+            alasan.style.display = 'none';
+            tombol.disabled = false;
+            tombol.style.opacity = 1;
+        }
+
+        const m = document.getElementById('sertifikatModal');
+        m.style.display = 'flex';
+        setTimeout(() => m.classList.add('active'), 10);
+    }
+
+    window.tutupSertifikatModal = function() {
+        const m = document.getElementById('sertifikatModal');
+        if (!m) return;
+        m.classList.remove('active');
+        setTimeout(() => m.style.display = 'none', 200);
+    }
+
+    window.pratinjauSertifikat = function() {
+        const form = document.getElementById('sertifikatForm');
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        form.action = ruteSertifikat.pratinjau.replace('999999999', sertifikatMahasiswaId);
+        form.target = '_blank';
+        form.submit();
+    }
+
+    window.terbitkanSertifikat = function() {
+        const form = document.getElementById('sertifikatForm');
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        if (!confirm('Terbitkan sertifikat dan kirim ke email peserta sekarang?')) return;
+        form.action = ruteSertifikat.terbitkan.replace('999999999', sertifikatMahasiswaId);
+        form.target = '_self';
+        form.submit();
     }
 
     window.submitNilaiAs = function(type) {

@@ -145,7 +145,7 @@
 
         <div class="stat-card">
             <div class="stat-info">
-                <span>Pengajuan Cuti</span>
+                <span>Ketidakhadiran</span>
                 <h2>{{ str_pad($pendingLeaveCount ?? 0, 2, '0', STR_PAD_LEFT) }}</h2>
             </div>
             <div class="stat-icon icon-green"><i class="fa-solid fa-calendar-check"></i></div>

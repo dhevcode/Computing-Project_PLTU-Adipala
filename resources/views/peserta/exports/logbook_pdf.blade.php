@@ -160,7 +160,7 @@
     <table class="header-kop">
         <tr>
             <td style="width: 70px;">
-                <img src="{{ public_path('images/logo-pln.png') }}" style="height: 48px;" alt="PLN Logo" onerror="this.style.display='none'">
+                @if(function_exists('imagecreatefrompng') && is_file(public_path('assets/image/logo-pln.png')))<img src="{{ public_path('assets/image/logo-pln.png') }}" style="height: 48px;" alt="PLN Logo">@else<div style="font-weight: bold; color: #075b73; font-size: 11px; line-height: 1.2;">PLN<br>Indonesia Power</div>@endif
             </td>
             <td>
                 <div class="instansi-title">PT PLN INDONESIA POWER</div>

@@ -77,6 +77,12 @@ class AdminPengumumanController extends Controller
             'attendance_radius_meters' => 'required|integer|min:10',
             'work_start_time' => 'required',
             'work_end_time' => 'required',
+            'website' => 'nullable|url|max:255',
+            'instagram_url' => 'nullable|url|max:255',
+            'youtube_url' => 'nullable|url|max:255',
+            'facebook_url' => 'nullable|url|max:255',
+        ], [
+            'url' => 'Alamat :attribute harus berupa URL lengkap (diawali https://).',
         ]);
 
         $company = Company::first();
@@ -84,7 +90,8 @@ class AdminPengumumanController extends Controller
             $company->update($request->only([
                 'name', 'industry', 'address', 'latitude', 'longitude',
                 'attendance_radius_meters', 'work_start_time', 'work_end_time',
-                'phone', 'email', 'website', 'description'
+                'phone', 'email', 'website', 'description',
+                'instagram_url', 'youtube_url', 'facebook_url',
             ]));
 
             // Sinkronisasi otomatis ke kebijakan presensi (AttendancePolicy)

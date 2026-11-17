@@ -1083,6 +1083,11 @@ $bidangData = $chartDivisi->pluck('total');
         $pengajuan = PengajuanMagang::findOrFail($id);
         $mahasiswa = $pengajuan->mahasiswa;
 
+        // Arsip magang dilindungi (aturan sama dengan API mobile)
+        if ($alasan = \App\Services\ArsipPesertaService::alasanTidakBolehDihapus($mahasiswa)) {
+            return redirect()->route('admin.data')->with('error', $alasan);
+        }
+
         if ($pengajuan->surat_permohonan && file_exists(public_path('uploads/surat_permohonan/' . $pengajuan->surat_permohonan))) {
             @unlink(public_path('uploads/surat_permohonan/' . $pengajuan->surat_permohonan));
         }
@@ -1090,6 +1095,7 @@ $bidangData = $chartDivisi->pluck('total');
         $pengajuan->delete();
 
         if ($mahasiswa && $mahasiswa->pengajuanMagang()->count() === 0) {
+            \App\Services\ArsipPesertaService::hapusAkun($mahasiswa); // akun portal ikut dihapus
             $mahasiswa->delete();
         }
 

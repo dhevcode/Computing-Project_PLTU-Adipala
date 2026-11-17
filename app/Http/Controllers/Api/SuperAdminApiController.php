@@ -488,6 +488,10 @@ class SuperAdminApiController extends AdminApiController
         $mahasiswa = Mahasiswa::findOrFail($id);
         $nama = $mahasiswa->nama_lengkap;
 
+        if ($alasan = $this->alasanTidakBolehDihapus($mahasiswa)) {
+            return $this->fail($alasan, 409);
+        }
+
         DB::transaction(function () use ($mahasiswa) {
             PengajuanMagang::where('mahasiswa_id', $mahasiswa->id_mhs)->delete();
             $akun = User::where('id_users', $mahasiswa->user_id)->orWhere('id_mhs', $mahasiswa->id_mhs)->get();

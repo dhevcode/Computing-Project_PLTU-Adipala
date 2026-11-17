@@ -322,6 +322,8 @@ trait FormatsMonitoringData
             'mahasiswa_id' => $e->mahasiswa_id,
             'date' => static::date($e->evaluation_date),
             'total_score' => (float) $e->total_score,
+            'grade' => $e->grade,
+            'predicate' => $e->predicate,
             'participant_note' => $e->participant_note,
             'status' => $e->status,
             'evaluator' => static::userSummary($e->evaluator),
@@ -396,6 +398,8 @@ trait FormatsMonitoringData
             'notifikasi' => 'notifikasi',
             'profil', 'profile' => 'profil',
             'dashboard' => 'dashboard',
+            // Admin: /admin/mahasiswa/{id}/detail (pengajuan magang baru)
+            'mahasiswa' => 'mahasiswa',
             default => null,
         };
     }

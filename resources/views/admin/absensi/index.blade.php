@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Presensi & Koreksi')
-@section('page_title', 'Monitoring Presensi & Koreksi')
+@section('title', 'Presensi (Kehadiran)')
+@section('page_title', 'Monitoring Presensi (Kehadiran)')
 @section('page_subtitle', 'Pantau kehadiran harian dan validasi pengajuan koreksi absensi mahasiswa')
 
 @push('styles')

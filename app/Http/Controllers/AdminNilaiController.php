@@ -10,6 +10,8 @@ use App\Models\EvaluationCriterion;
 use App\Models\EvaluationDetail;
 use App\Models\Mahasiswa;
 use App\Models\AppNotification;
+use App\Models\Sertifikat;
+use App\Services\SertifikatService;
 
 class AdminNilaiController extends Controller
 {
@@ -50,7 +52,24 @@ class AdminNilaiController extends Controller
 
         $evaluations = $query->orderBy('updated_at', 'desc')->paginate(15)->withQueryString();
 
-        return view('admin.nilai.index', compact('evaluations', 'mahasiswas', 'criteria'));
+        // Data penerbitan sertifikat per baris yang sudah dipublikasikan (isian awal form, syarat, sertifikat lama)
+        $sertifikatService = app(SertifikatService::class);
+        $sertifikatInfo = [];
+        foreach ($evaluations as $item) {
+            if ($item->status !== 'published' || !$item->mahasiswa) {
+                continue;
+            }
+            $lama = Sertifikat::where('mahasiswa_id', $item->mahasiswa_id)->latest('id_sertifikat')->first();
+            $sertifikatInfo[$item->mahasiswa_id] = [
+                'isian' => $sertifikatService->isianAwal($item->mahasiswa),
+                'alasan' => $sertifikatService->alasanBelumBisa($item->mahasiswa),
+                'url' => $lama ? asset($lama->file_sertifikat) : null,
+                'nomor' => $lama->nomor_sertifikat ?? null,
+                'tanggal' => $lama?->tanggal_terbit?->format('d/m/Y'),
+            ];
+        }
+
+        return view('admin.nilai.index', compact('evaluations', 'mahasiswas', 'criteria', 'sertifikatInfo'));
     }
 
     /**
@@ -144,5 +163,38 @@ class AdminNilaiController extends Controller
             : 'Draft penilaian akhir berhasil disimpan.';
 
         return back()->with('success', $msg);
+    }
+
+    /**
+     * Pratinjau PDF sertifikat (bertanda PRATINJAU) sebelum diterbitkan — dibuka di tab baru.
+     */
+    public function pratinjauSertifikat(Request $request, $mahasiswaId, SertifikatService $service)
+    {
+        $isian = $request->validate(SertifikatService::aturanValidasi(), SertifikatService::pesanValidasi());
+        $mhs = Mahasiswa::with('latestPengajuan')->findOrFail($mahasiswaId);
+        if (!$service->penilaianAkhir($mhs)) {
+            abort(422, 'Penilaian akhir magang belum dipublikasikan.');
+        }
+
+        return $service->pdf($mhs, $isian, true)->stream('Pratinjau_' . SertifikatService::namaFile($mhs));
+    }
+
+    /**
+     * Terbitkan sertifikat dari Penilaian Akhir: PDF 2 halaman (sertifikat + daftar nilai),
+     * disimpan ke menu Sertifikat dan dikirim ke email peserta.
+     */
+    public function terbitkanSertifikat(Request $request, $mahasiswaId, SertifikatService $service)
+    {
+        $isian = $request->validate(SertifikatService::aturanValidasi(), SertifikatService::pesanValidasi());
+        $mhs = Mahasiswa::with('latestPengajuan')->findOrFail($mahasiswaId);
+
+        if ($alasan = $service->alasanBelumBisa($mhs)) {
+            return back()->with('error', 'Sertifikat belum dapat diterbitkan: ' . $alasan);
+        }
+
+        [$sertifikat, $terkirim] = $service->terbitkan($mhs, $isian, Auth::id());
+
+        return back()->with('success', "Sertifikat {$sertifikat->nomor_sertifikat} untuk {$mhs->nama_lengkap} berhasil diterbitkan"
+            . ($terkirim ? ' dan dikirim ke email peserta.' : '. (Email tidak terkirim — periksa alamat email peserta / pengaturan email.)'));
     }
 }

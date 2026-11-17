@@ -23,7 +23,7 @@
             <div class="nav-group-title">Monitoring & Validasi</div>
             <a href="{{ route('pembimbing.absensi') }}" class="nav-link {{ request()->routeIs('pembimbing.absensi*') ? 'active' : '' }}">
                 <i class="fa-solid fa-location-dot"></i>
-                <span>Presensi & Koreksi</span>
+                <span>Presensi (Kehadiran)</span>
             </a>
             <a href="{{ route('pembimbing.logbook') }}" class="nav-link {{ request()->routeIs('pembimbing.logbook*') ? 'active' : '' }}">
                 <i class="fa-solid fa-book-open"></i>
@@ -31,7 +31,7 @@
             </a>
             <a href="{{ route('pembimbing.cuti') }}" class="nav-link {{ request()->routeIs('pembimbing.cuti*') ? 'active' : '' }}">
                 <i class="fa-solid fa-calendar-check"></i>
-                <span>Cuti & Izin</span>
+                <span>Ketidakhadiran</span>
             </a>
             <a href="{{ route('pembimbing.aduan') }}" class="nav-link {{ request()->routeIs('pembimbing.aduan*') ? 'active' : '' }}">
                 <i class="fa-solid fa-circle-exclamation"></i>

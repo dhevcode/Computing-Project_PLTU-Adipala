@@ -648,14 +648,16 @@
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
 
-                                    <!-- Delete -->
-                                    <form action="{{ route('superadmin.peserta.destroy', $mhs->id_mhs) }}" method="POST" data-confirm="Apakah Anda yakin ingin menghapus data peserta magang {{ $mhs->nama_lengkap }} beserta seluruh riwayat absensi dan logbooknya?" data-confirm-title="Hapus Data Permanen?">
+                                    <!-- Delete — hanya untuk pengajuan yang belum berjalan; arsip peserta aktif/alumni dilindungi -->
+                                    @if(!in_array(optional($mhs->latestPengajuan)->status, ['Sedang Magang', 'Selesai Magang']))
+                                    <form action="{{ route('superadmin.peserta.destroy', $mhs->id_mhs) }}" method="POST" data-confirm="Apakah Anda yakin ingin menghapus data peserta magang {{ $mhs->nama_lengkap }}? Seluruh data terkait ikut terhapus permanen." data-confirm-title="Hapus Data Permanen?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-action btn-delete" title="Hapus Peserta">
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

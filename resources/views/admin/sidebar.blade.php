@@ -31,7 +31,7 @@
             <div class="nav-group-title">Monitoring & Evaluasi</div>
             <a href="{{ route('admin.absensi') }}" class="nav-link {{ request()->routeIs('admin.absensi*') ? 'active' : '' }}">
                 <i class="fa-solid fa-location-dot"></i>
-                <span>Presensi & Koreksi</span>
+                <span>Presensi (Kehadiran)</span>
             </a>
             <a href="{{ route('admin.logbook') }}" class="nav-link {{ request()->routeIs('admin.logbook*') ? 'active' : '' }}">
                 <i class="fa-solid fa-book-open"></i>
@@ -39,7 +39,7 @@
             </a>
             <a href="{{ route('admin.cuti') }}" class="nav-link {{ request()->routeIs('admin.cuti*') ? 'active' : '' }}">
                 <i class="fa-solid fa-calendar-check"></i>
-                <span>Cuti & Izin</span>
+                <span>Ketidakhadiran</span>
             </a>
             <a href="{{ route('admin.aduan') }}" class="nav-link {{ request()->routeIs('admin.aduan*') ? 'active' : '' }}">
                 <i class="fa-solid fa-circle-exclamation"></i>
@@ -47,7 +47,7 @@
             </a>
             <a href="{{ route('admin.nilai') }}" class="nav-link {{ request()->routeIs('admin.nilai*') ? 'active' : '' }}">
                 <i class="fa-solid fa-star-half-stroke"></i>
-                <span>Nilai Harian</span>
+                <span>Penilaian Akhir</span>
             </a>
         </div>
 

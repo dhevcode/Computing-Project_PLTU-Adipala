@@ -100,7 +100,7 @@ class AdminAbsensiController extends Controller
             }
 
             if ($attendance->check_in_at && $attendance->check_out_at) {
-                $attendance->total_work_minutes = max(0, (int) Carbon::parse($attendance->check_out_at)->diffInMinutes(Carbon::parse($attendance->check_in_at)));
+                $attendance->total_work_minutes = max(0, (int) Carbon::parse($attendance->check_in_at)->diffInMinutes(Carbon::parse($attendance->check_out_at)) /* Carbon 3: selisih bertanda (akhir - awal) */);
             }
 
             $attendance->approval_status = 'corrected';

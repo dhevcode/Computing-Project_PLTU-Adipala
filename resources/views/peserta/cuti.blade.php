@@ -1,7 +1,7 @@
 @extends('peserta.layouts.app')
 
-@section('title', 'Pengajuan Cuti & Izin')
-@section('page_title', 'Pengajuan Cuti & Izin')
+@section('title', 'Ketidakhadiran')
+@section('page_title', 'Ketidakhadiran')
 @section('page_subtitle', 'Ajukan permohonan ketidakhadiran resmi untuk sakit, kegiatan akademik, atau cuti darurat.')
 
 @push('styles')
@@ -178,7 +178,7 @@
 <!-- ================= HEADER DASHBOARD ================= -->
 <div class="dashboard-header">
     <div class="header-info">
-        <h2>{{ $isAlumni ? 'Arsip Pengajuan Cuti & Izin' : 'Pengajuan Cuti & Izin' }}</h2>
+        <h2>{{ $isAlumni ? 'Arsip Ketidakhadiran' : 'Pengajuan Ketidakhadiran' }}</h2>
         <p>{{ $isAlumni ? 'Arsip seluruh riwayat permohonan izin dan cuti selama masa magang Anda.' : 'Lakukan permohonan izin ketidakhadiran resmi secara digital kepada pembimbing Anda.' }}</p>
     </div>
     @if(!$isAlumni)

@@ -595,6 +595,11 @@ class SuperAdminController extends Controller
         $mahasiswa = Mahasiswa::findOrFail($id);
         $nama = $mahasiswa->nama_lengkap;
 
+        // Arsip magang dilindungi (aturan sama dengan API mobile)
+        if ($alasan = \App\Services\ArsipPesertaService::alasanTidakBolehDihapus($mahasiswa)) {
+            return back()->with('error', $alasan);
+        }
+
         DB::transaction(function () use ($mahasiswa) {
             // Hapus pengajuan
             PengajuanMagang::where('mahasiswa_id', $mahasiswa->id_mhs)->delete();

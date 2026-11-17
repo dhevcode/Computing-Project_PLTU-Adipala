@@ -1,7 +1,7 @@
 @extends('pembimbing.layouts.app')
 
-@section('title', 'Monitoring Cuti & Izin Bimbingan')
-@section('page_title', 'Pengajuan Cuti & Izin Bimbingan')
+@section('title', 'Monitoring Ketidakhadiran Bimbingan')
+@section('page_title', 'Ketidakhadiran Bimbingan')
 @section('page_subtitle', 'Verifikasi dan tindak lanjuti permohonan ketidakhadiran, sakit, maupun izin akademik mahasiswa.')
 
 @push('styles')

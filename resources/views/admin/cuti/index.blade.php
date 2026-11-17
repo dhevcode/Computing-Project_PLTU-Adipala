@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Cuti & Izin')
-@section('page_title', 'Pengajuan Cuti & Izin Mahasiswa')
+@section('title', 'Ketidakhadiran')
+@section('page_title', 'Ketidakhadiran Mahasiswa')
 @section('page_subtitle', 'Verifikasi permohonan izin sakit, akademik, atau cuti pribadi. Izin yang disetujui otomatis memperbarui presensi.')
 
 @push('styles')
@@ -185,7 +185,7 @@
         </form>
 
         <div class="card-header" style="border: none; padding: 0 0 16px 0;">
-            <h3><i class="fa-solid fa-calendar-days" style="color: var(--primary);"></i> Daftar Pengajuan Cuti & Izin</h3>
+            <h3><i class="fa-solid fa-calendar-days" style="color: var(--primary);"></i> Daftar Pengajuan Ketidakhadiran</h3>
         </div>
 
         <div class="table-wrapper">
